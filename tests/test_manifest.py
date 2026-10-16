@@ -67,3 +67,6 @@ def test_live_only_packages_are_removed_after_install():
     for p in read_list(MANIFEST / "live.list"):
         base = p.split("-")[0]
         assert base in ("casper", "ubiquity", "gparted"), p
+    # ubiquity crashes without a slideshow: ours must be built and checked by the build
+    assert "Package: ubiquity-slideshow-trota" in (ROOT / "packaging/debian/control").read_text()
+    assert "/usr/share/ubiquity-slideshow/slides/index.html" in build

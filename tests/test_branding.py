@@ -65,3 +65,17 @@ def test_render_script(tmp_path):
                 "icons/48x48/it.testardstudios.TrotaWelcome.png"):
         f = tmp_path / rel
         assert f.exists() and f.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n", rel
+
+
+def test_installer_slideshow():
+    import re
+
+    html = (BRANDING / "slideshow/slides/index.html").read_text()
+    assert "http://" not in html.replace("http://www.w3.org/2000/svg", "") and "https://" not in html
+    assert 'logo.src = "trota-logo-dark.svg"' in html
+    # every language has the same number of slides
+    en = html[html.index("en: ["):html.index("it: [")]
+    it = html[html.index("it: ["):html.index("var FOOT")]
+    assert len(re.findall(r"\{ t:", en)) == len(re.findall(r"\{ t:", it)) >= 4
+    conf = (BRANDING / "slideshow/slideshow.conf").read_text()
+    assert "width:752" in conf and "height:442" in conf

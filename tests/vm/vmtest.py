@@ -311,6 +311,18 @@ def run_checks(vm: "VM", script: Path, out: Path, timeout: float = 1800, subst: 
     return results
 
 
+def collect_installer_logs(vm: "VM") -> None:
+    """Log in as the live user and copy the installer logs to the share."""
+    try:
+        serial_login(vm.serial, "trota", "", timeout=120)
+        vm.serial.run("sudo mount -t 9p -o trans=virtio,version=9p2000.L trotatest /mnt && "
+                      "sudo cp -r /var/log/installer /mnt/installer-logs; "
+                      "sudo journalctl -b --no-pager > /tmp/journal.txt; sudo cp /tmp/journal.txt /mnt/", 300)
+        log(f"installer logs copied to {vm.share}")
+    except Exception as exc:  # best effort only
+        log(f"could not collect installer logs: {exc}")
+
+
 # --- scenarios -------------------------------------------------------------------
 def scenario_boot_iso(args, out: Path) -> int:
     vm = VM(out, args.firmware, memory=args.memory)
@@ -368,6 +380,7 @@ def scenario_install(args, out: Path) -> int:
     elapsed = time.time() - t0
     if not finished:
         vm.screenshot("timeout")
+        collect_installer_logs(vm)
         vm.stop()
     result = {"install": {"status": "PASS" if finished else "FAIL",
                           "note": f"VM {'powered off/rebooted' if finished else 'still running'} after {elapsed / 60:.1f} min"}}

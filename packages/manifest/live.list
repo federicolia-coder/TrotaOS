@@ -6,4 +6,7 @@ ubiquity
 ubiquity-casper
 ubiquity-frontend-gtk
 ubiquity-ubuntu-artwork
+# The installer slideshow (ubiquity-slideshow-trota) is built from this
+# repository and installed with the other Trota OS packages: ubiquity 24.04.5
+# crashes without a slideshow (docs/testing.md).
 gparted

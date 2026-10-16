@@ -106,6 +106,10 @@ stage_trota() {
     in_chroot "$CHROOT" sh -c 'apt-get -y install --reinstall /tmp/trota-debs/*.deb'
     rm -rf "$CHROOT/tmp/trota-debs"
 
+    # Ubiquity crashes at the start of the installation without a slideshow
+    # (docs/testing.md): make sure ours is installed.
+    [ -f "$CHROOT/usr/share/ubiquity-slideshow/slides/index.html" ] || die "installer slideshow missing"
+
     # Fail the build if an excluded package slipped in anyway.
     local bad
     bad="$(read_list "$m/excluded.list" | awk '{print $1}' | while read -r p; do

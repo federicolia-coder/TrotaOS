@@ -108,3 +108,16 @@ Description: Trota OS desktop system (metapackage)
  Depends on all the Trota OS components. Removing it does not remove the
  rest of the system, but it should stay installed so that future Trota OS
  components arrive with normal updates.
+
+Package: ubiquity-slideshow-trota
+Architecture: all
+Depends: ${misc:Depends}
+Provides: ubiquity-slideshow
+Conflicts: ubiquity-slideshow
+Replaces: ubiquity-slideshow
+Description: Trota OS installer slideshow
+ Slides shown by the ubiquity installer while Trota OS is being installed
+ (English and Italian). Self-contained HTML, no network access.
+ .
+ Ubiquity 24.04 also needs a slideshow to keep its privilege handling
+ consistent during the installation.

@@ -79,6 +79,10 @@ override_dh_auto_install:
 	done
 	install -D -m 644 packaging/files/desktop/trota-welcome-autostart.desktop \
 		debian/trota-welcome/etc/xdg/autostart/trota-welcome.desktop
+	# --- ubiquity-slideshow-trota -----------------------------------------
+	install -D -m 644 branding/slideshow/slideshow.conf debian/ubiquity-slideshow-trota/usr/share/ubiquity-slideshow/slideshow.conf
+	install -D -m 644 branding/slideshow/slides/index.html debian/ubiquity-slideshow-trota/usr/share/ubiquity-slideshow/slides/index.html
+	install -m 644 branding/logo/trota-logo-dark.svg debian/ubiquity-slideshow-trota/usr/share/ubiquity-slideshow/slides/
 	# --- trota-docs --------------------------------------------------------
 	install -d debian/trota-docs/usr/share/doc/trota-docs/html
 	cp -r build-docs/. debian/trota-docs/usr/share/doc/trota-docs/html/
