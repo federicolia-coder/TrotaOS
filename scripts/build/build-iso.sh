@@ -176,6 +176,8 @@ EOF
     in_chroot "$CHROOT" locale-gen en_US.UTF-8 it_IT.UTF-8
 
     # Regenerate dconf and GSettings defaults shipped by trota-desktop-settings.
+    # --strict: an unknown key or a wrong type in an override fails the build.
+    in_chroot "$CHROOT" glib-compile-schemas --strict --dry-run /usr/share/glib-2.0/schemas
     in_chroot "$CHROOT" glib-compile-schemas /usr/share/glib-2.0/schemas
     in_chroot "$CHROOT" dconf update
 

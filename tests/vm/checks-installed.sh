@@ -21,8 +21,10 @@ if wait_for 900 sh -c 'systemctl is-system-running | grep -qE "running|degraded"
 else
     result systemd FAIL "boot did not complete"
 fi
-check grub_menu_name sh -c 'grep -m1 "^menuentry" /boot/grub/grub.cfg'
-check grub_trota_entry grep -q "menuentry 'Trota OS'" /boot/grub/grub.cfg
+# grub.cfg is readable by root only on Ubuntu 24.04
+check grub_menu_name sh -c 'printf "%s\n" "$0" | sudo -S -p "" grep -m1 "^menuentry" /boot/grub/grub.cfg' "$PW"
+check grub_trota_entry sh -c 'printf "%s\n" "$0" | sudo -S -p "" grep -q "menuentry .Trota OS" /boot/grub/grub.cfg' "$PW"
+echo "--- grub.cfg modules and fonts"; as_root grep -nE 'insmod|loadfont|font=|gfx|theme' /boot/grub/grub.cfg | head -25
 if [ "$FIRMWARE" = bios ]; then
     result efi_boot SKIP "BIOS installation"
 else
@@ -54,7 +56,8 @@ trota-diagnostics --text --no-dns; rc=$?
 [ $rc -le 1 ] && result diagnostics PASS "exit $rc" || result diagnostics FAIL "exit $rc"
 
 section "software and updates"
-if wait_for 1200 sh -c 'snap list firefox && snap list snap-store'; then
+# Seeding installs all snaps in one change; wait for it to finish (slow in emulation).
+if as_root timeout 2700 snap wait system seed.loaded && snap list firefox >/dev/null && snap list snap-store >/dev/null; then
     result snaps_installed PASS "$(snap list | awk 'NR>1{print $1}' | tr '\n' ' ')"
 else
     result snaps_installed FAIL "$(snap changes 2>&1 | tail -3 | tr '\n' ' ')"
@@ -79,6 +82,16 @@ bad="$(dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' ubuntu-report whoopsi
 [ -z "$bad" ] && result no_telemetry PASS "none of the excluded packages installed" || result no_telemetry FAIL "$bad"
 check apt_news_disabled sh -c 'pro config show apt_news 2>/dev/null | grep -q False && echo apt_news=False'
 check release_upgrade_prompt sh -c 'grep -E "^Prompt=" /etc/update-manager/release-upgrades'
+section "desktop session diagnostics"
+# "Oh no! Something has gone wrong" means gnome-session lost a required component.
+if journalctl -b --no-pager 2>/dev/null | grep -qE 'Unrecoverable failure in required component|fail-whale|Fatal IO error'; then
+    result gnome_session_healthy FAIL "$(journalctl -b --no-pager 2>/dev/null | grep -E 'Unrecoverable failure|required component|fail-whale' | tail -2 | tr '\n' ' ' | cut -c1-200)"
+else
+    result gnome_session_healthy PASS "no gnome-session failure logged"
+fi
+echo "--- gnome session journal"
+journalctl -b --no-pager -o short-monotonic 2>/dev/null | grep -iE 'gnome-session|gnome-shell|gsd-|mutter|Xwayland|gdm' | grep -iE 'fail|error|crit|warn|timeout|exit|killed|segfault' | tail -60
+
 section "measurements"
 result measure_memory PASS "$(free -m | awk '/^Mem:/{printf "used %d MiB of %d MiB (available %d MiB)", $3, $2, $7}')"
 result measure_disk PASS "$(df -BM --output=used,size / | awk 'NR==2{printf "root used %s of %s", $1, $2}')"

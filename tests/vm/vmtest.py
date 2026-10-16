@@ -171,7 +171,10 @@ class VM:
 
     def start(self, extra: list[str], vars_file: Path, no_reboot: bool = False):
         accel = "kvm" if os.access("/dev/kvm", os.W_OK) else "tcg,thread=multi,tb-size=1024"
-        cpu = "host" if accel == "kvm" else "max"
+        # Under TCG, "-cpu max" advertises extensions (AVX-512...) that the
+        # llvmpipe JIT uses and that the emulation does not handle reliably:
+        # gnome-shell then segfaults in JIT code. A conservative model avoids it.
+        cpu = "host" if accel == "kvm" else os.environ.get("TROTA_VM_CPU", "Nehalem")
         self.qmp_path = self.out / "qmp.sock"
         self.serial_path = self.out / "serial.sock"
         for p in (self.qmp_path, self.serial_path):
@@ -353,8 +356,11 @@ def scenario_live(args, out: Path) -> int:
     try:
         serial_login(vm.serial, "trota", "", timeout=args.minutes * 60)
         log("logged in on the serial console of the live session")
+        vm.serial.run("for i in $(seq 120); do pgrep -u trota -x gnome-shell >/dev/null && break; sleep 5; done", 700)
+        time.sleep(90)
+        vm.screenshot("desktop-live")
         results = run_checks(vm, HERE / "checks-live.sh", out)
-        vm.screenshot("desktop")
+        vm.screenshot("desktop-apps")
     finally:
         vm.stop()
     return report(results, out)
@@ -406,12 +412,14 @@ def scenario_installed(args, out: Path) -> int:
         vm.screenshot("boot")
         serial_login(vm.serial, creds["user"], creds["password"], timeout=args.minutes * 60)
         log("logged in on the serial console of the installed system")
+        # Desktop screenshots first: after a few idle minutes GNOME blanks the screen.
+        vm.serial.run("for i in $(seq 120); do pgrep -u \"$USER\" -f trota-welcome >/dev/null && break; sleep 5; done", 700)
+        time.sleep(45)
+        vm.screenshot("desktop-welcome")
         results = run_checks(vm, HERE / "checks-installed.sh", out, timeout=3600,
                              subst={"@PASSWORD@": creds["password"], "@FIRMWARE@": args.firmware},
                              password=creds["password"])
-        for i in range(3):
-            vm.screenshot(f"desktop{i}")
-            time.sleep(30)
+        vm.screenshot("desktop-end")
     finally:
         vm.stop()
     return report(results, out)
@@ -444,6 +452,10 @@ sudo cp -r /t/var/log/installer $D/installer-logs
 sudo cp /t/boot/grub/grub.cfg /t/etc/fstab /tmp/lsblk.txt /tmp/efibootmgr.txt /tmp/esp.txt $D/ 2>/dev/null
 sudo chroot /t dpkg -l 'grub*' 'shim*' casper 'ubiquity*' > /tmp/dpkg.txt 2>&1; sudo cp /tmp/dpkg.txt $D/
 sudo ls -la /t/etc/default/grub.d > /tmp/grubd.txt 2>&1; sudo cp /tmp/grubd.txt $D/
+if [ -d /t/var/log/journal ]; then
+    sudo journalctl -D /t/var/log/journal --no-pager -o short-iso > /tmp/journal-disk.txt 2>&1
+    sudo cp /tmp/journal-disk.txt $D/
+fi
 echo INSPECT-DONE
 """
         (vm.share / "inspect.sh").write_text(script)

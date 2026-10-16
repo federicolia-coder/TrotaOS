@@ -94,6 +94,13 @@ per i test automatici) e rimuove da solo i pacchetti live
 (`casper/filesystem.manifest-remove`).
 È quindi l'installer *della base Ubuntu* più adatto a una build riproducibile.
 
+Requisiti di ubiquity emersi dai test in VM (vedi [testing.md](testing.md)):
+- deve essere installato uno slideshow (`ubiquity-slideshow-trota`), altrimenti
+  ubiquity perde i privilegi all'avvio della copia e va in crash;
+- il supporto deve contenere un archivio APT (`dists/`, `pool/`), perché il
+  passo `apt-setup` esegue sempre `apt-cdrom add`; Trota OS vi inserisce i
+  propri pacchetti.
+
 ### ADR-004 — Catena di avvio: shim e GRUB firmati da Canonical
 
 Il supporto UEFI usa `shimx64.efi.signed` (firmato con la Microsoft UEFI CA) e

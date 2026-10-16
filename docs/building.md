@@ -61,7 +61,7 @@ Le ISO non vanno aggiunte a Git (`dist/` è ignorata).
 | `trota` | Installa i pacchetti `build/packages/*.deb`; fallisce se un pacchetto escluso risulta installato | ~60 s |
 | `snaps` | Risolve le dipendenze degli snap e li prepara con `snap prepare-image` (seed) | ~3 min |
 | `customize` | casper.conf, locale, schemi GSettings, dconf, `Prompt=never` per i rilasci, APT news disattivate, initramfs con verifica di tema Plymouth e casper, pulizia (machine-id, log, cache) | ~1 min |
-| `iso` | kernel/initrd, manifest, squashfs (xz), `.disk/info`, GRUB BIOS ed EFI firmato, `efi.img`, `xorriso` | ~15–20 min (xz) |
+| `iso` | kernel/initrd, manifest, squashfs (xz), `.disk/info`, archivio APT del supporto (`dists/`, `pool/` con i pacchetti Trota, richiesto da ubiquity), `md5sum.txt`, GRUB BIOS ed EFI firmato, `efi.img`, `xorriso` | ~8 min (xz, 4 core) |
 | `checksum` | SHA-256 e `verify-iso.sh` | ~30 s |
 | `clean` | Rimuove chroot e albero ISO (mantiene cache e pacchetti) | — |
 
