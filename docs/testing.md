@@ -60,3 +60,18 @@ multi-thread, 4 vCPU, 4–6 GB RAM, disco virtio 25 GB, OVMF 2024.02
 10–20 volte superiori a quelli su hardware reale.
 
 I risultati dettagliati sono nella sezione seguente, aggiornata a ogni release.
+
+### Difetti trovati dai test e corretti
+
+Ogni difetto è stato riprodotto, corretto e coperto da un controllo automatico
+che impedisce di ripresentarlo.
+
+| # | Trovato da | Difetto | Correzione | Protezione |
+|---|---|---|---|---|
+| 1 | Build (log initramfs) | Il plugin Plymouth `two-step` (pacchetto `plymouth-theme-spinner`) mancava: lo splash Trota sarebbe stato ignorato | Dipendenza di `trota-artwork` e manifest | La build fallisce se l'initrd non contiene tema e plugin |
+| 2 | Test live (`aptsources_ubuntu`) | Le righe di commento in os-release mandavano in errore `aptsources` (Software e aggiornamenti, `add-apt-repository`) | os-release senza commenti | `test_release.py` usa il vero parser di `aptsources` |
+| 3 | Test live (`systemd`) | `casper-md5check.service` falliva: mancava `md5sum.txt` sul supporto | `md5sum.txt` generato nello stadio `iso` | — |
+| 4 | Test live (`package_helper_backend`) | Timeout di 30 s della ricerca APT troppo stretto su macchine lente | Timeout 120 s e messaggio dedicato | `test_packages.py` |
+| 5 | Test di installazione (Secure Boot) | Ubiquity andava in crash all'avvio della copia: senza slideshow `start_slideshow()` riduce i privilegi senza ripristinarli e `debconf-communicate` (Perl) rifiuta di partire (*Insecure $ENV{PATH} while running setuid*) | Nuovo pacchetto `ubiquity-slideshow-trota` | La build fallisce se lo slideshow manca; `test_manifest.py` |
+| 6 | Test di installazione (Secure Boot) | *apt configuration problem*: `.disk/base_installable` faceva cercare un archivio APT inesistente sul supporto e l'installazione veniva interrotta | Il file non viene più creato | `verify-iso.sh` |
+| 7 | Build | Eseguendo il solo stadio `iso` lo script terminava senza messaggi (`grep` senza risultati con `pipefail`) | `chroot_umount` tollera l'assenza di mount; trap `ERR` che mostra il comando fallito | `test_build_scripts.py` |

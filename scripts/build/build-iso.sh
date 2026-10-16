@@ -228,6 +228,37 @@ EOF
     rm -f "$CHROOT"/etc/ssh/ssh_host_*_key*
 }
 
+# Small APT archive on the medium with the Trota OS packages. Ubiquity always
+# runs "apt-cdrom add" on the medium (it forces OVERRIDE_BASE_INSTALLABLE), and
+# aborts the installation if no package index is found (seen in the VM test).
+# During the installation ubiquity allows this unsigned source; afterwards the
+# cdrom entry is disabled in the installed system.
+make_cdrom_archive() {
+    local dist="dists/$TROTA_BASE_SUITE" comp="main/binary-$TROTA_ARCH"
+    mkdir -p "$ISO_DIR/pool/main/t/trota-os" "$ISO_DIR/$dist/$comp"
+    cp "$PKG_DIR"/*.deb "$ISO_DIR/pool/main/t/trota-os/"
+    (cd "$ISO_DIR" && dpkg-scanpackages --arch "$TROTA_ARCH" pool/main /dev/null 2>/dev/null) \
+        > "$ISO_DIR/$dist/$comp/Packages"
+    gzip -9nkf "$ISO_DIR/$dist/$comp/Packages"
+    printf 'Archive: %s\nComponent: main\nOrigin: Trota OS\nLabel: Trota OS\nArchitecture: %s\n' \
+        "$TROTA_BASE_SUITE" "$TROTA_ARCH" > "$ISO_DIR/$dist/$comp/Release"
+    {
+        printf 'Origin: Trota OS\nLabel: Trota OS\nSuite: %s\nCodename: %s\nVersion: %s\n' \
+            "$TROTA_BASE_SUITE" "$TROTA_BASE_SUITE" "$TROTA_VERSION"
+        printf 'Date: %s\nArchitectures: %s\nComponents: main\n' "$(LC_ALL=C date -Ru)" "$TROTA_ARCH"
+        printf 'Description: %s %s installation medium\n' "$TROTA_NAME" "$TROTA_VERSION"
+        local sum f
+        for sum in md5sum sha256sum; do
+            [ "$sum" = md5sum ] && echo "MD5Sum:" || echo "SHA256:"
+            for f in "$comp/Packages" "$comp/Packages.gz" "$comp/Release"; do
+                printf ' %s %16d %s\n' "$(cd "$ISO_DIR/$dist" && $sum "$f" | cut -d' ' -f1)" \
+                    "$(stat -c %s "$ISO_DIR/$dist/$f")" "$f"
+            done
+        done
+    } > "$ISO_DIR/$dist/Release"
+    log "iso: APT archive on the medium with $(grep -c '^Package:' "$ISO_DIR/$dist/$comp/Packages") packages"
+}
+
 # ---------------------------------------------------------------------------
 stage_iso() {
     chroot_umount "$CHROOT"
@@ -254,9 +285,8 @@ stage_iso() {
     # Medium identity, read by casper and ubiquity (RELEASE name in the UI).
     printf '%s %s "%s" - Release %s (%s)\n' "$TROTA_NAME" "$TROTA_VERSION" "$TROTA_CODENAME" "$TROTA_ARCH" "$BUILD_DATE" > "$ISO_DIR/.disk/info"
     echo "full_cd/single" > "$ISO_DIR/.disk/cd_type"
-    # No .disk/base_installable: the medium carries no APT archive (pool/,
-    # dists/), so the installer must not try to add it as a package source
-    # (it would stop with "apt configuration problem", seen in the VM test).
+    # No .disk/base_installable: the medium cannot install a base system with
+    # debootstrap; ubiquity copies the squashfs (see make_cdrom_archive).
     echo "https://github.com/federicolia-coder/TrotaOS/blob/main/docs/release-notes.md" > "$ISO_DIR/.disk/release_notes_url"
 
     # --- GRUB: menu, theme and fonts --------------------------------------
@@ -280,6 +310,8 @@ stage_iso() {
         || cp "$CHROOT/usr/lib/shim/shimx64.efi.signed" "$ISO_DIR/EFI/boot/bootx64.efi"
     cp "$CHROOT/usr/lib/shim/mmx64.efi" "$ISO_DIR/EFI/boot/mmx64.efi"
     cp "$CHROOT/usr/lib/grub/x86_64-efi-signed/gcdx64.efi.signed" "$ISO_DIR/EFI/boot/grubx64.efi"
+
+    make_cdrom_archive
 
     # Checksums of the medium, verified by casper-md5check at live boot.
     (cd "$ISO_DIR" && find . -type f ! -name md5sum.txt ! -name boot.catalog -print0 | sort -z \

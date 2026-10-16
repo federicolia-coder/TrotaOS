@@ -71,3 +71,24 @@ def test_build_iso_requires_root():
         pytest.skip("running as root")
     p = subprocess.run([str(ROOT / "scripts/build/build-iso.sh"), "iso"], capture_output=True, text=True)
     assert p.returncode != 0 and "root" in p.stderr
+
+
+def test_chroot_umount_with_nothing_mounted():
+    """Regression: with nothing mounted, grep returned 1 and pipefail made the
+    whole build exit silently at the start of the 'iso' stage."""
+    script = f"""
+        . {ROOT}/scripts/build/lib.sh
+        d="$BUILD/test-empty-chroot-$$"
+        mkdir -p "$d"
+        chroot_umount "$d"
+        rmdir "$d"
+        echo survived
+    """
+    p = subprocess.run(["bash", "-c", script], capture_output=True, text=True)
+    assert p.returncode == 0 and "survived" in p.stdout, p.stderr
+
+
+def test_errors_are_reported_not_silent():
+    p = subprocess.run(["bash", "-c", f". {ROOT}/scripts/build/lib.sh; f() {{ false; }}; f"],
+                       capture_output=True, text=True)
+    assert p.returncode != 0 and "command failed" in p.stderr

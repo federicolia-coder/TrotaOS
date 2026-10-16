@@ -201,6 +201,12 @@ class VM:
         self.shots += 1
         path = self.out / f"shot-{self.shots:03d}-{label}.png"
         try:
+            # Nudge the absolute pointer to a screen corner so that DPMS
+            # blanking does not hide the screen (harmless for the guest).
+            corner = 32767 if self.shots % 2 else 32700
+            self.qmp.cmd("input-send-event", events=[{"type": "abs", "data": {"axis": "x", "value": corner}},
+                                                     {"type": "abs", "data": {"axis": "y", "value": corner}}])
+            time.sleep(1)
             self.qmp.screendump(path)
             return path
         except Exception as exc:  # VM may be shutting down

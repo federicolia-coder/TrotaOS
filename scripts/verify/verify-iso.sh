@@ -53,10 +53,11 @@ for f in /casper/vmlinuz /casper/initrd /casper/filesystem.squashfs /casper/file
     grep -qx "'$f'" <<<"$listing" && pass "file $f" || bad "missing $f"
 done
 
-# The medium has no APT archive: it must not claim to be base-installable,
-# or the installer tries "apt-cdrom add" and stops with an error.
-grep -qx "'/.disk/base_installable'" <<<"$listing" && bad "/.disk/base_installable present without an APT archive" \
-    || pass "no /.disk/base_installable (no APT archive on the medium)"
+# Ubiquity always runs "apt-cdrom add" on the medium and aborts the
+# installation if it finds no package index: an APT archive must be present.
+for f in /dists/noble/Release /dists/noble/main/binary-amd64/Packages.gz; do
+    grep -qx "'$f'" <<<"$listing" && pass "APT archive: $f" || bad "APT archive missing $f (ubiquity would abort)"
+done
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT

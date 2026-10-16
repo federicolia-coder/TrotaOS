@@ -141,10 +141,17 @@ def launch_button(target: str, label: str, widget_for_toast: Gtk.Widget | None =
 def launch_row(target: str, title: str, subtitle: str, icon: str | None = None) -> Adw.ActionRow:
     """An activatable row that launches a target (insensitive if missing)."""
     row = plain(Adw.ActionRow, title, subtitle, activatable=True)
-    if icon:
-        row.add_prefix(Gtk.Image(icon_name=icon, pixel_size=32))
+    image = Gtk.Image(pixel_size=32)
+    resolved = desktop.TARGETS[target].resolve()
+    gicon = resolved.get_icon() if isinstance(resolved, Gio.AppInfo) else None
+    if gicon is not None:  # the application's own icon (works for snaps too)
+        image.set_from_gicon(gicon)
+    elif icon:
+        image.set_from_icon_name(icon)
+    if gicon is not None or icon:
+        row.add_prefix(image)
     row.add_suffix(Gtk.Image(icon_name="go-next-symbolic"))
-    if not desktop.available(target):
+    if resolved is None:
         row.set_sensitive(False)
         row.set_subtitle(subtitle + " — " + _("not installed"))
         return row
