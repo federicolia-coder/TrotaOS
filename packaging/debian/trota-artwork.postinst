@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ]; then
+    # Priority 150 is above Ubuntu's own themes (bgrt 110, spinner 70), so the
+    # Trota OS splash is selected automatically; "update-alternatives --config
+    # default.plymouth" still lets the administrator choose another one.
+    update-alternatives --install /usr/share/plymouth/themes/default.plymouth default.plymouth \
+        /usr/share/plymouth/themes/trota/trota.plymouth 150
+fi
+
+#DEBHELPER#
+exit 0

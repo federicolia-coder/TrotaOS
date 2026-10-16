@@ -1,0 +1,37 @@
+# Trota OS — base system (installed and kept on the target system).
+# One package per line; '#' starts a comment. Verified by tests/test_manifest.py
+# and scripts/verify/check-manifest.sh against the Ubuntu archive.
+
+# Ubuntu foundations
+ubuntu-minimal
+ubuntu-standard
+# Hardware enablement kernel, the same one used by the Ubuntu 24.04.x desktop ISO
+linux-generic-hwe-24.04
+linux-firmware
+intel-microcode
+amd64-microcode
+
+# Boot: BIOS + UEFI + Secure Boot (all needed for offline installs, see ADR-004)
+grub-pc
+grub-pc-bin
+grub-efi-amd64-bin
+grub-efi-amd64-signed
+shim-signed
+mokutil
+efibootmgr
+secureboot-db
+os-prober
+
+# Security
+apparmor
+apparmor-utils
+unattended-upgrades
+ufw
+
+# Boot splash
+plymouth
+plymouth-label
+plymouth-theme-spinner    # provides the two-step plugin used by the Trota OS splash
+
+# Snap support (Ubuntu ecosystem compatibility)
+snapd

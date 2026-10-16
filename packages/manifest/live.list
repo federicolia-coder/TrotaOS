@@ -1,0 +1,9 @@
+# Trota OS — live session only. These packages are installed in the live image
+# and removed from the installed system (casper/filesystem.manifest-remove).
+
+casper
+ubiquity
+ubiquity-casper
+ubiquity-frontend-gtk
+ubiquity-ubuntu-artwork
+gparted

@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Trota System Info
+Name[it]=Informazioni di sistema Trota
+GenericName=System information
+GenericName[it]=Informazioni di sistema
+Comment=Hardware and software of this computer
+Comment[it]=Hardware e software di questo computer
+Exec=trota-system-info
+Icon=it.testardstudios.TrotaSystemInfo
+Terminal=false
+Categories=GTK;GNOME;System;Monitor;
+Keywords=system;hardware;cpu;memory;kernel;disk;sistema;memoria;
+StartupNotify=true
+StartupWMClass=it.testardstudios.TrotaSystemInfo

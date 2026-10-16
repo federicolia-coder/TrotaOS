@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Trota Diagnostics
+Name[it]=Diagnostica Trota
+GenericName=System diagnostics
+GenericName[it]=Diagnostica di sistema
+Comment=Safe, read-only health checks
+Comment[it]=Controlli sicuri, in sola lettura
+Exec=trota-diagnostics
+Icon=it.testardstudios.TrotaDiagnostics
+Terminal=false
+Categories=GTK;GNOME;System;Monitor;
+Keywords=diagnostics;health;check;problem;diagnostica;controllo;problema;
+StartupNotify=true
+StartupWMClass=it.testardstudios.TrotaDiagnostics

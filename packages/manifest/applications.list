@@ -1,0 +1,35 @@
+# Trota OS — preinstalled applications (one per role, no duplicates).
+# The web browser (Firefox) and the software manager (App Center) are snaps,
+# seeded like on Ubuntu: see TROTA_SEED_SNAPS in scripts/build/config.env.
+
+nautilus                 # file manager
+nautilus-sendto
+gnome-terminal           # terminal
+gnome-text-editor        # text editor
+evince                   # PDF / document viewer
+file-roller              # archive manager
+unzip
+zip
+eog                      # image viewer
+totem                    # video player
+gnome-calculator
+gnome-characters
+gnome-clocks
+gnome-font-viewer
+gnome-system-monitor     # system utilities
+gnome-disk-utility
+gnome-logs
+gnome-power-manager
+baobab
+seahorse
+gnome-tweaks
+libreoffice-writer       # productivity
+libreoffice-calc
+libreoffice-impress
+libreoffice-gnome
+libreoffice-l10n-it
+libreoffice-help-it
+gamemode                 # gaming: CPU governor helper used by Steam/Lutris
+mesa-vulkan-drivers
+mesa-utils
+vulkan-tools

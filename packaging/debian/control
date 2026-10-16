@@ -1,0 +1,110 @@
+Source: trota-os
+Section: misc
+Priority: optional
+Maintainer: TestardStudios <maintainers@testardstudios.invalid>
+Build-Depends: debhelper-compat (= 13),
+               dh-python,
+               python3:any,
+               gettext,
+               librsvg2-bin,
+               python3-markdown,
+               python3-pytest
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+Homepage: https://github.com/federicolia-coder/TrotaOS
+Vcs-Git: https://github.com/federicolia-coder/TrotaOS.git
+
+Package: trota-artwork
+Architecture: all
+Depends: ${misc:Depends}, plymouth, plymouth-label, plymouth-theme-spinner
+Description: Trota OS artwork: logo, wallpapers, icons, boot splash
+ Original artwork of Trota OS by TestardStudios: logo and wordmark in
+ several variants, desktop wallpapers, application icons, the Plymouth
+ boot splash theme and a GRUB theme.
+
+Package: trota-release
+Architecture: all
+Depends: ${misc:Depends}, base-files
+Description: Trota OS release identification
+ Installs the Trota OS /usr/lib/os-release through a dpkg diversion. The
+ original Ubuntu file is preserved as /usr/lib/os-release.ubuntu and keeps
+ being updated by base-files. Machine-readable identifiers (ID, VERSION_ID,
+ VERSION_CODENAME) stay those of the Ubuntu base for compatibility.
+
+Package: trota-desktop-settings
+Architecture: all
+Depends: ${misc:Depends}, trota-artwork (= ${source:Version}), dconf-cli,
+         gsettings-desktop-schemas, fonts-inter, yaru-theme-gtk, yaru-theme-icon
+Description: Trota OS default desktop configuration
+ GSettings and dconf defaults of the Trota OS GNOME desktop: dark style,
+ wallpapers, dock, fonts, terminal colours, login screen logo and privacy
+ defaults. Only defaults are changed: every setting remains user
+ configurable.
+
+Package: trota-common
+Architecture: all
+Section: python
+Depends: ${misc:Depends}, ${python3:Depends}, python3-gi, gir1.2-gtk-4.0,
+         gir1.2-adw-1, trota-artwork (= ${source:Version})
+Recommends: iproute2, pciutils
+Description: shared library of the Trota OS applications
+ Python modules shared by the Trota OS utilities: local system
+ information, read-only diagnostics, APT catalogue queries, translations
+ and GTK 4 / libadwaita helpers.
+
+Package: trota-welcome
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version})
+Recommends: trota-docs
+Description: Trota OS welcome guide
+ First-run guide of Trota OS: version information, quick access to
+ settings, updates, documentation and support, and an overview of the
+ preinstalled applications. Shown at login until disabled.
+
+Package: trota-system-info
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version})
+Description: Trota OS system information
+ Shows the Trota OS and Ubuntu versions, kernel, architecture, CPU,
+ memory, disks, graphics and network interfaces. Information is collected
+ locally and never sent anywhere. Also usable from the terminal
+ (--text, --json).
+
+Package: trota-diagnostics
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version})
+Recommends: network-manager, update-notifier-common
+Description: Trota OS safe system diagnostics
+ Read-only health checks: disk space, network, kernel, security features,
+ system services, recent log errors and pending updates, with cautious
+ suggestions. Nothing is changed or repaired automatically.
+
+Package: trota-package-helper
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version}), apt
+Description: Trota OS package search helper
+ Searches the APT catalogue, shows essential package information and
+ explains how to install software. APT remains the package manager: the
+ helper never installs or removes anything itself.
+
+Package: trota-docs
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Trota OS documentation
+ Offline HTML version of the Trota OS documentation: installation,
+ building, troubleshooting, security and licensing.
+
+Package: trota-desktop
+Architecture: all
+Section: metapackages
+Depends: ${misc:Depends}, trota-release, trota-artwork, trota-desktop-settings,
+         trota-welcome, trota-system-info, trota-diagnostics,
+         trota-package-helper,
+         ubuntu-session, gdm3, gnome-shell, apparmor, unattended-upgrades,
+         network-manager, update-manager
+Recommends: trota-docs
+Description: Trota OS desktop system (metapackage)
+ Depends on all the Trota OS components. Removing it does not remove the
+ rest of the system, but it should stay installed so that future Trota OS
+ components arrive with normal updates.

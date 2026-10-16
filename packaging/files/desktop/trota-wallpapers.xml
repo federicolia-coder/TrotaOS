@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>Trota OS — Forge / Steel</name>
+    <filename>/usr/share/backgrounds/trota/trota-steel.png</filename>
+    <filename-dark>/usr/share/backgrounds/trota/trota-forge.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#101214</pcolor>
+    <scolor>#101214</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>Trota OS — Ingot</name>
+    <filename>/usr/share/backgrounds/trota/trota-ingot.png</filename>
+    <filename-dark>/usr/share/backgrounds/trota/trota-ingot.png</filename-dark>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#101214</pcolor>
+    <scolor>#101214</scolor>
+  </wallpaper>
+</wallpapers>

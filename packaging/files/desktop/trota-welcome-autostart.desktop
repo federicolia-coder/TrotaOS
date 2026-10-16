@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Trota Welcome
+Name[it]=Benvenuto in Trota OS
+Comment=Shows the Trota OS welcome guide at login (can be disabled in the window)
+Exec=trota-welcome --autostart
+Icon=it.testardstudios.TrotaWelcome
+NoDisplay=true
+X-GNOME-Autostart-Delay=3
+OnlyShowIn=GNOME;ubuntu;

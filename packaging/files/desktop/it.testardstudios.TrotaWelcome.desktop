@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Trota Welcome
+Name[it]=Benvenuto in Trota OS
+GenericName=Welcome guide
+GenericName[it]=Guida di benvenuto
+Comment=Get started with Trota OS
+Comment[it]=Primi passi con Trota OS
+Exec=trota-welcome
+Icon=it.testardstudios.TrotaWelcome
+Terminal=false
+Categories=GTK;GNOME;System;Documentation;
+Keywords=welcome;start;help;trota;benvenuto;guida;
+StartupNotify=true
+StartupWMClass=it.testardstudios.TrotaWelcome

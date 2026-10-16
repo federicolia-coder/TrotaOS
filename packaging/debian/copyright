@@ -1,0 +1,39 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Trota OS
+Upstream-Contact: TestardStudios <https://github.com/federicolia-coder/TrotaOS>
+Source: https://github.com/federicolia-coder/TrotaOS
+
+Files: *
+Copyright: 2026 TestardStudios
+License: GPL-3+
+
+Files: branding/*
+Copyright: 2026 TestardStudios
+License: CC-BY-SA-4.0
+Comment: The "Trota OS" name and logo are identifiers of the TestardStudios
+ project; see docs/licensing.md (trademark policy). The license of the
+ files does not grant rights on the name and logo beyond what is needed to
+ redistribute unmodified Trota OS.
+
+Files: docs/*
+Copyright: 2026 TestardStudios
+License: CC-BY-SA-4.0
+
+License: GPL-3+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ version 3 can be found in "/usr/share/common-licenses/GPL-3".
+
+License: CC-BY-SA-4.0
+ Creative Commons Attribution-ShareAlike 4.0 International Public License.
+ The full text is available at
+ https://creativecommons.org/licenses/by-sa/4.0/legalcode

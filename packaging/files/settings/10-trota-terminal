@@ -1,0 +1,18 @@
+# Trota OS terminal colours for the default GNOME Terminal profile.
+# Compiled by "dconf update" into /etc/dconf/db/trota (system defaults: users
+# can still change every value in the terminal preferences).
+[org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9]
+visible-name='Trota'
+use-theme-colors=false
+background-color='#101214'
+foreground-color='#E8ECEF'
+bold-color-same-as-fg=true
+cursor-colors-set=true
+cursor-background-color='#FF6A2A'
+cursor-foreground-color='#101214'
+highlight-colors-set=true
+highlight-background-color='#FF6A2A'
+highlight-foreground-color='#101214'
+palette=['#191D21', '#E5484D', '#8CC265', '#F2B33D', '#5B9BD5', '#C678DD', '#4FB8B0', '#C9CED3', '#4A525A', '#FF6B6E', '#A7D982', '#FFCB66', '#7DB4E6', '#D89BEA', '#6FD3CB', '#E8ECEF']
+use-transparent-background=false
+audible-bell=false

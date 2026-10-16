@@ -1,0 +1,8 @@
+trota-os (1.0.0) noble; urgency=medium
+
+  * First release of Trota OS 1.0 "Fario", based on Ubuntu 24.04 LTS.
+  * New packages: trota-artwork, trota-release, trota-desktop-settings,
+    trota-common, trota-welcome, trota-system-info, trota-diagnostics,
+    trota-package-helper, trota-docs, trota-desktop.
+
+ -- TestardStudios <maintainers@testardstudios.invalid>  Fri, 16 Oct 2026 12:00:00 +0000

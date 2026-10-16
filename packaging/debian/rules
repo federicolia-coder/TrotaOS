@@ -1,0 +1,90 @@
+#!/usr/bin/make -f
+# Trota OS packaging. The source tree is assembled by
+# scripts/build/build-packages.sh (repository root + packaging/debian).
+
+export DH_VERBOSE = 1
+export PYTHONDONTWRITEBYTECODE = 1
+
+APPS := trota-common trota-welcome trota-system-info trota-diagnostics trota-package-helper
+ICON_SIZES := 16 24 32 48 64 128 256 512
+ART := debian/trota-artwork
+SET := debian/trota-desktop-settings
+PYDIR := usr/lib/python3/dist-packages
+
+%:
+	dh $@ --with python3
+
+override_dh_auto_build:
+	PYTHON=python3 sh branding/render.sh build-art
+	python3 scripts/build/build-docs.py docs build-docs
+	set -e; for po in po/*.po; do \
+		lang=$$(basename $$po .po); \
+		mkdir -p build-locale/$$lang/LC_MESSAGES; \
+		msgfmt --check --statistics -o build-locale/$$lang/LC_MESSAGES/trota-os.mo $$po; \
+	done
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	python3 -m pytest -q -p no:cacheprovider tests --deselect tests/test_ui_smoke.py
+endif
+
+override_dh_auto_install:
+	# --- trota-artwork ---------------------------------------------------
+	install -d $(ART)/usr/share/backgrounds/trota $(ART)/usr/share/gnome-background-properties \
+		$(ART)/usr/share/trota-os/logo $(ART)/usr/share/pixmaps \
+		$(ART)/usr/share/plymouth/themes/trota $(ART)/usr/share/grub/themes/trota \
+		$(ART)/usr/share/icons/hicolor/scalable/apps
+	install -m 644 build-art/wallpapers/*.png branding/wallpapers/*.svg $(ART)/usr/share/backgrounds/trota/
+	install -m 644 packaging/files/desktop/trota-wallpapers.xml $(ART)/usr/share/gnome-background-properties/
+	install -m 644 branding/logo/*.svg $(ART)/usr/share/trota-os/logo/
+	install -m 644 build-art/pixmaps/*.png $(ART)/usr/share/pixmaps/
+	install -m 644 branding/themes/plymouth/trota/trota.plymouth build-art/plymouth/trota/*.png \
+		$(ART)/usr/share/plymouth/themes/trota/
+	install -m 644 branding/themes/grub/trota/theme.txt build-art/grub/trota/background.png \
+		$(ART)/usr/share/grub/themes/trota/
+	install -m 644 branding/icons/*.svg $(ART)/usr/share/icons/hicolor/scalable/apps/
+	install -m 644 branding/logo/trota-symbol.svg $(ART)/usr/share/icons/hicolor/scalable/apps/trota-os-logo.svg
+	install -m 644 branding/logo/trota-symbol.svg $(ART)/usr/share/icons/hicolor/scalable/apps/trota-os-logo-dark.svg
+	install -m 644 branding/logo/trota-logo-light.svg $(ART)/usr/share/icons/hicolor/scalable/apps/trota-os-logo-text.svg
+	install -m 644 branding/logo/trota-logo-dark.svg $(ART)/usr/share/icons/hicolor/scalable/apps/trota-os-logo-text-dark.svg
+	set -e; for s in $(ICON_SIZES); do \
+		install -d $(ART)/usr/share/icons/hicolor/$${s}x$${s}/apps; \
+		install -m 644 build-art/icons/$${s}x$${s}/*.png $(ART)/usr/share/icons/hicolor/$${s}x$${s}/apps/; \
+	done
+	# --- trota-release -----------------------------------------------------
+	install -D -m 644 packaging/files/release/os-release debian/trota-release/usr/lib/os-release
+	# --- trota-desktop-settings ------------------------------------------
+	install -D -m 644 packaging/files/settings/90_trota-os.gschema.override \
+		$(SET)/usr/share/glib-2.0/schemas/90_trota-os.gschema.override
+	install -D -m 644 packaging/files/settings/dconf-profile-user $(SET)/etc/dconf/profile/user
+	install -D -m 644 packaging/files/settings/10-trota-terminal $(SET)/etc/dconf/db/trota.d/10-trota-terminal
+	# --- Python applications ---------------------------------------------
+	set -e; for app in $(APPS); do \
+		mod=$$(echo $$app | tr - _); \
+		install -d debian/$$app/$(PYDIR); \
+		cp -r applications/$$app/$$mod debian/$$app/$(PYDIR)/; \
+		find debian/$$app/$(PYDIR) -name __pycache__ -prune -exec rm -rf {} +; \
+	done
+	install -D -m 644 applications/trota-common/data/trota.css debian/trota-common/usr/share/trota-os/trota.css
+	set -e; for lang in $$(ls build-locale); do \
+		install -D -m 644 build-locale/$$lang/LC_MESSAGES/trota-os.mo \
+			debian/trota-common/usr/share/locale/$$lang/LC_MESSAGES/trota-os.mo; \
+	done
+	set -e; for pair in welcome:TrotaWelcome system-info:TrotaSystemInfo diagnostics:TrotaDiagnostics \
+			package-helper:TrotaPackageHelper; do \
+		name=$${pair%%:*}; id=it.testardstudios.$${pair##*:}; \
+		install -D -m 755 packaging/files/bin/trota-$$name debian/trota-$$name/usr/bin/trota-$$name; \
+		install -D -m 644 packaging/files/desktop/$$id.desktop debian/trota-$$name/usr/share/applications/$$id.desktop; \
+	done
+	install -D -m 644 packaging/files/desktop/trota-welcome-autostart.desktop \
+		debian/trota-welcome/etc/xdg/autostart/trota-welcome.desktop
+	# --- trota-docs --------------------------------------------------------
+	install -d debian/trota-docs/usr/share/doc/trota-docs/html
+	cp -r build-docs/. debian/trota-docs/usr/share/doc/trota-docs/html/
+
+override_dh_python3:
+	dh_python3 --no-ext-rename
+
+override_dh_auto_clean:
+	rm -rf build-art build-docs build-locale
+	find . -name __pycache__ -prune -exec rm -rf {} +

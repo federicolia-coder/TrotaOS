@@ -1,0 +1,41 @@
+# Trota OS — command line tools for developers and system administrators.
+
+# Developer tools
+git
+build-essential
+gdb
+make
+cmake
+pkg-config
+python3-venv
+python3-pip
+python3-dev
+manpages-dev
+jq
+vim
+shellcheck
+
+# Network tools
+curl
+wget
+openssh-client
+iputils-ping
+iputils-tracepath
+traceroute
+mtr-tiny
+bind9-dnsutils
+whois
+ethtool
+iperf3
+netcat-openbsd
+
+# System utilities
+htop
+lm-sensors
+pciutils
+usbutils
+nvme-cli
+smartmontools
+lshw
+dmidecode
+bc

@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+    rm -f /etc/dconf/db/trota
+    if command -v dconf >/dev/null 2>&1; then dconf update || true; fi
+fi
+
+#DEBHELPER#
+exit 0

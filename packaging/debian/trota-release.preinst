@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+# Keep Ubuntu's os-release as /usr/lib/os-release.ubuntu (still updated by
+# base-files) and install the Trota OS one in its place.
+if [ "$1" = "install" ] || [ "$1" = "upgrade" ]; then
+    dpkg-divert --package trota-release --add --rename \
+        --divert /usr/lib/os-release.ubuntu /usr/lib/os-release
+fi
+
+#DEBHELPER#
+exit 0
