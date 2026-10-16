@@ -411,6 +411,44 @@ def scenario_installed(args, out: Path) -> int:
     return report(results, out)
 
 
+def scenario_inspect(args, out: Path) -> int:
+    """Rescue-style inspection of an installed disk from the live system
+    (text mode): installer logs, ESP content, NVRAM boot entries, GRUB."""
+    kernel, initrd = extract_from_iso(args.iso, out.parent / "iso-boot")
+    disk = out.parent / f"disk-{args.firmware}.qcow2"
+    vars_file = out.parent / f"OVMF_VARS-{args.firmware}.fd"
+    cmdline = "boot=casper systemd.unit=multi-user.target console=tty0 console=ttyS0,115200 ---"
+    vm = VM(out, args.firmware, memory=args.memory)
+    vm.start(["-cdrom", str(args.iso), "-kernel", str(kernel), "-initrd", str(initrd), "-append", cmdline,
+              "-drive", f"file={disk},if=virtio,format=qcow2,cache=unsafe,readonly=on"], vars_file)
+    try:
+        serial_login(vm.serial, "trota", "", timeout=args.minutes * 60)
+        script = r"""
+set -x
+sudo mount -t 9p -o trans=virtio,version=9p2000.L trotatest /mnt
+D=/mnt/inspect; sudo mkdir -p $D
+lsblk -o NAME,SIZE,FSTYPE,PARTTYPENAME,MOUNTPOINT /dev/vda > /tmp/lsblk.txt 2>&1
+sudo efibootmgr -v > /tmp/efibootmgr.txt 2>&1
+sudo mkdir -p /t /t/boot/efi
+root=$(lsblk -nrpo NAME,FSTYPE /dev/vda | awk '$2=="ext4"{print $1; exit}')
+esp=$(lsblk -nrpo NAME,FSTYPE /dev/vda | awk '$2=="vfat"{print $1; exit}')
+sudo mount -o ro "$root" /t && { [ -n "$esp" ] && sudo mount -o ro "$esp" /t/boot/efi; }
+sudo find /t/boot/efi -maxdepth 4 > /tmp/esp.txt 2>&1
+sudo cp -r /t/var/log/installer $D/installer-logs
+sudo cp /t/boot/grub/grub.cfg /t/etc/fstab /tmp/lsblk.txt /tmp/efibootmgr.txt /tmp/esp.txt $D/ 2>/dev/null
+sudo chroot /t dpkg -l 'grub*' 'shim*' casper 'ubiquity*' > /tmp/dpkg.txt 2>&1; sudo cp /tmp/dpkg.txt $D/
+sudo ls -la /t/etc/default/grub.d > /tmp/grubd.txt 2>&1; sudo cp /tmp/grubd.txt $D/
+echo INSPECT-DONE
+"""
+        (vm.share / "inspect.sh").write_text(script)
+        vm.serial.run("sudo mount -t 9p -o trans=virtio,version=9p2000.L trotatest /mnt; bash /mnt/inspect.sh "
+                      "> /tmp/inspect.log 2>&1; sudo cp /tmp/inspect.log /mnt/", 1200)
+    finally:
+        vm.stop()
+    log(f"inspection results in {vm.share}")
+    return 0
+
+
 def report(results: dict, out: Path) -> int:
     width = max((len(k) for k in results), default=10)
     lines = [f"{k:<{width}}  {v['status']:<4}  {v['note']}" for k, v in results.items()]
@@ -423,15 +461,19 @@ def report(results: dict, out: Path) -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("scenario", choices=["boot-iso", "live", "install", "installed"])
+    ap.add_argument("scenario", choices=["boot-iso", "live", "install", "installed", "inspect"])
     ap.add_argument("--iso", type=Path, default=ROOT / "dist" / "trota-os-1.0-amd64.iso")
     ap.add_argument("--firmware", choices=["bios", "uefi", "secureboot"], default="uefi")
     ap.add_argument("--memory", type=int, default=4096)
     ap.add_argument("--disk-gb", type=int, default=25)
-    ap.add_argument("--minutes", type=float, default=40, help="time limit of the scenario")
+    ap.add_argument("--minutes", type=float, default=None,
+                    help="time limit of the scenario (default, sized for TCG emulation: "
+                         "boot-iso 15, live 60, install 180, installed 90)")
     ap.add_argument("--interval", type=float, default=30, help="seconds between screenshots (boot-iso)")
     ap.add_argument("--out", type=Path)
     args = ap.parse_args()
+    if args.minutes is None:
+        args.minutes = {"boot-iso": 15, "live": 60, "install": 180, "installed": 90, "inspect": 30}[args.scenario]
     if not shutil.which("qemu-system-x86_64"):
         print("qemu-system-x86_64 is required", file=sys.stderr)
         return 2
@@ -440,7 +482,7 @@ def main() -> int:
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
     return {"boot-iso": scenario_boot_iso, "live": scenario_live, "install": scenario_install,
-            "installed": scenario_installed}[args.scenario](args, out)
+            "installed": scenario_installed, "inspect": scenario_inspect}[args.scenario](args, out)
 
 
 if __name__ == "__main__":

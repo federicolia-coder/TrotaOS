@@ -1,7 +1,9 @@
 # shellcheck shell=bash
 # Shared helpers for the Trota OS build scripts. Source, do not execute.
 
-set -euo pipefail
+set -Eeuo pipefail
+# Never fail silently: report where and what failed.
+trap 'printf "\033[1;31m[trota] ERROR:\033[0m command failed (exit %s) at %s:%s: %s\n" "$?" "${BASH_SOURCE[0]:-bash}" "$LINENO" "$BASH_COMMAND" >&2' ERR
 
 TROTA_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 export TROTA_ROOT
@@ -72,8 +74,8 @@ chroot_mount() {
 chroot_umount() {
     local root="$1" m
     assert_in_build "$root"
-    # Unmount everything below $root, deepest first.
-    findmnt -rn -o TARGET | grep "^$(realpath -m "$root")/" | sort -r | while read -r m; do
+    # Unmount everything below $root, deepest first (nothing mounted is fine).
+    { findmnt -rn -o TARGET | grep "^$(realpath -m "$root")/" || true; } | sort -r | while read -r m; do
         umount -l "$m" || warn "could not unmount $m"
     done
 }

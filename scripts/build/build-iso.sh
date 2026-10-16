@@ -254,7 +254,9 @@ stage_iso() {
     # Medium identity, read by casper and ubiquity (RELEASE name in the UI).
     printf '%s %s "%s" - Release %s (%s)\n' "$TROTA_NAME" "$TROTA_VERSION" "$TROTA_CODENAME" "$TROTA_ARCH" "$BUILD_DATE" > "$ISO_DIR/.disk/info"
     echo "full_cd/single" > "$ISO_DIR/.disk/cd_type"
-    touch "$ISO_DIR/.disk/base_installable"
+    # No .disk/base_installable: the medium carries no APT archive (pool/,
+    # dists/), so the installer must not try to add it as a package source
+    # (it would stop with "apt configuration problem", seen in the VM test).
     echo "https://github.com/federicolia-coder/TrotaOS/blob/main/docs/release-notes.md" > "$ISO_DIR/.disk/release_notes_url"
 
     # --- GRUB: menu, theme and fonts --------------------------------------

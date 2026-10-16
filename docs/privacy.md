@@ -12,6 +12,14 @@ Trota OS non raccoglie dati sugli utenti.
   sono lette localmente e mostrate solo all'utente. Si possono copiare o
   salvare in un file soltanto con un'azione esplicita.
 
+## File locali dell'installer
+
+L'installer ubiquity salva in `/var/log/installer/` i log dell'installazione e
+un file `telemetry` con le scelte fatte (lingua, tipo di partizionamento,
+durata delle fasi). Il file resta **solo sul computer**: il programma che in
+Ubuntu potrebbe inviarlo (`ubuntu-report`) non è installato in Trota OS. Si può
+cancellare in sicurezza con `sudo rm /var/log/installer/telemetry`.
+
 ## Connessioni di rete effettuate dal sistema
 
 Sono quelle standard di Ubuntu, necessarie al funzionamento:

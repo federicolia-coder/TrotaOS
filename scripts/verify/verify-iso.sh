@@ -53,6 +53,11 @@ for f in /casper/vmlinuz /casper/initrd /casper/filesystem.squashfs /casper/file
     grep -qx "'$f'" <<<"$listing" && pass "file $f" || bad "missing $f"
 done
 
+# The medium has no APT archive: it must not claim to be base-installable,
+# or the installer tries "apt-cdrom add" and stops with an error.
+grep -qx "'/.disk/base_installable'" <<<"$listing" && bad "/.disk/base_installable present without an APT archive" \
+    || pass "no /.disk/base_installable (no APT archive on the medium)"
+
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 xorriso -osirrox on -indev "$ISO" -extract /.disk/info "$tmp/info" -extract /casper/filesystem.manifest "$tmp/manifest" \
