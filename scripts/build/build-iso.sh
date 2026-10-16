@@ -179,6 +179,27 @@ EOF
     # they are not validated for Trota OS yet (docs/architecture.md, ADR-007).
     sed -i 's/^Prompt=.*/Prompt=never/' "$CHROOT/etc/update-manager/release-upgrades"
 
+    # Console banners (conffiles of base-files whose text does not change with
+    # updates; lsb-release and the motd header are left untouched, see
+    # docs/release-notes.md "Known issues").
+    printf '%s %s \\n \\l\n\n' "$TROTA_NAME" "$TROTA_VERSION" > "$CHROOT/etc/issue"
+    printf '%s %s\n' "$TROTA_NAME" "$TROTA_VERSION" > "$CHROOT/etc/issue.net"
+    cat > "$CHROOT/etc/legal" <<EOF
+
+$TROTA_NAME is published by $TROTA_PUBLISHER and based on Ubuntu. The programs
+included with the system are free software; the exact distribution terms for
+each program are described in the individual files in
+/usr/share/doc/*/copyright.
+
+$TROTA_NAME comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+EOF
+
+    # Privacy: no Canonical "APT news" messages fetched in the background
+    # (docs/privacy.md). Security updates are not affected.
+    in_chroot "$CHROOT" pro config set apt_news=false
+
     log "customize: initramfs with casper and the Trota OS boot splash"
     in_chroot "$CHROOT" update-initramfs -u -k all
     local initrd
@@ -253,6 +274,10 @@ stage_iso() {
         || cp "$CHROOT/usr/lib/shim/shimx64.efi.signed" "$ISO_DIR/EFI/boot/bootx64.efi"
     cp "$CHROOT/usr/lib/shim/mmx64.efi" "$ISO_DIR/EFI/boot/mmx64.efi"
     cp "$CHROOT/usr/lib/grub/x86_64-efi-signed/gcdx64.efi.signed" "$ISO_DIR/EFI/boot/grubx64.efi"
+
+    # Checksums of the medium, verified by casper-md5check at live boot.
+    (cd "$ISO_DIR" && find . -type f ! -name md5sum.txt ! -name boot.catalog -print0 | sort -z \
+        | xargs -0 md5sum > md5sum.txt)
 
     local efi_img="$BUILD/efi.img"
     rm -f "$efi_img"

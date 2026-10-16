@@ -59,6 +59,8 @@ if wait_for 1200 sh -c 'snap list firefox && snap list snap-store'; then
 else
     result snaps_installed FAIL "$(snap changes 2>&1 | tail -3 | tr '\n' ' ')"
 fi
+echo "--- snapd diagnostics"; snap changes 2>&1 | tail -8; systemctl status snapd.seeded.service --no-pager 2>&1 | head -8
+check snapd_seeded_service systemctl is-active snapd.seeded.service
 check firefox_runs sh -c 'timeout 300 snap run firefox --version'
 check unattended_upgrades sh -c 'apt-config dump APT::Periodic | grep -q "Unattended-Upgrade \"1\"" && systemctl is-enabled unattended-upgrades'
 wait_for 120 sh -c 'nmcli -t -f STATE general | grep -q "^connected"' && result network PASS "$(nmcli -t -f STATE,CONNECTIVITY general)" || result network FAIL "$(nmcli -t general 2>&1)"
@@ -75,5 +77,10 @@ listen="$(ss -Htln 2>/dev/null | awk '{print $4}' | grep -vE '^(127\.|\[::1\]|::
 [ -z "$listen" ] && result no_open_tcp_ports PASS "no TCP service listening on external addresses" || result no_open_tcp_ports FAIL "$listen"
 bad="$(dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' ubuntu-report whoopsie popularity-contest apport kerneloops openssh-server 2>/dev/null | awk '/^ii/{print $2}')"
 [ -z "$bad" ] && result no_telemetry PASS "none of the excluded packages installed" || result no_telemetry FAIL "$bad"
+check apt_news_disabled sh -c 'pro config show apt_news 2>/dev/null | grep -q False && echo apt_news=False'
 check release_upgrade_prompt sh -c 'grep -E "^Prompt=" /etc/update-manager/release-upgrades'
+section "measurements"
+result measure_memory PASS "$(free -m | awk '/^Mem:/{printf "used %d MiB of %d MiB (available %d MiB)", $3, $2, $7}')"
+result measure_disk PASS "$(df -BM --output=used,size / | awk 'NR==2{printf "root used %s of %s", $1, $2}')"
+result measure_boot_time PASS "$(systemd-analyze 2>/dev/null | head -1 | cut -c1-140)"
 echo CHECKS-DONE

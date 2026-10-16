@@ -1,0 +1,34 @@
+# Privacy
+
+Trota OS non raccoglie dati sugli utenti.
+
+- **Nessun account obbligatorio** e nessuna registrazione.
+- **Nessuna telemetria**: sono esclusi dall'immagine `ubuntu-report`
+  (statistiche hardware), `whoopsie`/`apport`/`kerneloops` (invio di rapporti
+  di crash), `popularity-contest` (statistiche d'uso dei pacchetti).
+  In GNOME le impostazioni *Segnala problemi tecnici* e *Invia statistiche
+  d'uso del software* sono disattivate per impostazione predefinita.
+- **Applicazioni Trota OS**: tutte le informazioni (System Info, Diagnostics)
+  sono lette localmente e mostrate solo all'utente. Si possono copiare o
+  salvare in un file soltanto con un'azione esplicita.
+
+## Connessioni di rete effettuate dal sistema
+
+Sono quelle standard di Ubuntu, necessarie al funzionamento:
+
+| Servizio | Destinazione | Scopo | Come disattivarlo |
+|---|---|---|---|
+| APT, aggiornamenti automatici | archive.ubuntu.com, security.ubuntu.com | Elenchi dei pacchetti e aggiornamenti di sicurezza | *Software e aggiornamenti → Aggiornamenti* |
+| snapd | api.snapcraft.io | Aggiornamenti degli snap (Firefox, App Center) | `sudo snap refresh --hold` |
+| NetworkManager | connectivity-check.ubuntu.com | Rilevamento di captive portal | *Impostazioni → Privacy → Connettività* |
+| Sincronizzazione ora | ntp.ubuntu.com | Orologio di sistema | *Impostazioni → Sistema → Data e ora* |
+| fwupd (`fwupd-refresh.timer`) | cdn.fwupd.org | Metadati degli aggiornamenti firmware (LVFS); i firmware si installano solo su richiesta | `sudo systemctl disable --now fwupd-refresh.timer` |
+| Ubuntu Pro client (`ua-timer.timer`) | contracts.canonical.com | Solo se l'utente attiva Ubuntu Pro; gli "APT news" sono **disattivati** in Trota OS (`pro config set apt_news=false`) | `sudo pro config set apt_news=true` per riattivarli |
+| Firefox | Mozilla | Funzioni del browser | Impostazioni di Firefox |
+
+Il messaggio del giorno dinamico di Ubuntu (`motd-news`) è inattivo perché il
+pacchetto di configurazione `motd-news-config` non è installato.
+
+Trota Diagnostics esegue una risoluzione DNS di `archive.ubuntu.com` solo
+quando l'utente avvia i controlli dall'interfaccia (opzione `--no-dns` nella
+riga di comando).

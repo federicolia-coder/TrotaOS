@@ -1,0 +1,6 @@
+#!/bin/sh
+# Trota OS line of the message of the day (package trota-release).
+[ -r /usr/lib/os-release ] && . /usr/lib/os-release
+printf '\n  %s "%s" — based on Ubuntu %s, by TestardStudios\n' \
+    "${PRETTY_NAME:-Trota OS}" "${TROTA_CODENAME:-}" "${TROTA_BASE_VERSION:-}"
+printf '  Help: trota-diagnostics --text · Docs: /usr/share/doc/trota-docs/html/index.html\n'

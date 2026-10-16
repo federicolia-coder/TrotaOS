@@ -150,6 +150,10 @@ class VM:
         self.serial = None
         self.shots = 0
         outdir.mkdir(parents=True, exist_ok=True)
+        # Host directory shared with the guest (virtio-9p): check scripts in,
+        # results out. Nothing large travels over the serial console.
+        self.share = outdir / "share"
+        self.share.mkdir(exist_ok=True)
 
     def firmware_args(self, vars_file: Path) -> list[str]:
         if self.firmware == "bios":
@@ -182,6 +186,7 @@ class VM:
                "-chardev", f"socket,id=ser0,path={self.serial_path},server=on,wait=off",
                "-serial", "chardev:ser0",
                "-qmp", f"unix:{self.qmp_path},server=on,wait=off",
+               "-virtfs", f"local,path={self.share},mount_tag=trotatest,security_model=none,id=share0",
                *extra]
         if no_reboot:
             cmd.append("-no-reboot")
@@ -271,24 +276,37 @@ def serial_login(serial: Serial, user: str, password: str, timeout: float):
     serial.send("\r")
     serial.expect(r"login: ", timeout)
     serial.send(user + "\r")
-    serial.expect(r"[Pp]assword: ", 60)
-    serial.send(password + "\r")
-    serial.expect(r"\$ $|\$ \S*$", 180)
+    # Users without a password (the live session) get a shell directly.
+    m = serial.expect(r"([Pp]assword: )|(\$ (\x1b\[\?2004h)?$)", 120)
+    if m.group(1):
+        serial.send(password + "\r")
+        serial.expect(r"\$ (\x1b\[\?2004h)?$", 180)
     serial.send("export TERM=dumb PAGER=cat SYSTEMD_PAGER=cat; stty -echo cols 200\r")
     time.sleep(2)
 
 
-def run_checks(serial: Serial, script: Path, out: Path, timeout: float = 1800, subst: dict | None = None) -> dict:
-    results = {}
+def run_checks(vm: "VM", script: Path, out: Path, timeout: float = 1800, subst: dict | None = None,
+               password: str = "") -> dict:
     body = (HERE / "checks-common.sh").read_text() + "\n" + script.read_text()
     for k, v in (subst or {}).items():
         body = body.replace(k, v)
-    text = serial.run(f"bash -s <<'TROTA_CHECKS_EOF'\n{body}\nTROTA_CHECKS_EOF", timeout)
+    (vm.share / "checks.sh").write_text(body)
+    out_file = vm.share / "checks-output.txt"
+    out_file.unlink(missing_ok=True)
+    vm.serial.run(f"printf '%s\\n' '{password}' | sudo -S -p '' mount -t 9p -o trans=virtio,version=9p2000.L "
+                  "trotatest /mnt && echo mounted", 120)
+    vm.serial.run("bash /mnt/checks.sh > /tmp/trota-checks.txt 2>&1; "
+                  f"printf '%s\\n' '{password}' | sudo -S -p '' cp /tmp/trota-checks.txt /mnt/checks-output.txt",
+                  timeout)
+    text = out_file.read_text(errors="replace") if out_file.exists() else ""
     (out / "checks.txt").write_text(text)
+    results = {}
     for line in text.splitlines():
         m = re.match(r"^RESULT (\S+) (PASS|FAIL|SKIP)\b(.*)", line)
         if m:
             results[m.group(1)] = {"status": m.group(2), "note": m.group(3).strip()}
+    if "CHECKS-DONE" not in text:
+        results["checks_completed"] = {"status": "FAIL", "note": "the check script did not finish"}
     (out / "results.json").write_text(json.dumps(results, indent=2))
     return results
 
@@ -317,7 +335,7 @@ def scenario_live(args, out: Path) -> int:
     try:
         serial_login(vm.serial, "trota", "", timeout=args.minutes * 60)
         log("logged in on the serial console of the live session")
-        results = run_checks(vm.serial, HERE / "checks-live.sh", out)
+        results = run_checks(vm, HERE / "checks-live.sh", out)
         vm.screenshot("desktop")
     finally:
         vm.stop()
@@ -369,8 +387,9 @@ def scenario_installed(args, out: Path) -> int:
         vm.screenshot("boot")
         serial_login(vm.serial, creds["user"], creds["password"], timeout=args.minutes * 60)
         log("logged in on the serial console of the installed system")
-        results = run_checks(vm.serial, HERE / "checks-installed.sh", out, timeout=3600,
-                             subst={"@PASSWORD@": creds["password"], "@FIRMWARE@": args.firmware})
+        results = run_checks(vm, HERE / "checks-installed.sh", out, timeout=3600,
+                             subst={"@PASSWORD@": creds["password"], "@FIRMWARE@": args.firmware},
+                             password=creds["password"])
         for i in range(3):
             vm.screenshot(f"desktop{i}")
             time.sleep(30)

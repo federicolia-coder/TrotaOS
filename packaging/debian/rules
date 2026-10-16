@@ -53,6 +53,7 @@ override_dh_auto_install:
 	done
 	# --- trota-release -----------------------------------------------------
 	install -D -m 644 packaging/files/release/os-release debian/trota-release/usr/lib/os-release
+	install -D -m 755 packaging/files/release/05-trota-os debian/trota-release/etc/update-motd.d/05-trota-os
 	# --- trota-desktop-settings ------------------------------------------
 	install -D -m 644 packaging/files/settings/90_trota-os.gschema.override \
 		$(SET)/usr/share/glib-2.0/schemas/90_trota-os.gschema.override

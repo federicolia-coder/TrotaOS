@@ -60,6 +60,10 @@ if wait_for 1200 sh -c 'snap list firefox && snap list snap-store'; then
 else
     result snaps_seeded FAIL "$(snap changes 2>&1 | tail -3 | tr '\n' ' ')"
 fi
+echo "--- snapd diagnostics"; snap changes 2>&1 | tail -8
+for u in snapd.seeded.service snapd.hold.service casper-md5check.service; do
+    systemctl status "$u" --no-pager 2>&1 | head -6; journalctl -b -u "$u" --no-pager 2>/dev/null | tail -5
+done
 check unattended_upgrades sh -c 'apt-config dump APT::Periodic | grep -q "Unattended-Upgrade \"1\""'
 bad="$(dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' ubuntu-report whoopsie popularity-contest apport kerneloops openssh-server gnome-remote-desktop 2>/dev/null | awk '/^ii/{print $2}')"
 [ -z "$bad" ] && result no_telemetry PASS "none of the excluded packages installed" || result no_telemetry FAIL "$bad"
@@ -70,4 +74,8 @@ listen="$(ss -Htlnp 2>/dev/null | awk '{print $4}' | grep -vE '^(127\.|\[::1\]|:
 [ -z "$listen" ] && result no_open_tcp_ports PASS "no TCP service listening on external addresses" || result no_open_tcp_ports FAIL "$listen"
 check audio_device sh -c 'aplay -l | grep -m1 "^card"'
 if wait_for 120 pgrep -u trota -x pipewire; then result audio_pipewire PASS "pipewire running for the live user"; else result audio_pipewire FAIL "no pipewire"; fi
+section "measurements"
+result measure_memory PASS "$(free -m | awk '/^Mem:/{printf "used %d MiB of %d MiB (available %d MiB)", $3, $2, $7}')"
+result measure_disk PASS "$(df -BM --output=used,size / | awk 'NR==2{printf "root used %s of %s", $1, $2}')"
+result measure_boot_time PASS "$(systemd-analyze 2>/dev/null | head -1 | cut -c1-140)"
 echo CHECKS-DONE

@@ -90,11 +90,13 @@ def search(query: str, runner: Runner = run, limit: int = DEFAULT_LIMIT, names_o
     if names_only:
         args.append("--names-only")
     args += [re.escape(w) for w in words]
-    res = runner(args, 30)
+    res = runner(args, 120)
     if res.missing:
-        raise PackageError("apt-cache is not installed")
+        raise PackageError(_("apt-cache is not installed"))
+    if res.timed_out:
+        raise PackageError(_("The search took too long. Try a more specific search."))
     if not res.ok:
-        raise PackageError(res.stderr.strip() or "apt-cache search failed")
+        raise PackageError(res.stderr.strip() or _("apt-cache search failed"))
     results = []
     for line in res.stdout.splitlines():
         name, sep, summary = line.partition(" - ")

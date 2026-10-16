@@ -21,4 +21,5 @@ applications/trota-system-info/trota_system_info/cli.py
 applications/trota-welcome/trota_welcome/__init__.py
 applications/trota-welcome/trota_welcome/__main__.py
 applications/trota-welcome/trota_welcome/app.py
+applications/trota-welcome/trota_welcome/cli.py
 applications/trota-welcome/trota_welcome/settings.py
