@@ -85,7 +85,12 @@ if as_root apt-get update >/tmp/apt-update.log 2>&1; then
     n="$(apt-get -s -o Debug::NoLocking=1 upgrade | grep -c '^Inst ')"
     result apt_upgrade_simulation PASS "$n packages upgradable"
     check unattended_upgrade_dry_run sh -c 'printf "%s\n" "$0" | sudo -S -p "" timeout 900 unattended-upgrade --dry-run 2>&1 | tail -1; exit 0' "$PW"
-    check ppa_add sh -c 'printf "%s\n" "$0" | sudo -S -p "" timeout 300 add-apt-repository -y -n ppa:git-core/ppa >/dev/null 2>&1; f=$(ls /etc/apt/sources.list.d/ | grep -m1 git-core) && grep -h "^Suites:" "/etc/apt/sources.list.d/$f" | grep -q noble && echo "$f (noble)"; r=$?; printf "%s\n" "$0" | sudo -S -p "" add-apt-repository -y -n -r ppa:git-core/ppa >/dev/null 2>&1; exit $r' "$PW"
+    # PPAs need HTTPS to Launchpad (the test network may intercept TLS).
+    if curl -sS -m 30 -o /dev/null https://api.launchpad.net/ 2>/dev/null; then
+        check ppa_add sh -c 'printf "%s\n" "$0" | sudo -S -p "" timeout 300 add-apt-repository -y -n ppa:git-core/ppa >/dev/null 2>&1; f=$(ls /etc/apt/sources.list.d/ | grep -m1 git-core) && grep -h "^Suites:" "/etc/apt/sources.list.d/$f" | grep -q noble && echo "$f (noble)"; r=$?; printf "%s\n" "$0" | sudo -S -p "" add-apt-repository -y -n -r ppa:git-core/ppa >/dev/null 2>&1; exit $r' "$PW"
+    else
+        result ppa_add SKIP "Launchpad not reachable over HTTPS from the test VM: $(curl -sS -m 30 -o /dev/null https://api.launchpad.net/ 2>&1 | tail -1 | cut -c1-90)"
+    fi
     check package_helper_search python3 -c 'from trota_common import packages; r = packages.search("htop"); assert r; i = packages.info(r[0].name); print(i.name, i.version, i.summary)'
 else
     result apt_update FAIL "$(tail -2 /tmp/apt-update.log | tr '\n' ' ')"

@@ -146,6 +146,16 @@ automatici, nomi delle sessioni GDM, servizi tolti dall'accesso, Firefox di
 Mozilla, Flathub. Memoria usata dopo l'accesso: 923 MB (ciclo C: circa
 1,2 GB).
 
+Ricostruita la ISO con le correzioni emerse dagli screenshot (icona del
+dock, testo di Welcome, icona e presentazione dell'installer; SHA-256
+`92eefcfbc6e046d50c26c215d209964b2d4490a5fbe5292d3f731be4a4380c1e`):
+
+| Scenario | Esito | Dettagli |
+|---|---|---|
+| Sessione live (UEFI) | **54/54** | Icona Trota nel dock e sull'installer, 935 MB di RAM dopo l'accesso |
+| Installazione (UEFI + Secure Boot) | Superata | 136 minuti in emulazione |
+| Primo avvio (UEFI + Secure Boot) | **57/58** | SecureBoot attivo, sessioni GDM "Trota OS", origini di sicurezza degli aggiornamenti automatici, Firefox di Mozilla, Flathub; 860 MB di RAM dopo l'accesso, avvio in 2 min 25 s (emulato). Unico non superato `ppa_add`: la rete delle VM di test intercetta l'HTTPS verso Launchpad (*self-signed certificate in certificate chain*, anche con `curl`); `add-apt-repository` arriva a contattare Launchpad e il PPA usa il codename `noble`. Il controllo ora risulta *saltato* quando Launchpad non è raggiungibile; da riverificare su una rete normale |
+
 **Immagini disco** (primo avvio, 2 GB di RAM, disco da 25 GB):
 
 | Edizione | Firmware | Esito | Avvio fino alla console* | RAM usata | Pacchetti |
