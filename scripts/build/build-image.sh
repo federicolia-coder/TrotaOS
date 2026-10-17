@@ -30,7 +30,6 @@ RAW="$WORK/disk.img"
 CACHE="$BUILD/cache"
 PKG_DIR="$BUILD/packages"
 NAME="trota-os-$EDITION-$TROTA_VERSION-$TROTA_ARCH"
-SIZE="${TROTA_IMAGE_SIZE:-4G}"
 M="$TROTA_ROOT/packages/manifest"
 LOOP=""
 
@@ -174,7 +173,14 @@ EOF
 
 # GPT disk: BIOS boot partition, EFI system partition, root (grown on first boot).
 make_disk() {
-    log "disk: $SIZE raw image"
+    # Disk size: the system plus 40% and 600 MiB (ESP, kernels of updates),
+    # at least 4 GiB; cloud-init grows the root partition on first boot.
+    local used size
+    used="$(du -sxm "$ROOT" | cut -f1)"
+    size="${TROTA_IMAGE_SIZE:-$(( (used * 14 / 10 + 600 + 1023) / 1024 ))G}"
+    [ "${size%G}" -ge 4 ] 2>/dev/null || size=4G
+    log "disk: $size raw image (system: ${used} MiB)"
+    local SIZE="$size"
     rm -f "$RAW"
     truncate -s "$SIZE" "$RAW"
     printf '%s\n' 'label: gpt' \
