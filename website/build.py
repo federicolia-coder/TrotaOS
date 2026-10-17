@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Assemble the Trota OS website: logos and the desktop screenshot are inlined
-(the page is a single file). Output: build/site/index.html."""
+(the page is a single file).
+
+Output:
+  build/site/index.html     complete HTML document (static hosting, e.g. Render)
+  build/site-fragment.html  page without the document skeleton (claude.ai artifact)
+"""
 import base64
 import re
 from pathlib import Path
@@ -8,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "website" / "index.src.html"
 OUT = ROOT / "build" / "site" / "index.html"
+FRAGMENT = ROOT / "build" / "site-fragment.html"
 REPO = "https://github.com/federicolia-coder/TrotaOS"
 
 
@@ -33,8 +39,17 @@ def main() -> None:
     left = re.findall(r"\{\{[A-Z_]+\}\}", page)
     assert not left, left
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(page)
-    print(f"{OUT} ({OUT.stat().st_size // 1024} KiB)")
+    FRAGMENT.write_text(page)
+    # Complete document: everything up to the stylesheet goes in <head>.
+    head, body = page.split("</style>", 1)
+    OUT.write_text(
+        '<!doctype html>\n<html lang="it">\n<head>\n<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+        '<link rel="icon" type="image/svg+xml" href="favicon.svg">\n'
+        + head + "</style>\n</head>\n<body>\n" + body.strip() + "\n</body>\n</html>\n")
+    (OUT.parent / "favicon.svg").write_text(svg("trota-symbol.svg"))
+    for f in (OUT, FRAGMENT):
+        print(f"{f} ({f.stat().st_size // 1024} KiB)")
 
 
 if __name__ == "__main__":
