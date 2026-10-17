@@ -1,0 +1,71 @@
+# Copy the files of a GitHub release to the Cloudflare R2 bucket that serves
+# the downloads of the website (public, also when the repository is private).
+#
+# Runs after "Build and release ISO" and by hand (Actions → Mirror release to R2).
+# Repository secrets (an R2 API token with "Object Read & Write" on the bucket,
+# created in the Cloudflare dashboard → R2 → Manage API tokens):
+#   R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY
+name: Mirror release to R2
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to copy"
+        required: true
+        default: "v1.0.0"
+  workflow_run:
+    workflows: ["Build and release ISO"]
+    types: [completed]
+
+permissions:
+  contents: read
+
+env:
+  R2_ACCOUNT_ID: 0dc4f5889348652eae9dde71ba5b7979
+  R2_BUCKET: trotaos-downloads
+  PUBLIC_URL: https://pub-d6b49f9479c04789b2d7198ad306e374.r2.dev
+
+jobs:
+  mirror:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check the credentials
+        env:
+          KEY: ${{ secrets.R2_ACCESS_KEY_ID }}
+          SECRET: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: |
+          if [ -z "$KEY" ] || [ -z "$SECRET" ]; then
+            echo "::error::secrets R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY are not set"; exit 1
+          fi
+
+      - name: Download the release files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag || 'v1.0.0' }}
+        run: |
+          mkdir files
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir files
+          ls -l files
+          # The checksums published with the release must match the files.
+          (cd files && cat ./*.sha256 | sha256sum -c -)
+
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          TAG: ${{ inputs.tag || 'v1.0.0' }}
+        run: |
+          version="${TAG#v}"; version="${version%.0}"   # v1.0.0 -> 1.0
+          endpoint="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
+          cat files/*.sha256 > files/SHA256SUMS
+          aws s3 cp files/ "s3://$R2_BUCKET/$version/" --recursive --endpoint-url "$endpoint" --only-show-errors
+          aws s3 ls "s3://$R2_BUCKET/$version/" --endpoint-url "$endpoint"
+          for f in files/*; do
+            code=$(curl -s -o /dev/null -I -w '%{http_code}' "$PUBLIC_URL/$version/$(basename "$f")")
+            echo "$code $PUBLIC_URL/$version/$(basename "$f")"
+            [ "$code" = 200 ] || { echo "::error::$(basename "$f") is not public"; exit 1; }
+          done

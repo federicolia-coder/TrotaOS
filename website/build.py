@@ -15,6 +15,8 @@ SRC = ROOT / "website" / "index.src.html"
 OUT = ROOT / "build" / "site" / "index.html"
 FRAGMENT = ROOT / "build" / "site-fragment.html"
 REPO = "https://github.com/federicolia-coder/TrotaOS"
+# Public downloads: Cloudflare R2 bucket "trotaos-downloads" (.github/workflows/mirror-r2.yml).
+DOWNLOADS = "https://pub-d6b49f9479c04789b2d7198ad306e374.r2.dev/1.0"
 
 
 def svg(name: str) -> str:
@@ -31,7 +33,7 @@ def main() -> None:
         "{{LOGO_LIGHT}}": svg("trota-logo-light.svg"),
         "{{LOGO_DARK}}": svg("trota-logo-dark.svg"),
         "{{SHOT}}": "data:image/webp;base64," + shot,
-        "{{RELEASE_URL}}": REPO + "/releases/tag/v1.0.0",
+        "{{DL}}": DOWNLOADS,
         "{{DOCS_URL}}": REPO + "/blob/claude/trota-os-linux-distro-410sep/docs/installation.md",
         "{{REPO_URL}}": REPO,
     }.items():
