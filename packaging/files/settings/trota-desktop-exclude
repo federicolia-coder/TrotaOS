@@ -1,0 +1,18 @@
+# Trota OS: files of the base system that are not unpacked (dpkg filter,
+# package trota-desktop-settings). The packages stay installed and updated.
+#
+# Ubuntu wallpapers: not offered in Settings → Appearance (~48 MB).
+path-exclude=/usr/share/gnome-background-properties/ubuntu-wallpapers.xml
+path-exclude=/usr/share/gnome-background-properties/noble-wallpapers.xml
+path-exclude=/usr/share/backgrounds/*_by_*
+path-exclude=/usr/share/backgrounds/Numbat_wallpaper_*
+path-exclude=/usr/share/backgrounds/contest/*
+path-exclude=/usr/share/backgrounds/warty-final-ubuntu.png
+path-exclude=/usr/share/backgrounds/ubuntu-wallpaper-d.png
+path-exclude=/usr/share/backgrounds/ubuntu-default-greyscale-wallpaper.png
+# Background services started at every login:
+#  * GNOME Software in the background (~150 MB of RAM): Flatpak applications
+#    are updated by trota-flatpak-update.timer instead, APT by the updater;
+#  * the Ubuntu Pro notification of update-notifier.
+path-exclude=/etc/xdg/autostart/org.gnome.Software.desktop
+path-exclude=/etc/xdg/autostart/ubuntu-advantage-notification.desktop

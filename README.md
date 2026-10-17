@@ -2,25 +2,33 @@
 
 # Trota OS
 
-**Trota OS** è una distribuzione Linux desktop basata su **Ubuntu 24.04 LTS**,
-con un'identità visiva industriale e minimale, pensata per sviluppo software,
-amministrazione di sistemi, gaming, studio e uso quotidiano.
+**Trota OS** è un sistema operativo desktop leggero, con un'identità visiva
+industriale e minimale, pensato per sviluppo software, amministrazione di
+sistemi, gaming, studio e uso quotidiano.
 
-Sviluppata e pubblicata da **TestardStudios**.
+Sviluppato e pubblicato da **TestardStudios**.
 
-- Base Ubuntu 24.04 LTS (kernel HWE), GNOME su Wayland, APT/DEB, systemd,
-  GRUB, NetworkManager, ext4, PipeWire, AppArmor
-- Avvio BIOS e UEFI, **Secure Boot supportato** (shim e GRUB firmati da Canonical)
-- Nessun account obbligatorio, **nessuna telemetria**, nessun servizio di rete
-  in ascolto, aggiornamenti di sicurezza automatici
+- Leggero: nessuno snap, nessun indicizzatore o negozio di app in background,
+  nessuna telemetria, ISO da circa 2 GB
+- GNOME su Wayland, Firefox aggiornato direttamente da Mozilla, applicazioni
+  da Flathub, pacchetti APT/DEB, systemd, PipeWire, AppArmor
+- Avvio BIOS e UEFI, **Secure Boot supportato**
+- Nessun account obbligatorio, nessun servizio di rete in ascolto,
+  aggiornamenti di sicurezza automatici
 - Quattro applicazioni originali (GTK 4 / libadwaita), in inglese e italiano:
   - **Trota Welcome** – guida di primo avvio
   - **Trota System Info** – informazioni sul sistema raccolte localmente
   - **Trota Diagnostics** – controlli di salute in sola lettura
   - **Trota Package Helper** – ricerca nel catalogo APT e istruzioni di installazione
 
-> Trota OS non è un prodotto di Canonical né del progetto Ubuntu.
-> Ubuntu è un marchio registrato di Canonical Ltd.
+### Compatibilità
+
+Trota OS usa come base i pacchetti di Ubuntu 24.04 LTS (codename `noble`) e ne
+riceve gli aggiornamenti di sicurezza fino ad aprile 2029: i pacchetti `.deb`,
+i PPA e i repository pensati per Ubuntu 24.04 funzionano anche su Trota OS.
+Trota OS non è un prodotto di Canonical né del progetto Ubuntu; Ubuntu è un
+marchio registrato di Canonical Ltd. Dettagli in
+[docs/architecture.md](docs/architecture.md) e [docs/licensing.md](docs/licensing.md).
 
 ## Stato del progetto
 

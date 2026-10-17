@@ -64,7 +64,7 @@ def test_pro_advertising_hook_cleared():
     # Pre-Invoke is shared with other packages: it must not be cleared
     assert "#clear APT::Update::Pre-Invoke" not in text
     for unit in ("esm-cache.service", "apt-news.service"):
-        assert f"ln -sf /dev/null $(SRC)/etc/systemd/system/{unit}" in RULES
+        assert f"ln -sf /dev/null debian/trota-release/etc/systemd/system/{unit}" in RULES
 
 
 def test_flathub_remote():

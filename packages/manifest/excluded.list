@@ -20,6 +20,7 @@ snapd                    # Trota OS ships no snaps (blocked also on the installe
 gnome-software-plugin-snap # snap support in GNOME Software
 ubuntu-kernel-accessories # bpftrace, bpfcc-tools and two extra LLVM copies (~210 MB), kernel developers only
 linux-tools-common       # perf and kernel tools (~170 MB with LLVM), recommended by the HWE kernel
+sssd                     # enterprise directory login (Active Directory/LDAP), a background service on every boot
 
 # Note: ubuntu-wallpapers cannot be excluded because Ubuntu's gnome-shell
 # package depends on it; Trota OS only changes the default wallpaper.

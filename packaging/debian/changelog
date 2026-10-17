@@ -1,3 +1,15 @@
+trota-os (1.0.1) noble; urgency=medium
+
+  * The system identifies itself as Trota OS (ID=trota, ID_LIKE=ubuntu
+    debian); unattended-upgrades and python-apt keep working with explicit
+    origins and templates; Firefox security updates are automatic.
+  * GDM sessions named Trota OS; no file indexer, GNOME Software or Ubuntu
+    Pro notifier at login; Flatpak applications updated by a daily timer.
+  * The snapd pin and the Ubuntu Pro settings move to trota-release.
+  * New package trota-server-settings for the Server, Edge and Cloud images.
+
+ -- TestardStudios <maintainers@testardstudios.invalid>  Sat, 17 Oct 2026 12:00:00 +0000
+
 trota-os (1.0.0) noble; urgency=medium
 
   * First release of Trota OS 1.0 "Fario", based on Ubuntu 24.04 LTS.

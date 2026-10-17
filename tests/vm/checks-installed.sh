@@ -49,6 +49,17 @@ check wallpaper sh -c 'XDG_CURRENT_DESKTOP=ubuntu:GNOME gsettings get org.gnome.
 if wait_for 120 pgrep -u "$USER" -x pipewire; then result audio_pipewire PASS "pipewire running"; else result audio_pipewire FAIL "no pipewire"; fi
 check audio_device sh -c 'aplay -l | grep -m1 "^card"'
 
+section "identity and lightness"
+check no_ubuntu_motd sh -c '! run-parts --lsbsysinit --test /etc/update-motd.d | grep -qE "00-header|10-help-text" && /etc/update-motd.d/05-trota-os | grep -m1 Welcome'
+check uu_security_origin sh -c 'apt-config dump Unattended-Upgrade::Allowed-Origins | grep -q "Ubuntu:\${distro_codename}-security" && apt-config dump Unattended-Upgrade::Origins-Pattern | grep -q packages.mozilla.org && echo "base security archive and Mozilla allowed"'
+check gdm_session_name sh -c 'grep -h "^Name=" /usr/share/wayland-sessions/*.desktop /usr/share/xsessions/*.desktop | sort -u | tr "\n" " " | grep -v Ubuntu'
+check no_ubuntu_wallpapers sh -c '! ls /usr/share/gnome-background-properties | grep -qv trota && ls /usr/share/gnome-background-properties'
+check tracker_masked sh -c 'test "$(readlink /etc/systemd/user/tracker-miner-fs-3.service)" = /dev/null && echo masked'
+check no_software_autostart sh -c '! test -e /etc/xdg/autostart/org.gnome.Software.desktop && ! test -e /etc/xdg/autostart/ubuntu-advantage-notification.desktop && echo "not started at login"'
+check flatpak_update_timer systemctl is-enabled trota-flatpak-update.timer
+check no_sssd sh -c '! systemctl list-unit-files sssd.service --no-legend | grep -q . && echo "sssd not installed"'
+result memory_after_login PASS "$(free -m | awk '/^Mem:/{print $3 " MB used of " $2 " MB"}')"
+
 section "applications"
 check system_info sh -c 'trota-system-info --text | grep -E "^(Operating system|Based on)"'
 trota-system-info --text
@@ -72,6 +83,7 @@ if as_root apt-get update >/tmp/apt-update.log 2>&1; then
     n="$(apt-get -s -o Debug::NoLocking=1 upgrade | grep -c '^Inst ')"
     result apt_upgrade_simulation PASS "$n packages upgradable"
     check unattended_upgrade_dry_run sh -c 'printf "%s\n" "$0" | sudo -S -p "" timeout 900 unattended-upgrade --dry-run 2>&1 | tail -1; exit 0' "$PW"
+    check ppa_add sh -c 'printf "%s\n" "$0" | sudo -S -p "" timeout 300 add-apt-repository -y -n ppa:git-core/ppa >/dev/null 2>&1; f=$(ls /etc/apt/sources.list.d/ | grep -m1 git-core) && grep -h "^Suites:" "/etc/apt/sources.list.d/$f" | grep -q noble && echo "$f (noble)"; r=$?; printf "%s\n" "$0" | sudo -S -p "" add-apt-repository -y -n -r ppa:git-core/ppa >/dev/null 2>&1; exit $r' "$PW"
     check package_helper_search python3 -c 'from trota_common import packages; r = packages.search("htop"); assert r; i = packages.info(r[0].name); print(i.name, i.version, i.summary)'
 else
     result apt_update FAIL "$(tail -2 /tmp/apt-update.log | tr '\n' ' ')"

@@ -113,7 +113,6 @@ anacron
 gnome-keyring
 libpam-gnome-keyring
 libpam-fprintd
-libpam-sss
 gpg-agent
 dirmngr
 ca-certificates
@@ -142,7 +141,7 @@ language-selector-gnome
 
 # Help
 yelp
-ubuntu-docs
+ubuntu-docs              # GNOME desktop guide (Ubuntu edition, required by gnome-user-docs)
 
 # Languages shipped on the image (others are installed on demand)
 language-pack-en

@@ -112,23 +112,45 @@ l'immagine El Torito di GRUB `i386-pc`. Il sistema installato usa i pacchetti
 così che l'installer non debba scaricarli (l'installazione
 completamente senza rete non è ancora stata verificata).
 
-### ADR-005 — Identificazione del sistema (os-release)
+### ADR-005 — Identità del sistema: Trota OS anche per i programmi
+
+**Decisione.** Il sistema si presenta come Trota OS sia all'utente sia ai
+programmi, come fanno le derivate mature (es. Linux Mint):
+
+| Campo | Valore | Chi lo usa |
+|---|---|---|
+| `ID` / `lsb_release -i` | `trota` / `Trota` | script e installer di terze parti, strumenti di sistema |
+| `ID_LIKE` | `ubuntu debian` | script di terze parti che riconoscono le derivate |
+| `VERSION_ID` / `lsb_release -r` | `1.0` | |
+| `VERSION_CODENAME`, `UBUNTU_CODENAME` / `lsb_release -c` | `noble` | sorgenti APT, PPA, repository di terze parti, unattended-upgrades |
 
 `/usr/lib/os-release` è sostituito tramite `dpkg-divert` dal pacchetto
-`trota-release`; il file originale resta in `/usr/lib/os-release.ubuntu` ed è
-aggiornato da `base-files`. I campi leggibili (`NAME`, `PRETTY_NAME`, `LOGO`,
-URL) identificano Trota OS; i campi tecnici `ID=ubuntu`, `VERSION_ID=24.04`,
-`VERSION_CODENAME=noble` restano quelli della base perché:
-- `lsb_release` (usato da `aptsources`, *Software e aggiornamenti*,
-  `add-apt-repository`, `ubuntu-drivers`) deriva l'ID della distribuzione da
-  `ID`; con `ID=trota` il sistema non verrebbe più riconosciuto come Ubuntu e
-  PPA e repository di terze parti smetterebbero di funzionare;
-- molti installer di terze parti costruiscono gli URL dei repository da
-  `ID`/`VERSION_ID`/`VERSION_CODENAME`.
-La versione di Trota OS è nei campi `TROTA_VERSION` e `TROTA_CODENAME`, come
-consentito da os-release(5). Questo non presenta Trota OS come Ubuntu ufficiale:
-il nome mostrato all'utente, il marchio e la documentazione sono quelli di
-Trota OS (vedi [licensing.md](licensing.md)).
+`trota-release` (l'originale resta in `/usr/lib/os-release.ubuntu`, aggiornato
+da `base-files`); `/etc/lsb-release` è riscritto nell'immagine.
+
+**Compatibilità mantenuta esplicitamente** (verificata dalla build, che si
+ferma se una di queste condizioni non vale, e dai test in VM):
+- *aggiornamenti di sicurezza automatici*: `50unattended-upgrades` di Ubuntu
+  autorizza `${distro_id}:${distro_codename}-security`, che con `ID=trota`
+  non corrisponderebbe più all'archivio; `51trota-unattended-upgrades`
+  autorizza esplicitamente le origini `Ubuntu:noble`, `Ubuntu:noble-security`
+  ed ESM, e in più **Firefox** dal repository di Mozilla;
+- *Software e aggiornamenti* (python-apt): i modelli `Trota.info` e
+  `Trota.mirrors` sono collegamenti a quelli della base, così l'elenco delle
+  sorgenti resta gestibile dall'interfaccia;
+- *PPA e repository di terze parti*: il codename resta `noble`;
+- *Ubuntu Pro client*: agisce solo su `ID=ubuntu`; la configurazione (APT news
+  disattivate) è applicata durante la build prima del cambio di identità.
+
+**Cosa resta visibile della base** (non modificabile senza ricompilare
+pacchetti, e quindi senza perdere gli aggiornamenti di sicurezza di Ubuntu):
+la stringa di versione del kernel (`uname -v`) e le versioni dei pacchetti
+(`…ubuntu…`), gli indirizzi `archive.ubuntu.com` nelle sorgenti APT, alcuni
+testi di *Impostazioni → Ubuntu Desktop*, di *Software e aggiornamenti* e della
+*Guida del desktop* (pacchetto `ubuntu-docs`, richiesto da `gnome-user-docs`),
+alcuni messaggi rari dell'installer (RST, BitLocker). La pagina delle licenze e
+la finestra *Informazioni* delle app Trota citano la base, come richiesto da
+licenze e marchi ([licensing.md](licensing.md)).
 
 ### ADR-006 — Nessuno snap: Firefox da Mozilla, applicazioni da Flathub
 
@@ -223,6 +245,16 @@ nelle sezioni specifiche di sessione usate da Ubuntu (`:ubuntu`,
 dconf di sistema (`/etc/dconf/db/trota.d`). Tema Yaru scuro (accento arancione
 di Yaru, il più vicino alla palette Trota), font Inter, sfondi Trota, dock
 grafite. Tutto resta modificabile dall'utente.
+
+Le sessioni di GDM si chiamano *Trota OS* (i file di `ubuntu-session` sono
+deviati con `dpkg-divert` dal pacchetto `trota-desktop-settings`, la sessione
+avviata resta la stessa). Per un desktop più leggero all'accesso non partono
+l'indicizzatore dei file (`tracker-miner-fs-3`, mascherato: la ricerca di File
+funziona lo stesso, senza indice), GNOME Software in background (le app
+Flatpak sono aggiornate da `trota-flatpak-update.timer`, una volta al giorno)
+e la notifica di Ubuntu Pro; `sssd` (accesso con Active Directory/LDAP) non è
+installato. Gli sfondi di Ubuntu non vengono estratti (filtro dpkg
+`trota-desktop-exclude`).
 
 ### ADR-010 — Applicazioni originali
 

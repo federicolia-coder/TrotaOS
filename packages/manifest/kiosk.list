@@ -1,0 +1,12 @@
+# Trota OS Kiosk — added to server.list in the kiosk disk image
+# (scripts/build/build-image.sh kiosk). Firefox and cage come with the
+# trota-kiosk package; these are the graphics, fonts and audio around them.
+libgl1-mesa-dri          # OpenGL drivers (Intel, AMD, virtual GPUs, software rendering)
+libegl-mesa0
+mesa-vulkan-drivers
+fonts-noto-core
+fonts-noto-color-emoji
+fonts-inter
+pipewire                 # audio for videos and pages with sound
+pipewire-pulse
+wireplumber

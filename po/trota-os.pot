@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trota OS 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
-"POT-Creation-Date: 2026-10-17 06:40+0000\n"
+"POT-Creation-Date: 2026-10-17 10:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -369,7 +369,7 @@ msgid "Proprietary driver supported by Canonical."
 msgstr ""
 
 #: applications/trota-common/trota_common/packages.py:62
-msgid "Maintained by the Ubuntu community."
+msgid "Maintained by the community."
 msgstr ""
 
 #: applications/trota-common/trota_common/packages.py:63
@@ -544,7 +544,7 @@ msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:27
 msgid ""
-"Software installs applications from the Ubuntu archive and from Flathub "
+"Software installs applications from the package archive and from Flathub "
 "(Steam, VS Code, Spotify, Discord…) as Flatpak packages, isolated from the "
 "system and updated automatically."
 msgstr ""
@@ -555,8 +555,8 @@ msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:30
 msgid ""
-"Install them from the Ubuntu archive with APT, for example: sudo apt install "
-"htop"
+"Install them from the package archive with APT, for example: sudo apt "
+"install htop"
 msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:31
@@ -565,7 +565,7 @@ msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:32
 msgid ""
-"Prefer the Ubuntu archive or Flathub. Add third-party repositories (PPA) "
+"Prefer the package archive or Flathub. Add third-party repositories (PPA) "
 "only from sources you trust: they get full access to your system."
 msgstr ""
 
@@ -707,7 +707,7 @@ msgid "Trota Package Helper"
 msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:221
-msgid "Search the Ubuntu package catalogue"
+msgid "Search the package catalogue"
 msgstr ""
 
 #: applications/trota-system-info/trota_system_info/app.py:20
@@ -1176,7 +1176,7 @@ msgid "Safe, read-only checks with clear suggestions"
 msgstr ""
 
 #: applications/trota-welcome/trota_welcome/app.py:208
-msgid "Search the Ubuntu catalogue and learn how to install software"
+msgid "Search the package catalogue and learn how to install software"
 msgstr ""
 
 #: applications/trota-welcome/trota_welcome/app.py:219
@@ -1216,7 +1216,7 @@ msgid "Desktop guide"
 msgstr ""
 
 #: applications/trota-welcome/trota_welcome/app.py:231
-msgid "How to use the GNOME desktop (Ubuntu Desktop Guide)"
+msgid "How to use the GNOME desktop"
 msgstr ""
 
 #: applications/trota-welcome/trota_welcome/app.py:234

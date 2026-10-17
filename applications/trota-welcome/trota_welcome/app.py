@@ -205,7 +205,7 @@ class WelcomeWindow(Adw.ApplicationWindow):
                                 _("Safe, read-only checks with clear suggestions"),
                                 "it.testardstudios.TrotaDiagnostics"))
         group.add(ui.launch_row("trota_package_helper", _("Trota Package Helper"),
-                                _("Search the Ubuntu catalogue and learn how to install software"),
+                                _("Search the package catalogue and learn how to install software"),
                                 "it.testardstudios.TrotaPackageHelper"))
         return self._scrolled(group)
 
@@ -228,7 +228,7 @@ class WelcomeWindow(Adw.ApplicationWindow):
         if local:
             docs.add(ui.uri_row(local, _("Trota OS documentation"), _("Offline guide installed on this computer"), "help-contents-symbolic"))
         docs.add(ui.uri_row(DOCS_URL, _("Online documentation"), _("Latest version of the guides"), "web-browser-symbolic"))
-        docs.add(ui.launch_row("help", _("Desktop guide"), _("How to use the GNOME desktop (Ubuntu Desktop Guide)"), "help-browser-symbolic"))
+        docs.add(ui.launch_row("help", _("Desktop guide"), _("How to use the GNOME desktop"), "help-browser-symbolic"))
 
         support = Adw.PreferencesGroup(
             title=_("Support"),

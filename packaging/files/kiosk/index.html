@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trota OS Kiosk</title>
+<style>
+  :root { --bg: #101214; --panel: #191D21; --line: #2A3036; --text: #E8ECEF; --muted: #9AA2AA; --accent: #FF6A2A; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font: 18px/1.5 Inter, "Noto Sans", "DejaVu Sans", sans-serif; }
+  main { min-height: 100%; display: grid; place-content: center; padding: 6vh 6vw; gap: 4vh; }
+  h1 { margin: 0; font-size: clamp(32px, 5vw, 64px); font-weight: 700; letter-spacing: -0.02em; }
+  h1 span { color: var(--accent); }
+  p { margin: 0; color: var(--muted); max-width: 46em; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 24px 28px; max-width: 46em; }
+  .panel h2 { margin: 0 0 8px; font-size: 18px; }
+  code { font-family: "Noto Sans Mono", "DejaVu Sans Mono", monospace; color: var(--text);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; }
+  ol { margin: 8px 0 0; padding-left: 1.3em; color: var(--muted); }
+  #clock { font-variant-numeric: tabular-nums; color: var(--text); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Trota <span>OS</span> Kiosk</h1>
+  <p>Questo schermo è pronto: manca solo la pagina da mostrare. · This screen is ready: it only needs the page to show.</p>
+  <div class="panel">
+    <h2>Configurazione · Setup</h2>
+    <ol>
+      <li>Imposta l'indirizzo in <code>/etc/trota-kiosk.conf</code> (<code>TROTA_KIOSK_URL=https://…</code>).</li>
+      <li>Applica con <code>sudo systemctl restart trota-kiosk</code>, oppure riavvia.</li>
+      <li>Su molti schermi insieme: scrivi il file al primo avvio con cloud-init (<code>write_files</code>).</li>
+    </ol>
+  </div>
+  <p id="clock"></p>
+</main>
+<script>
+  const c = document.getElementById("clock");
+  const tick = () => { c.textContent = new Date().toLocaleString(); };
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>

@@ -20,6 +20,9 @@ ISO_FILE="$DIST/$ISO_NAME"
 STAGES_ALL=(bootstrap packages trota customize iso checksum)
 
 cleanup() { [ -d "$CHROOT" ] && chroot_umount "$CHROOT" || true; }
+
+# Trota OS packages of the desktop image (the server ones go to build-image.sh).
+desktop_debs() { find "$PKG_DIR" -maxdepth 1 -name '*.deb' ! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*' | sort; }
 trap cleanup EXIT
 
 # ---------------------------------------------------------------------------
@@ -38,39 +41,6 @@ stage_bootstrap() {
     fi
 }
 
-write_apt_sources() {
-    local root="$1"
-    : > "$root/etc/apt/sources.list"
-    cat > "$root/etc/apt/sources.list.d/ubuntu.sources" <<EOF
-Types: deb
-URIs: $TROTA_MIRROR/
-Suites: $TROTA_BASE_SUITE $TROTA_BASE_SUITE-updates $TROTA_BASE_SUITE-backports
-Components: $TROTA_COMPONENTS
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-
-Types: deb
-URIs: $TROTA_SECURITY_MIRROR/
-Suites: $TROTA_BASE_SUITE-security
-Components: $TROTA_COMPONENTS
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-EOF
-}
-
-# Build-time-only configuration, removed again by stage_customize:
-#  * policy-rc.d: never start services inside the build chroot;
-#  * a pin that makes excluded packages uninstallable, so no Recommends can
-#    pull them in (users stay free to install them later).
-prepare_chroot() {
-    printf '#!/bin/sh\nexit 101\n' > "$CHROOT/usr/sbin/policy-rc.d"
-    chmod 755 "$CHROOT/usr/sbin/policy-rc.d"
-    {
-        echo "# Temporary pin used only while building the Trota OS image."
-        read_list "$TROTA_ROOT/packages/manifest/excluded.list" | awk '{print $1}' | while read -r p; do
-            printf 'Package: %s\nPin: release *\nPin-Priority: -1\n\n' "$p"
-        done
-    } > "$CHROOT/etc/apt/preferences.d/zz-trota-build-excluded.pref"
-}
-
 # ---------------------------------------------------------------------------
 stage_packages() {
     [ -d "$CHROOT/etc" ] || die "no chroot: run the bootstrap stage first"
@@ -80,11 +50,14 @@ stage_packages() {
     echo "trota" > "$CHROOT/etc/hostname"
     printf '127.0.0.1 localhost\n127.0.1.1 trota\n::1 localhost ip6-localhost ip6-loopback\n' > "$CHROOT/etc/hosts"
 
-    prepare_chroot
-    # Same dpkg filter as trota-desktop-settings, in place before linux-firmware
-    # is unpacked (data-centre firmware, ~170 MB, see the file for details).
-    install -D -m 644 "$TROTA_ROOT/packaging/files/settings/trota-firmware-exclude" \
-        "$CHROOT/etc/dpkg/dpkg.cfg.d/trota-firmware-exclude"
+    prepare_chroot "$CHROOT" "$TROTA_ROOT/packages/manifest/excluded.list"
+    # Same dpkg filters as trota-desktop-settings, in place before the first
+    # package is unpacked (data-centre firmware, Ubuntu wallpapers, login
+    # services: see the files for details).
+    local f
+    for f in trota-firmware-exclude trota-desktop-exclude; do
+        install -D -m 644 "$TROTA_ROOT/packaging/files/settings/$f" "$CHROOT/etc/dpkg/dpkg.cfg.d/$f"
+    done
     in_chroot "$CHROOT" apt-get update
     in_chroot "$CHROOT" apt-get -y full-upgrade
 
@@ -96,6 +69,9 @@ stage_packages() {
     # shellcheck disable=SC2046
     in_chroot "$CHROOT" apt-get -y install $(read_list "$m/desktop.list" "$m/applications.list" "$m/tools.list" "$m/live.list" | awk '{print $1}')
 
+    # Privacy: no Canonical "APT news" fetched in the background (docs/privacy.md).
+    # Here, before trota-release changes the system ID: pro acts only on Ubuntu.
+    in_chroot "$CHROOT" pro config set apt_news=false
 }
 
 # ---------------------------------------------------------------------------
@@ -103,10 +79,10 @@ stage_trota() {
     ls "$PKG_DIR"/*.deb >/dev/null 2>&1 || die "no Trota OS packages in $PKG_DIR: run scripts/build/build-packages.sh first"
     chroot_mount "$CHROOT"
     local m="$TROTA_ROOT/packages/manifest"
-    prepare_chroot
+    prepare_chroot "$CHROOT" "$TROTA_ROOT/packages/manifest/excluded.list"
     log "trota: Trota OS packages from $PKG_DIR"
     rm -rf "$CHROOT/tmp/trota-debs" && mkdir -p "$CHROOT/tmp/trota-debs"
-    cp "$PKG_DIR"/*.deb "$CHROOT/tmp/trota-debs/"
+    desktop_debs | xargs cp -t "$CHROOT/tmp/trota-debs/"
     in_chroot "$CHROOT" sh -c 'apt-get -y install --reinstall /tmp/trota-debs/*.deb'
     rm -rf "$CHROOT/tmp/trota-debs"
 
@@ -139,6 +115,29 @@ stage_trota() {
         [ -z "$(find "$CHROOT/usr/lib/firmware/$d" -type f 2>/dev/null | head -1)" ] \
             || die "firmware filter not applied: usr/lib/firmware/$d"
     done
+}
+
+# The image identifies itself as Trota OS (ID=trota) with the base codename;
+# the tools that used to rely on ID=ubuntu must keep working.
+check_identity() {
+    [ "$(in_chroot "$CHROOT" lsb_release -is)" = Trota ] || die "lsb_release does not report Trota"
+    [ "$(in_chroot "$CHROOT" lsb_release -cs)" = "$TROTA_BASE_SUITE" ] || die "lsb_release codename is not $TROTA_BASE_SUITE"
+    # Security updates must still be installed automatically from the base archive.
+    in_chroot "$CHROOT" python3 -c '
+import apt_pkg
+apt_pkg.init_config()
+allowed = apt_pkg.config.value_list("Unattended-Upgrade::Allowed-Origins")
+assert "Ubuntu:${distro_codename}-security" in allowed, allowed
+' || die "unattended-upgrades does not allow the security archive"
+    # "Software & Updates" (python-apt) must find the templates for Trota.
+    in_chroot "$CHROOT" python3 -c '
+from aptsources.distro import get_distro
+from aptsources.sourceslist import SourcesList
+d = get_distro()
+d.get_sources(SourcesList())
+assert d.id == "Trota" and d.source_template, d
+print("python-apt:", d.id, d.codename, d.source_template.description)
+' || die "python-apt cannot handle the Trota distribution"
 }
 
 # ---------------------------------------------------------------------------
@@ -186,13 +185,17 @@ applicable law.
 
 EOF
 
-    # Privacy: no Canonical "APT news" messages fetched in the background
-    # (docs/privacy.md). Security updates are not affected.
-    in_chroot "$CHROOT" pro config set apt_news=false
-    # Login banner without Canonical's Landscape/Ubuntu Pro links and ESM
-    # advertising. update-motd runs only executable scripts; dpkg keeps the
-    # mode until Ubuntu changes these files.
-    chmod -x "$CHROOT/etc/update-motd.d/10-help-text" "$CHROOT/etc/update-motd.d/91-contract-ua-esm-status"
+    # Login banner: the Trota OS one (05-trota-os) instead of Ubuntu's header,
+    # Landscape/Ubuntu Pro links and ESM advertising. update-motd runs only
+    # executable scripts; dpkg keeps the mode until Ubuntu changes these files.
+    chmod -x "$CHROOT/etc/update-motd.d/00-header" "$CHROOT/etc/update-motd.d/10-help-text" \
+        "$CHROOT/etc/update-motd.d/91-contract-ua-esm-status"
+
+    # /etc/lsb-release (base-files conffile, read by a few older programs) with
+    # the same identity as os-release; the codename stays the base one.
+    printf 'DISTRIB_ID=Trota\nDISTRIB_RELEASE=%s\nDISTRIB_CODENAME=%s\nDISTRIB_DESCRIPTION="%s %s"\n' \
+        "$TROTA_VERSION" "$TROTA_BASE_SUITE" "$TROTA_NAME" "$TROTA_VERSION" > "$CHROOT/etc/lsb-release"
+    check_identity
 
     log "customize: initramfs with casper and the Trota OS boot splash"
     in_chroot "$CHROOT" update-initramfs -u -k all
@@ -226,7 +229,7 @@ EOF
 make_cdrom_archive() {
     local dist="dists/$TROTA_BASE_SUITE" comp="main/binary-$TROTA_ARCH"
     mkdir -p "$ISO_DIR/pool/main/t/trota-os" "$ISO_DIR/$dist/$comp"
-    cp "$PKG_DIR"/*.deb "$ISO_DIR/pool/main/t/trota-os/"
+    desktop_debs | xargs cp -t "$ISO_DIR/pool/main/t/trota-os/"
     (cd "$ISO_DIR" && dpkg-scanpackages --arch "$TROTA_ARCH" pool/main /dev/null 2>/dev/null) \
         > "$ISO_DIR/$dist/$comp/Packages"
     gzip -9nkf "$ISO_DIR/$dist/$comp/Packages"
@@ -276,7 +279,8 @@ stage_iso() {
         -wildcards -e 'proc/*' 'sys/*' 'dev/*' 'run/*' 'tmp/*' 'var/tmp/*' 'var/cache/apt/archives/*.deb'
 
     # Medium identity, read by casper and ubiquity (RELEASE name in the UI).
-    printf '%s %s "%s" - Release %s (%s)\n' "$TROTA_NAME" "$TROTA_VERSION" "$TROTA_CODENAME" "$TROTA_ARCH" "$BUILD_DATE" > "$ISO_DIR/.disk/info"
+    # Ubiquity reads "<name> <version> ...", with "-" for the spaces of the name.
+    printf '%s %s "%s" - Release %s (%s)\n' "${TROTA_NAME// /-}" "$TROTA_VERSION" "$TROTA_CODENAME" "$TROTA_ARCH" "$BUILD_DATE" > "$ISO_DIR/.disk/info"
     echo "full_cd/single" > "$ISO_DIR/.disk/cd_type"
     # No .disk/base_installable: the medium cannot install a base system with
     # debootstrap; ubiquity copies the squashfs (see make_cdrom_archive).

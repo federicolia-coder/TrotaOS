@@ -93,3 +93,55 @@ def test_firmware_filter_is_installed_before_the_kernel():
     assert build.index("trota-firmware-exclude") < build.index('install $(read_list "$m/base.list"')
     patterns = [ln.split("=", 1)[1] for ln in conf.read_text().splitlines() if ln.startswith("path-exclude=")]
     assert patterns and all(p.startswith(("/lib/firmware/", "/usr/lib/firmware/")) and p.endswith("/*") for p in patterns)
+
+
+SERVER_LISTS = ["server.list", "server-excluded.list", "kiosk.list"]
+
+
+@pytest.mark.parametrize("name", SERVER_LISTS)
+def test_server_lists_valid(name):
+    pkgs = read_list(MANIFEST / name)
+    assert pkgs
+    for p in pkgs:
+        assert NAME.match(p), f"{name}: invalid package name {p!r}"
+
+
+def test_server_image_contents():
+    pkgs = set(read_list(MANIFEST / "server.list"))
+    excluded = set(read_list(MANIFEST / "server-excluded.list"))
+    assert not pkgs & excluded
+    assert {"openssh-server", "cloud-init", "cloud-guest-utils", "ufw", "unattended-upgrades", "apparmor",
+            "podman", "shim-signed", "grub-efi-amd64-signed", "grub-pc"} <= pkgs
+    assert {"snapd", "ubuntu-report", "whoopsie", "apport", "popularity-contest"} <= excluded
+    # no desktop on the headless editions
+    assert not pkgs & {"gdm3", "gnome-shell", "xorg", "firefox", "flatpak"}
+
+
+def test_image_build_editions():
+    script = (ROOT / "scripts/build/build-image.sh").read_text()
+    assert "server) KERNEL=linux-image-generic-hwe-24.04" in script
+    assert "cloud)  KERNEL=linux-image-virtual-hwe-24.04" in script
+    # BIOS and UEFI (Secure Boot shim, fallback path) on the same disk
+    assert "grub-install --target=i386-pc" in script
+    assert script.count("--uefi-secure-boot") == 2 and "--removable" in script
+    # the desktop sources (Mozilla, Flathub) reach only the kiosk (Firefox)
+    kiosk_branch = script.split('if [ "$EDITION" = kiosk ]; then', 1)[1].split("\n    fi\n", 1)[0]
+    assert script.count("trota-software-sources") == kiosk_branch.count("trota-software-sources") > 0
+
+
+def test_kiosk_package():
+    control = (ROOT / "packaging/debian/control").read_text()
+    kiosk = control.split("Package: trota-kiosk\n", 1)[1].split("\n\n", 1)[0]
+    assert "cage" in kiosk and "firefox" in kiosk and "trota-software-sources" in kiosk
+    rules = (ROOT / "packaging/debian/rules").read_text()
+    assert "--name=trota-kiosk --no-start" in rules and "--name=trota-kiosk-restart" in rules
+    unit = (ROOT / "packaging/debian/trota-kiosk.trota-kiosk.service").read_text()
+    assert "User=kiosk" in unit and "Restart=always" in unit and "TTYPath=/dev/tty1" in unit
+    session = (ROOT / "packaging/files/kiosk/trota-kiosk-session").read_text()
+    assert "cage" in session and "firefox --kiosk" in session
+    import json
+    policies = json.loads((ROOT / "packaging/files/kiosk/policies.json").read_text())["policies"]
+    assert policies["DisableTelemetry"] and policies["DisableAppUpdate"] and not policies["PasswordManagerEnabled"]
+    # kiosk and server packages never reach the desktop ISO
+    build = (ROOT / "scripts/build/build-iso.sh").read_text()
+    assert "! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*'" in build

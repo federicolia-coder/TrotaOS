@@ -4,9 +4,9 @@
 section "identity"
 check os_release grep -q '^NAME="Trota OS"' /etc/os-release
 check ubuntu_base_kept test -s /usr/lib/os-release.ubuntu
-check lsb_compat sh -c 'test "$(lsb_release -is)" = Ubuntu && lsb_release -ds | grep -q "Trota OS"'
-check aptsources_ubuntu python3 -c 'from aptsources.distro import get_distro; d = get_distro(); assert type(d).__name__ == "UbuntuDistribution", d; print(d.id, d.codename)'
-check medium_name grep -q '^Trota OS' /cdrom/.disk/info
+check lsb_identity sh -c 'test "$(lsb_release -is)" = Trota && test "$(lsb_release -cs)" = noble && lsb_release -ds'
+check aptsources_trota python3 -c 'from aptsources.distro import get_distro; from aptsources.sourceslist import SourcesList; d = get_distro(); d.get_sources(SourcesList()); assert d.id == "Trota" and d.source_template, d; print(d.id, d.codename, len(d.source_template.components), "components")'
+check medium_name grep -q '^Trota-OS [0-9]' /cdrom/.disk/info
 
 section "boot"
 if wait_for 900 sh -c 'systemctl is-system-running | grep -qE "running|degraded"'; then
@@ -34,6 +34,17 @@ check terminal_palette sh -c 'dconf read /org/gnome/terminal/legacy/profiles:/:b
 check gdm_logo sh -c 'XDG_CURRENT_DESKTOP=GNOME-Greeter:GNOME gsettings get org.gnome.login-screen logo | grep -q trota-logo-gdm'
 check welcome_autostart test -f /etc/xdg/autostart/trota-welcome.desktop
 check installer_present sh -c 'command -v ubiquity'
+
+section "identity and lightness"
+check no_ubuntu_motd sh -c '! run-parts --lsbsysinit --test /etc/update-motd.d | grep -qE "00-header|10-help-text" && /etc/update-motd.d/05-trota-os | grep -m1 Welcome'
+check uu_security_origin sh -c 'apt-config dump Unattended-Upgrade::Allowed-Origins | grep -q "Ubuntu:\${distro_codename}-security" && apt-config dump Unattended-Upgrade::Origins-Pattern | grep -q packages.mozilla.org && echo "base security archive and Mozilla allowed"'
+check gdm_session_name sh -c 'grep -h "^Name=" /usr/share/wayland-sessions/*.desktop /usr/share/xsessions/*.desktop | sort -u | tr "\n" " " | grep -v Ubuntu'
+check no_ubuntu_wallpapers sh -c '! ls /usr/share/gnome-background-properties | grep -qv trota && ls /usr/share/gnome-background-properties'
+check tracker_masked sh -c 'test "$(readlink /etc/systemd/user/tracker-miner-fs-3.service)" = /dev/null && echo masked'
+check no_software_autostart sh -c '! test -e /etc/xdg/autostart/org.gnome.Software.desktop && ! test -e /etc/xdg/autostart/ubuntu-advantage-notification.desktop && echo "not started at login"'
+check flatpak_update_timer systemctl is-enabled trota-flatpak-update.timer
+check no_sssd sh -c '! systemctl list-unit-files sssd.service --no-legend | grep -q . && echo "sssd not installed"'
+result memory_after_login PASS "$(free -m | awk '/^Mem:/{print $3 " MB used of " $2 " MB"}')"
 
 section "applications"
 check system_info sh -c 'trota-system-info --text | grep -E "^(Operating system|Kernel)"'

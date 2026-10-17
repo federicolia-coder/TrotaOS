@@ -103,3 +103,39 @@ read_list() {
 }
 
 timestamp() { date -u +%Y%m%dT%H%M%SZ; }
+
+# --- shared by the ISO and the disk image builds ----------------------------
+# APT sources of the base archive (deb822).
+write_apt_sources() {
+    local root="$1"
+    : > "$root/etc/apt/sources.list"
+    cat > "$root/etc/apt/sources.list.d/ubuntu.sources" <<SRC
+Types: deb
+URIs: $TROTA_MIRROR/
+Suites: $TROTA_BASE_SUITE $TROTA_BASE_SUITE-updates $TROTA_BASE_SUITE-backports
+Components: $TROTA_COMPONENTS
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: $TROTA_SECURITY_MIRROR/
+Suites: $TROTA_BASE_SUITE-security
+Components: $TROTA_COMPONENTS
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+SRC
+}
+
+# Build-time-only configuration, removed again before the image is sealed:
+#  * policy-rc.d: never start services inside the build chroot;
+#  * a pin that makes the excluded packages uninstallable, so that no
+#    Recommends can pull them in (users stay free to install them later).
+prepare_chroot() {
+    local root="$1" excluded="$2"
+    printf '#!/bin/sh\nexit 101\n' > "$root/usr/sbin/policy-rc.d"
+    chmod 755 "$root/usr/sbin/policy-rc.d"
+    {
+        echo "# Temporary pin used only while building the Trota OS image."
+        read_list "$excluded" | awk '{print $1}' | while read -r p; do
+            printf 'Package: %s\nPin: release *\nPin-Priority: -1\n\n' "$p"
+        done
+    } > "$root/etc/apt/preferences.d/zz-trota-build-excluded.pref"
+}

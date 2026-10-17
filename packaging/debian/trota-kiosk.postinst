@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+# Unprivileged user of the kiosk session: no password, no shell login.
+if [ "$1" = "configure" ] && ! getent passwd kiosk >/dev/null; then
+    adduser --system --group --home /var/lib/trota-kiosk --shell /usr/sbin/nologin \
+        --gecos "Trota OS Kiosk" kiosk >/dev/null
+    for g in video render input audio; do
+        getent group "$g" >/dev/null && adduser kiosk "$g" >/dev/null
+    done
+fi
+if [ "$1" = "configure" ] && [ -d /run/systemd/system ]; then
+    systemctl set-default graphical.target >/dev/null 2>&1 || true
+fi
+
+#DEBHELPER#
+exit 0

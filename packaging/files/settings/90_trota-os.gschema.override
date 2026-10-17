@@ -33,6 +33,7 @@ gtk-theme='Yaru-dark'
 icon-theme='Yaru-dark'
 font-name='Inter 11'
 document-font-name='Inter 11'
+monospace-font-name='Noto Sans Mono 11'
 clock-show-weekday=true
 show-battery-percentage=true
 
@@ -42,6 +43,7 @@ gtk-theme='Yaru-dark'
 icon-theme='Yaru-dark'
 font-name='Inter 11'
 document-font-name='Inter 11'
+monospace-font-name='Noto Sans Mono 11'
 clock-show-weekday=true
 show-battery-percentage=true
 

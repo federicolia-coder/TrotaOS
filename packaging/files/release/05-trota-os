@@ -1,6 +1,7 @@
 #!/bin/sh
-# Trota OS line of the message of the day (package trota-release).
+# Trota OS message of the day (package trota-release). Ubuntu's 00-header and
+# 10-help-text are disabled in the image.
 [ -r /usr/lib/os-release ] && . /usr/lib/os-release
-printf '\n  %s "%s" — based on Ubuntu %s, by TestardStudios\n' \
-    "${PRETTY_NAME:-Trota OS}" "${TROTA_CODENAME:-}" "${TROTA_BASE_VERSION:-}"
-printf '  Help: trota-diagnostics --text · Docs: /usr/share/doc/trota-docs/html/index.html\n'
+printf '\nWelcome to %s "%s" (%s %s %s)\n' \
+    "${PRETTY_NAME:-Trota OS}" "${TROTA_CODENAME:-}" "$(uname -o)" "$(uname -r)" "$(uname -m)"
+printf '\n  Help: trota-diagnostics --text · Docs: /usr/share/doc/trota-docs/html/index.html\n'

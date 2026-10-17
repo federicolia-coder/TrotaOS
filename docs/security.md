@@ -8,7 +8,7 @@ propri che possano indebolirli.
 
 | Area | Stato in Trota OS | Come è verificato |
 |---|---|---|
-| Aggiornamenti di sicurezza | Archivio `noble-security` attivo; `unattended-upgrades` installa automaticamente gli aggiornamenti di sicurezza (come Ubuntu) | Test VM `unattended_upgrades`, Trota Diagnostics |
+| Aggiornamenti di sicurezza | Archivio `noble-security` attivo; `unattended-upgrades` installa automaticamente gli aggiornamenti di sicurezza della base e di Firefox (origini esplicite in `51trota-unattended-upgrades`, necessarie perché il sistema si identifica come Trota OS); le app Flatpak si aggiornano una volta al giorno | Build (`check_identity`), test VM `uu_security_origin`, `unattended_upgrades`, Trota Diagnostics |
 | AppArmor | Attivo con i profili di Ubuntu; nessun profilo disattivato | Test VM `apparmor` |
 | Secure Boot | Supportato con shim e GRUB firmati da Canonical; non viene disattivato | Test VM in modalità `secureboot` |
 | Privilegi | Il primo utente è amministratore tramite `sudo` (gruppo `sudo`), come in Ubuntu; le applicazioni Trota non richiedono mai privilegi | Test automatici (`test_checks_never_run_privileged_or_destructive_commands`, `test_never_runs_privileged_commands`) |

@@ -1,0 +1,79 @@
+# Checks run as user "trota" on the serial console of a Trota OS disk image
+# (server or cloud edition) at first boot. @PASSWORD@, @FIRMWARE@, @EDITION@ and
+# @DISK_GB@ are substituted by vmtest.py; helpers are prepended by vmtest.py.
+PW='@PASSWORD@'
+FIRMWARE='@FIRMWARE@'
+EDITION='@EDITION@'
+DISK_GB='@DISK_GB@'
+as_root() { printf '%s\n' "$PW" | sudo -S -p '' "$@"; }
+
+section "identity"
+check os_release sh -c 'grep -q "^ID=trota" /etc/os-release && grep -q "^NAME=\"Trota OS\"" /etc/os-release && grep PRETTY_NAME /etc/os-release'
+check lsb_identity sh -c 'test "$(lsb_release -is)" = Trota && test "$(lsb_release -cs)" = noble && lsb_release -ds'
+check no_ubuntu_motd sh -c '! run-parts --lsbsysinit --test /etc/update-motd.d | grep -qE "00-header|10-help-text" && echo ok'
+check kernel sh -c 'uname -r'
+result kernel_flavour PASS "$(dpkg-query -W -f='${Package} ' 'linux-image-*-hwe-24.04' 2>/dev/null)"
+
+section "first boot"
+if as_root timeout 900 cloud-init status --wait >/dev/null 2>&1 || as_root cloud-init status | grep -q "status: done"; then
+    result cloud_init PASS "$(as_root cloud-init status --long 2>&1 | grep -E 'status|detail' | tr '\n' ' ' | cut -c1-160)"
+else
+    result cloud_init FAIL "$(as_root cloud-init status --long 2>&1 | tr '\n' ' ' | cut -c1-200)"
+fi
+result datasource PASS "$(as_root cloud-init query platform 2>/dev/null || echo unknown)"
+check root_grown sh -c 'size=$(df -B1 --output=size / | tail -1); test "$size" -gt $(( ($0 - 2) * 1024 * 1024 * 1024 )) && echo "/ is $((size / 1024 / 1024 / 1024)) GiB on a $0 GB disk"' "$DISK_GB"
+check ssh_host_keys sh -c 'ls /etc/ssh/ssh_host_*_key.pub | wc -l | grep -qv "^0$" && ls /etc/ssh/ssh_host_*_key.pub | tr "\n" " "'
+check machine_id_unique sh -c 'test -s /etc/machine-id && cat /etc/machine-id'
+check network sh -c 'ip -4 -o addr show scope global | awk "{print \$2, \$4}" | grep .'
+if wait_for 900 sh -c 'systemctl is-system-running | grep -qE "running|degraded"'; then
+    state="$(systemctl is-system-running)"
+    failed="$(systemctl --failed --no-legend --plain | awk '{print $1}' | tr '\n' ' ')"
+    [ "$state" = running ] && result systemd PASS running || result systemd FAIL "$state: $failed"
+else
+    result systemd FAIL "boot did not complete"
+fi
+result boot_time PASS "$(systemd-analyze 2>/dev/null | head -1)"
+
+section "boot loader"
+if [ "$FIRMWARE" = bios ]; then
+    result efi_boot SKIP "BIOS"
+else
+    check efi_boot test -d /sys/firmware/efi
+    check esp_fallback sh -c 'printf "%s\n" "$0" | sudo -S -p "" ls /boot/efi/EFI/BOOT/ | tr "\n" " " | grep -q -i bootx64 && echo "EFI/BOOT/BOOTX64.EFI present"' "$PW"
+fi
+[ "$FIRMWARE" = secureboot ] && check secure_boot sh -c 'mokutil --sb-state 2>&1 | grep -q "SecureBoot enabled" && mokutil --sb-state'
+check grub_trota_entry sh -c 'printf "%s\n" "$0" | sudo -S -p "" grep -m1 "^menuentry" /boot/grub/grub.cfg | grep -q "Trota OS" && echo "Trota OS entry"' "$PW"
+
+section "security"
+check ssh_running systemctl is-active ssh.service
+check ssh_keys_only sh -c 'printf "%s\n" "$0" | sudo -S -p "" sshd -T 2>/dev/null | grep -E "^(passwordauthentication|permitrootlogin) " | tr "\n" " " | grep -q "passwordauthentication no" && printf "%s\n" "$0" | sudo -S -p "" sshd -T | grep -E "^(passwordauthentication|permitrootlogin) " | tr "\n" " "' "$PW"
+check firewall sh -c 'printf "%s\n" "$0" | sudo -S -p "" ufw status | grep -q "Status: active" && printf "%s\n" "$0" | sudo -S -p "" ufw status | grep -E "OpenSSH|22" | head -1' "$PW"
+check sysctl_hardening sh -c 'test "$(sysctl -n kernel.kptr_restrict)" = 2 && test "$(sysctl -n kernel.dmesg_restrict)" = 1 && test "$(sysctl -n net.ipv4.conf.all.accept_redirects)" = 0 && echo "kptr_restrict=2 dmesg_restrict=1 accept_redirects=0"'
+check apparmor sh -c 'printf "%s\n" "$0" | sudo -S -p "" aa-status --enabled && echo enabled' "$PW"
+check uu_security_origin sh -c 'apt-config dump Unattended-Upgrade::Allowed-Origins | grep -q "Ubuntu:\${distro_codename}-security" && systemctl is-enabled unattended-upgrades'
+check no_snapd sh -c '! command -v snap && echo "no snapd"'
+check no_mozilla_source sh -c '! test -e /etc/apt/sources.list.d/mozilla.sources && echo "base archive only"'
+check no_pro_apt_hook sh -c 'systemctl is-enabled esm-cache.service apt-news.service 2>&1 | tr "\n" " " | grep -q "^masked masked" && echo masked'
+bad="$(dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' ubuntu-report whoopsie popularity-contest apport snapd landscape-common 2>/dev/null | awk '/^ii/{print $2}')"
+[ -z "$bad" ] && result no_telemetry PASS "none installed" || result no_telemetry FAIL "$bad"
+listen="$(ss -Htln 2>/dev/null | awk '{print $4}' | grep -vE '^(127\.|\[::1\]|::1)' | grep -vE ':22$' | tr '\n' ' ')"
+[ -z "$listen" ] && result open_tcp_ports PASS "only SSH (22) on external addresses" || result open_tcp_ports FAIL "$listen"
+check journald_limit sh -c 'systemd-analyze cat-config systemd/journald.conf 2>/dev/null | grep -q "^SystemMaxUse=500M" && echo "SystemMaxUse=500M"'
+
+section "containers"
+check podman_rootless sh -c 'podman info --format "{{.Host.Security.Rootless}} {{.Version.Version}}" 2>&1 | grep -q "^true" && podman info --format "rootless {{.Version.Version}}, {{.Host.NetworkBackend}}"'
+check podman_run sh -c 'timeout 900 podman run --rm docker.io/library/busybox:latest echo container-ok 2>&1 | tail -1 | grep -q container-ok && echo "busybox ran rootless"'
+
+section "updates"
+if as_root timeout 900 apt-get update >/tmp/apt-update.log 2>&1; then
+    result apt_update PASS "$(grep -c '^\(Hit\|Get\)' /tmp/apt-update.log) indexes"
+    check unattended_upgrade_dry_run sh -c 'printf "%s\n" "$0" | sudo -S -p "" timeout 900 unattended-upgrade --dry-run --debug 2>&1 | grep -m1 -i "allowed origins"' "$PW"
+else
+    result apt_update FAIL "$(tail -2 /tmp/apt-update.log | tr '\n' ' ')"
+fi
+
+section "resources"
+result memory PASS "$(free -m | awk '/^Mem:/{print $3 " MB used of " $2 " MB"}')"
+result disk_used PASS "$(df -h / | awk 'NR==2{print $3 " used on /"}')"
+result packages PASS "$(dpkg-query -W -f='.' | wc -c) packages"
+echo CHECKS-DONE

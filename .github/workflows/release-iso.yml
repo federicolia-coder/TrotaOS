@@ -1,5 +1,6 @@
-# Build the Trota OS ISO on a GitHub-hosted runner and publish it as a
-# GitHub release. Started by hand: Actions → "Build and release ISO" → Run workflow.
+# Build Trota OS on GitHub-hosted runners and publish it as a GitHub release:
+# the desktop ISO, then the Server/Edge, Cloud and Kiosk disk images
+# (docs/editions.md). Started by hand: Actions → "Build and release ISO" → Run workflow.
 #
 # GitHub limits release assets to 2 GiB per file: the ISO is attached as a
 # single file when it fits, otherwise in parts (see docs/release-notes.md).
@@ -20,6 +21,10 @@ on:
         description: "Delete an existing release with this tag (and the tag) first"
         type: boolean
         default: false
+      images:
+        description: "Also build the Server, Cloud and Kiosk disk images"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -107,13 +112,14 @@ jobs:
               echo "**Anteprima.** Build automatica su GitHub Actions; l'immagine ha superato \`verify-iso.sh\`. I test in macchina virtuale e su hardware reale sono descritti in [docs/testing.md]($url/docs/testing.md)."
               echo
             fi
-            echo "Trota OS 1.0 \"Fario\" di TestardStudios, basato su Ubuntu 24.04 LTS (GNOME 46, kernel HWE)."
+            echo "Trota OS 1.0 \"Fario\" di TestardStudios: sistema operativo leggero, GNOME su Wayland."
             echo
-            echo "- Nessuno snap: Firefox \`.deb\` ufficiale di Mozilla, GNOME Software con Flatpak e Flathub."
-            echo "- Niente pubblicità di Ubuntu Pro, nessuna telemetria, nessun servizio di rete in ascolto."
-            echo "- Secure Boot con shim e GRUB firmati."
+            echo "- Nessuno snap e niente in background: Firefox \`.deb\` aggiornato da Mozilla, applicazioni da Flathub."
+            echo "- Nessuna telemetria, nessun servizio di rete in ascolto, aggiornamenti di sicurezza automatici."
+            echo "- Avvio BIOS e UEFI con Secure Boot."
+            echo "- Compatibile con i pacchetti \`.deb\` e i PPA per Ubuntu 24.04 LTS."
             echo
-            echo "### Download ($size)"
+            echo "### Desktop: ISO live con installer ($size)"
             if [ "$single" = true ]; then
               echo "Scarica \`$name\` e verificalo:"
               echo '```sh'
@@ -131,6 +137,13 @@ jobs:
             fi
             echo
             echo "SHA-256 della ISO: \`$sha\`"
+            echo
+            if [ "${{ inputs.images }}" = true ]; then
+              echo
+              echo "### Server / Edge, Cloud, Kiosk: immagini disco pronte"
+              echo "\`trota-os-<edizione>-1.0-amd64.img.xz\` da scrivere su un disco, \`.qcow2\` per macchine virtuali e cloud; configurazione al primo avvio con cloud-init. Guida: [docs/editions.md]($url/docs/editions.md)."
+              echo "Le immagini vengono aggiunte a questo release qualche minuto dopo la ISO; checksum nei file \`.sha256\`."
+            fi
             echo
             echo "Note di rilascio e problemi noti: [docs/release-notes.md]($url/docs/release-notes.md) · Installazione: [docs/installation.md]($url/docs/installation.md)"
           } > release-body.md
@@ -157,5 +170,52 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-logs
+          path: logs/
+          if-no-files-found: ignore
+
+  images:
+    needs: iso
+    if: ${{ inputs.images }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [server, cloud, kiosk]
+    env:
+      TROTA_MIRROR: http://archive.ubuntu.com/ubuntu
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends debootstrap rsync dosfstools fdisk qemu-utils xz-utils \
+              dpkg-dev python3 python3-pytest gettext
+
+      - name: Build packages
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh
+
+      - name: Build the ${{ matrix.edition }} image
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-image.sh ${{ matrix.edition }} || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-image.sh ${{ matrix.edition }}
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          EDITION: ${{ matrix.edition }}
+        run: |
+          name="trota-os-$EDITION-1.0-amd64"
+          ls -l dist/
+          for f in "dist/$name.qcow2" "dist/$name.img.xz"; do
+            [ "$(stat -c %s "$f")" -lt 2147483648 ] || { echo "::error::$f is over the 2 GiB limit of GitHub"; exit 1; }
+          done
+          gh release upload "$TAG" "dist/$name.qcow2" "dist/$name.img.xz" "dist/$name.sha256" "dist/$name.manifest" --clobber
+
+      - name: Build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.edition }}
           path: logs/
           if-no-files-found: ignore

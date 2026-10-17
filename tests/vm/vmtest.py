@@ -294,6 +294,41 @@ def serial_login(serial: Serial, user: str, password: str, timeout: float):
     time.sleep(2)
 
 
+def serial_login_expired(serial: Serial, user: str, old: str, new: str, timeout: float):
+    """First console login of a user whose password must be changed (passwd -e)."""
+    serial.send("\r")
+    serial.expect(r"login: ", timeout)
+    serial.send(user + "\r")
+    serial.expect(r"[Pp]assword: ", 120)
+    serial.send(old + "\r")
+    serial.expect(r"[Cc]urrent password: ", 180)
+    serial.send(old + "\r")
+    serial.expect(r"[Nn]ew password: ", 60)
+    serial.send(new + "\r")
+    serial.expect(r"[Rr]etype new password: ", 60)
+    serial.send(new + "\r")
+    serial.expect(r"\$ (\x1b\[\?2004h)?$", 180)
+    serial.send("export TERM=dumb PAGER=cat SYSTEMD_PAGER=cat; stty -echo cols 200\r")
+    time.sleep(2)
+
+
+def nocloud_seed(dest: Path, user: str, password: str) -> Path:
+    """cloud-init NoCloud data source (an ISO labelled CIDATA)."""
+    src = dest.with_suffix(".d")
+    src.mkdir(parents=True, exist_ok=True)
+    (src / "meta-data").write_text("instance-id: trota-vmtest\nlocal-hostname: trota-vmtest\n")
+    (src / "user-data").write_text(f"""#cloud-config
+chpasswd:
+  expire: false
+  users:
+    - {{name: {user}, password: {password}, type: text}}
+ssh_pwauth: false
+""")
+    subprocess.run(["xorriso", "-as", "mkisofs", "-quiet", "-V", "CIDATA", "-J", "-r", "-o", str(dest), str(src)],
+                   check=True)
+    return dest
+
+
 def run_checks(vm: "VM", script: Path, out: Path, timeout: float = 1800, subst: dict | None = None,
                password: str = "") -> dict:
     body = (HERE / "checks-common.sh").read_text() + "\n" + script.read_text()
@@ -467,6 +502,37 @@ echo INSPECT-DONE
     return 0
 
 
+def scenario_image(args, out: Path) -> int:
+    """Disk image (server/cloud edition): first boot on a larger disk, with a
+    cloud-init NoCloud seed (cloud) or without any data source (server)."""
+    image = args.image.resolve()
+    edition = "cloud" if "-cloud-" in image.name else "server"
+    disk = out / "disk.qcow2"
+    subprocess.run(["qemu-img", "create", "-q", "-f", "qcow2", "-b", str(image), "-F", "qcow2", str(disk),
+                    f"{args.disk_gb}G"], check=True)
+    extra = ["-drive", f"file={disk},if=virtio,format=qcow2,cache=unsafe"]
+    password = "Trota-vm-1"
+    if edition == "cloud":
+        extra += ["-drive", f"file={nocloud_seed(out / 'seed.iso', 'trota', password)},if=virtio,format=raw,readonly=on"]
+    vm = VM(out, args.firmware, memory=args.memory)
+    vm.start(extra, out / "OVMF_VARS.fd")
+    t0 = time.time()
+    try:
+        if edition == "cloud":
+            serial_login(vm.serial, "trota", password, timeout=args.minutes * 60)
+        else:
+            serial_login_expired(vm.serial, "trota", "trota", password, timeout=args.minutes * 60)
+        log(f"logged in after {time.time() - t0:.0f} s")
+        results = run_checks(vm, HERE / "checks-image.sh", out, timeout=2400,
+                             subst={"@PASSWORD@": password, "@FIRMWARE@": args.firmware, "@EDITION@": edition,
+                                    "@DISK_GB@": str(args.disk_gb)},
+                             password=password)
+        results["login_time"] = {"status": "PASS", "note": f"{time.time() - t0:.0f} s from power on to shell (emulated)"}
+    finally:
+        vm.stop()
+    return report(results, out)
+
+
 def report(results: dict, out: Path) -> int:
     width = max((len(k) for k in results), default=10)
     lines = [f"{k:<{width}}  {v['status']:<4}  {v['note']}" for k, v in results.items()]
@@ -479,9 +545,10 @@ def report(results: dict, out: Path) -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("scenario", choices=["boot-iso", "live", "install", "installed", "inspect"])
+    ap.add_argument("scenario", choices=["boot-iso", "live", "install", "installed", "inspect", "image"])
     ap.add_argument("--iso", type=Path, default=ROOT / "dist" / "trota-os-1.0-amd64.iso")
     ap.add_argument("--firmware", choices=["bios", "uefi", "secureboot"], default="uefi")
+    ap.add_argument("--image", type=Path, help="disk image (qcow2) for the 'image' scenario")
     ap.add_argument("--memory", type=int, default=4096)
     ap.add_argument("--disk-gb", type=int, default=25)
     ap.add_argument("--minutes", type=float, default=None,
@@ -491,16 +558,20 @@ def main() -> int:
     ap.add_argument("--out", type=Path)
     args = ap.parse_args()
     if args.minutes is None:
-        args.minutes = {"boot-iso": 15, "live": 60, "install": 180, "installed": 90, "inspect": 30}[args.scenario]
+        args.minutes = {"boot-iso": 15, "live": 60, "install": 180, "installed": 90, "inspect": 30, "image": 30}[args.scenario]
     if not shutil.which("qemu-system-x86_64"):
         print("qemu-system-x86_64 is required", file=sys.stderr)
         return 2
-    out = args.out or ROOT / "build" / "vm" / f"{args.scenario}-{args.firmware}"
+    if args.scenario == "image" and not args.image:
+        print("--image is required for the 'image' scenario", file=sys.stderr)
+        return 2
+    name = args.scenario if args.scenario != "image" else "image-" + ("cloud" if "-cloud-" in args.image.name else "server")
+    out = args.out or ROOT / "build" / "vm" / f"{name}-{args.firmware}"
     if out.exists() and args.scenario != "installed":
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
     return {"boot-iso": scenario_boot_iso, "live": scenario_live, "install": scenario_install,
-            "installed": scenario_installed, "inspect": scenario_inspect}[args.scenario](args, out)
+            "installed": scenario_installed, "inspect": scenario_inspect, "image": scenario_image}[args.scenario](args, out)
 
 
 if __name__ == "__main__":

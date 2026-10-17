@@ -63,7 +63,7 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 xorriso -osirrox on -indev "$ISO" -extract /.disk/info "$tmp/info" -extract /casper/filesystem.manifest "$tmp/manifest" \
     -extract /casper/filesystem.size "$tmp/size" -extract /EFI/boot/bootx64.efi "$tmp/bootx64.efi" >/dev/null 2>&1
-grep -q '^Trota OS' "$tmp/info" 2>/dev/null && pass "medium name: $(cat "$tmp/info")" || bad ".disk/info is not Trota OS"
+grep -q '^Trota-OS [0-9]' "$tmp/info" 2>/dev/null && pass "medium name: $(cat "$tmp/info")" || bad ".disk/info is not 'Trota-OS <version>' (ubiquity format)"
 for p in trota-desktop trota-release trota-welcome trota-system-info casper ubiquity linux-generic-hwe-24.04; do
     grep -q "^${p}[[:space:]]" "$tmp/manifest" 2>/dev/null && pass "manifest lists $p" || bad "manifest lacks $p"
 done

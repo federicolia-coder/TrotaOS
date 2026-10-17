@@ -59,7 +59,7 @@ class PackageInfo:
         return {
             "main": _("Supported by Canonical with security updates."),
             "restricted": _("Proprietary driver supported by Canonical."),
-            "universe": _("Maintained by the Ubuntu community."),
+            "universe": _("Maintained by the community."),
             "multiverse": _("Not free software; may have legal restrictions."),
         }.get(self.component, "")
 

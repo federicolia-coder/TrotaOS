@@ -6,5 +6,13 @@ if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
     if command -v dconf >/dev/null 2>&1; then dconf update || true; fi
 fi
 
+if [ "$1" = "remove" ] || [ "$1" = "purge" ] || [ "$1" = "abort-install" ] || [ "$1" = "disappear" ]; then
+    for f in wayland-sessions/ubuntu.desktop wayland-sessions/ubuntu-wayland.desktop \
+             xsessions/ubuntu.desktop xsessions/ubuntu-xorg.desktop; do
+        dpkg-divert --package trota-desktop-settings --remove --rename \
+            --divert "/usr/share/$f.ubuntu" "/usr/share/$f"
+    done
+fi
+
 #DEBHELPER#
 exit 0

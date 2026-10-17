@@ -27,8 +27,8 @@ Sono quelle standard di Ubuntu, necessarie al funzionamento:
 | Servizio | Destinazione | Scopo | Come disattivarlo |
 |---|---|---|---|
 | APT, aggiornamenti automatici | archive.ubuntu.com, security.ubuntu.com | Elenchi dei pacchetti e aggiornamenti di sicurezza | *Software e aggiornamenti → Aggiornamenti* |
-| APT (Firefox) | packages.mozilla.org | Aggiornamenti di Firefox, insieme agli altri pacchetti | Rimuovere `/etc/apt/sources.list.d/mozilla.sources` (Firefox non sarà più aggiornato) |
-| GNOME Software, Flatpak | dl.flathub.org | Catalogo e aggiornamenti delle applicazioni Flatpak, solo se si apre Software o si installano app | *Software → Preferenze* (aggiornamenti automatici) |
+| APT (Firefox) | packages.mozilla.org | Aggiornamenti di Firefox, installati automaticamente come quelli di sicurezza | Rimuovere `/etc/apt/sources.list.d/mozilla.sources` (Firefox non sarà più aggiornato) |
+| GNOME Software, Flatpak (`trota-flatpak-update.timer`) | dl.flathub.org | Catalogo quando si apre Software; aggiornamento delle applicazioni Flatpak una volta al giorno | `sudo systemctl disable --now trota-flatpak-update.timer` |
 | NetworkManager | connectivity-check.ubuntu.com | Rilevamento di captive portal | *Impostazioni → Privacy → Connettività* |
 | Sincronizzazione ora | ntp.ubuntu.com | Orologio di sistema | *Impostazioni → Sistema → Data e ora* |
 | fwupd (`fwupd-refresh.timer`) | cdn.fwupd.org | Metadati degli aggiornamenti firmware (LVFS); i firmware si installano solo su richiesta | `sudo systemctl disable --now fwupd-refresh.timer` |

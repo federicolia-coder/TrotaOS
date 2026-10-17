@@ -24,12 +24,12 @@ from . import APP_ID  # noqa: E402
 
 TIPS = (
     (_("Graphical applications"),
-     _("Software installs applications from the Ubuntu archive and from Flathub (Steam, VS Code, Spotify, "
+     _("Software installs applications from the package archive and from Flathub (Steam, VS Code, Spotify, "
        "Discord…) as Flatpak packages, isolated from the system and updated automatically.")),
     (_("Command line tools and libraries"),
-     _("Install them from the Ubuntu archive with APT, for example: sudo apt install htop")),
+     _("Install them from the package archive with APT, for example: sudo apt install htop")),
     (_("Software from other websites"),
-     _("Prefer the Ubuntu archive or Flathub. Add third-party repositories (PPA) only from sources you trust: "
+     _("Prefer the package archive or Flathub. Add third-party repositories (PPA) only from sources you trust: "
        "they get full access to your system.")),
 )
 
@@ -218,7 +218,7 @@ class PackageHelperWindow(Adw.ApplicationWindow):
 
 class PackageHelperApp(ui.TrotaApplication):
     app_name = _("Trota Package Helper")
-    app_comments = _("Search the Ubuntu package catalogue")
+    app_comments = _("Search the package catalogue")
 
     def __init__(self):
         super().__init__(APP_ID)
