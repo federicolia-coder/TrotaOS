@@ -96,10 +96,21 @@ dell'host sono inoltrate al chroot.
 
 ## Build in CI
 
-Le risorse gratuite di CI (GitHub Actions: 14 GB di disco, limiti sugli
-artefatti) non bastano in modo affidabile per costruire e conservare una ISO
-da ~2,4 GB. La CI può eseguire i test e la compilazione dei pacchetti; la ISO
-si costruisce in locale con la procedura sopra.
+Il workflow `.github/workflows/release-iso.yml` costruisce la ISO su un
+runner GitHub (`ubuntu-24.04`) e la pubblica come release. Si avvia a mano:
+*Actions → Build and release ISO → Run workflow*, scegliendo il branch, il tag
+(es. `v1.0.0`) e se segnarla come pre-release.
+
+Passi: test automatici, `build-packages.sh`, `build-iso.sh` (che termina con
+`verify-iso.sh`), divisione della ISO in parti da 1900 MiB (GitHub accetta
+allegati fino a 2 GiB), checksum, creazione del release con la descrizione
+generata. Il workflow libera prima ~25 GB di disco sul runner (toolchain non
+usate) e usa il mirror Ubuntu di Azure. Se il tag esiste già si ferma senza
+toccare nulla; i log della build sono sempre allegati all'esecuzione come
+artefatto `build-logs`.
+
+I test in macchina virtuale (`tests/vm/`) non girano in CI: i runner non hanno
+KVM e in emulazione richiedono ore (vedi [testing.md](testing.md)).
 
 ## Problemi di build comuni
 

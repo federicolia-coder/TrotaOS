@@ -37,7 +37,7 @@ Build di rilascio (senza snap): SHA-256
 | File | Descrizione |
 |---|---|
 | `trota-os-1.0-amd64.iso` | Immagine ISO (circa 2,4 GB) |
-| `trota-os-1.0-amd64.iso.part1` … `.part6` | La ISO divisa in sei parti da 380 MiB per il download |
+| `trota-os-1.0-amd64.iso.part1`, `.part2`… | La ISO divisa in parti (GitHub accetta allegati fino a 2 GiB) |
 | `SHA256SUMS-parts` | Checksum delle singole parti |
 | `trota-os-1.0-amd64.iso.sha256` | Checksum SHA-256 della ISO intera |
 | `trota-os-1.0-amd64.manifest` | Elenco di pacchetti e versioni |
@@ -45,15 +45,17 @@ Build di rilascio (senza snap): SHA-256
 Ricomporre e verificare la ISO scaricata dalla release:
 
 ```sh
-cat trota-os-1.0-amd64.iso.part[1-6] > trota-os-1.0-amd64.iso
+cat trota-os-1.0-amd64.iso.part* > trota-os-1.0-amd64.iso
 sha256sum -c trota-os-1.0-amd64.iso.sha256
 ```
 
-Su Windows: `copy /b trota-os-1.0-amd64.iso.part1 + trota-os-1.0-amd64.iso.part2 + trota-os-1.0-amd64.iso.part3 + trota-os-1.0-amd64.iso.part4 + trota-os-1.0-amd64.iso.part5 + trota-os-1.0-amd64.iso.part6 trota-os-1.0-amd64.iso`
+Su Windows: `copy /b trota-os-1.0-amd64.iso.part1 + trota-os-1.0-amd64.iso.part2 trota-os-1.0-amd64.iso`
+(elencando tutte le parti presenti, in ordine)
 e poi `certutil -hashfile trota-os-1.0-amd64.iso SHA256`.
 
 Le ISO non sono conservate nel repository Git: si generano con
-[building.md](building.md). La release 1.0 va pubblicata su GitHub come
+[building.md](building.md) oppure con il workflow *Build and release ISO* di
+GitHub Actions, che le pubblica come release. La release 1.0 va pubblicata come
 **anteprima** (pre-release) finché la build senza snap non ha completato i
 test in VM descritti in [testing.md](testing.md).
 

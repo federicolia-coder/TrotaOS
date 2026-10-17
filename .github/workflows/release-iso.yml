@@ -1,0 +1,130 @@
+# Build the Trota OS ISO on a GitHub-hosted runner and publish it as a
+# GitHub release. Started by hand: Actions → "Build and release ISO" → Run workflow.
+#
+# GitHub limits release assets to 2 GiB per file, so the ISO is attached in
+# parts (see docs/release-notes.md for how to join them).
+name: Build and release ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (created on the selected branch)"
+        required: true
+        default: "v1.0.0"
+      prerelease:
+        description: "Mark the release as a pre-release"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-iso
+  cancel-in-progress: false
+
+jobs:
+  iso:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      TROTA_MIRROR: http://azure.archive.ubuntu.com/ubuntu
+      ISO: dist/trota-os-1.0-amd64.iso
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refuse an existing tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1 || git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
+            echo "::error::release or tag $TAG already exists"; exit 1
+          fi
+
+      # The build needs ~25 GB; the runner image ships ~20 GB free.
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+              /opt/hostedtoolcache /usr/local/share/boost /usr/share/swift /usr/local/julia* \
+              /opt/microsoft /usr/local/share/powershell /usr/local/share/chromium
+          sudo docker image prune --all --force >/dev/null || true
+          df -h /
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends debootstrap squashfs-tools xorriso mtools \
+              dosfstools rsync grub-pc-bin grub-efi-amd64-bin dpkg-dev python3 python3-pytest gettext
+
+      - name: Unit tests
+        run: python3 -m pytest -q -p no:cacheprovider tests --deselect tests/test_ui_smoke.py
+
+      - name: Build packages
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh
+
+      - name: Build ISO
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-iso.sh
+
+      - name: Prepare release files
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" dist
+          mkdir -p release
+          split -b 1900M -d -a 1 --numeric-suffixes=1 "$ISO" "release/$(basename "$ISO").part"
+          cp "$ISO.sha256" dist/trota-os-1.0-amd64.manifest release/
+          (cd release && sha256sum *.part* > SHA256SUMS-parts && cat ./*.part* | sha256sum -c <(sed 's/  .*/  -/' "$(basename "$ISO").sha256"))
+          ls -l release
+          sha="$(cut -d' ' -f1 "$ISO.sha256")"
+          size="$(du -h --apparent-size "$ISO" | cut -f1)"
+          parts="$(cd release && ls *.part* | paste -sd' ')"
+          winparts="$(cd release && ls *.part* | paste -sd+ | sed 's/+/ + /g')"
+          {
+            if [ "${{ inputs.prerelease }}" = true ]; then
+              echo "**Anteprima.** Build automatica su GitHub Actions; l'immagine ha superato \`verify-iso.sh\`. I test in macchina virtuale e su hardware reale sono descritti in [docs/testing.md](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/docs/testing.md)."
+              echo
+            fi
+            echo "Trota OS 1.0 \"Fario\" di TestardStudios, basato su Ubuntu 24.04 LTS (GNOME 46, kernel HWE)."
+            echo
+            echo "- Nessuno snap: Firefox \`.deb\` ufficiale di Mozilla, GNOME Software con Flatpak e Flathub."
+            echo "- Niente pubblicità di Ubuntu Pro, nessuna telemetria, nessun servizio di rete in ascolto."
+            echo "- Secure Boot con shim e GRUB firmati."
+            echo
+            echo "### Download ($size)"
+            echo "GitHub accetta file fino a 2 GiB: la ISO è divisa in parti ($parts). Scaricale tutte nella stessa cartella."
+            echo
+            echo "Linux/macOS:"
+            echo '```sh'
+            echo "cat trota-os-1.0-amd64.iso.part* > trota-os-1.0-amd64.iso"
+            echo "sha256sum -c trota-os-1.0-amd64.iso.sha256"
+            echo '```'
+            echo "Windows (cmd):"
+            echo '```'
+            echo "copy /b $winparts trota-os-1.0-amd64.iso"
+            echo "certutil -hashfile trota-os-1.0-amd64.iso SHA256"
+            echo '```'
+            echo "SHA-256 della ISO: \`$sha\`"
+            echo
+            echo "Note di rilascio e problemi noti: [docs/release-notes.md](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/docs/release-notes.md) · Installazione: [docs/installation.md](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/docs/installation.md)"
+          } > release-body.md
+          cat release-body.md
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          flags=()
+          [ "${{ inputs.prerelease }}" = true ] && flags+=(--prerelease)
+          gh release create "$TAG" release/* --target "$GITHUB_SHA" \
+              --title "Trota OS 1.0 \"Fario\"$([ "${{ inputs.prerelease }}" = true ] && echo ' (anteprima)')" \
+              --notes-file release-body.md "${flags[@]}"
+
+      - name: Build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: logs/
+          if-no-files-found: ignore
