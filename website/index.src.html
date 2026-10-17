@@ -1,0 +1,359 @@
+<title>Trota OS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Trota OS, il sistema operativo leggero di TestardStudios: desktop, server, cloud e chioschi.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an engineering product site. A 12-column grid; every section opens
+   with a hairline rule, its title in the left quarter and the content in the
+   right three quarters. One dark band (the hero) carries the faceted trout
+   graphic; everything else is paper, ink and hairlines, orange only for the
+   main action and the trout's lateral line. */
+:root {
+  --paper: #FFFFFF;
+  --paper-2: #F5F6F7;    /* alternate band, table head */
+  --ink: #111316;        /* text */
+  --ink-2: #4F565D;      /* secondary text */
+  --rule: #D9DCDF;       /* hairlines */
+  --orange: #E2541B;     /* action; darker than the brand orange for text-size contrast on white */
+  --orange-hover: #C8460F;
+  --on-orange: #FFFFFF;
+  --band: #101214;       /* hero band: brand carbon in both themes */
+  --band-ink: #E8ECEF;
+  --band-ink-2: #9AA2AA;
+  --term: #101214;
+  --term-ink: #E8ECEF;
+  --sans: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #141619; --paper-2: #1B1E22; --ink: #E8ECEF; --ink-2: #A3AAB1; --rule: #2C3238;
+    --orange: #FF6A2A; --orange-hover: #FF7F47; --on-orange: #101214;
+    --band: #0B0C0E; --term: #0B0C0E; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #141619; --paper-2: #1B1E22; --ink: #E8ECEF; --ink-2: #A3AAB1; --rule: #2C3238;
+  --orange: #FF6A2A; --orange-hover: #FF7F47; --on-orange: #101214;
+  --band: #0B0C0E; --term: #0B0C0E; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+code { font-family: var(--mono); font-size: 0.86em; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { margin: 0; font-weight: 300; text-wrap: balance; }
+h1 { font-size: clamp(40px, 5.4vw, 64px); line-height: 1.05; letter-spacing: -0.01em; }
+h2 { font-size: clamp(28px, 3vw, 36px); line-height: 1.15; }
+h3 { font-size: 21px; line-height: 1.3; font-weight: 400; }
+p { margin: 0; }
+.muted { color: var(--ink-2); }
+
+/* Header */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; align-items: center; gap: 28px; min-height: 56px; }
+.brand { display: block; line-height: 0; }
+.brand svg { height: 38px; width: auto; }
+.logo-dark { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo-dark { display: block; } :root:not([data-theme="light"]) .logo-light { display: none; } }
+:root[data-theme="dark"] .logo-dark { display: block; }
+:root[data-theme="dark"] .logo-light { display: none; }
+.top nav { display: flex; gap: 24px; flex: 1; }
+.top nav a { text-decoration: none; font-size: 15px; color: var(--ink-2); padding-block: 16px; }
+.top nav a:hover { color: var(--ink); }
+@media (max-width: 720px) { .top nav { display: none; } .top .wrap { justify-content: space-between; } }
+
+/* Buttons: square, as on engineering sites */
+.btn { display: inline-block; text-decoration: none; font: 400 16px/1.25 var(--sans); padding: 10px 20px; border: 1px solid var(--ink); color: var(--ink); background: transparent; }
+.btn:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.btn.primary { background: var(--orange); border-color: var(--orange); color: var(--on-orange); }
+.btn.primary:hover { background: var(--orange-hover); border-color: var(--orange-hover); }
+.btn.small { padding: 7px 14px; font-size: 15px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* Hero band */
+.hero { background: var(--band); color: var(--band-ink); overflow: hidden; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; align-items: center; min-height: 440px; padding-block: 56px; }
+.hero p { color: var(--band-ink-2); font-size: 20px; line-height: 1.5; max-width: 32em; margin-top: 20px; font-weight: 300; }
+.hero .actions { margin-top: 32px; }
+.hero .btn { border-color: var(--band-ink); color: var(--band-ink); }
+.hero .btn:hover { background: rgb(232 236 239 / 0.08); }
+.hero .btn.primary { color: #FFFFFF; border-color: #E2541B; background: #E2541B; }
+.hero .btn.primary:hover { background: #C8460F; border-color: #C8460F; }
+.hero .meta { margin-top: 20px; font: 400 13px/1.5 var(--mono); color: var(--band-ink-2); }
+.hero canvas { width: 100%; height: auto; aspect-ratio: 1 / 1; max-width: 100%; display: block; }
+@media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; min-height: 0; } .hero canvas { max-width: 380px; margin-inline: auto; } }
+
+/* Sections: rule, title left, content right */
+.section { padding-block: 64px; }
+.section.alt { background: var(--paper-2); }
+.row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 24px 32px; border-top: 1px solid var(--rule); padding-top: 24px; }
+@media (max-width: 860px) { .row { grid-template-columns: 1fr; } }
+.row > * { min-width: 0; }
+.content { display: grid; gap: 32px; }
+.content > p { max-width: 40em; font-size: 20px; line-height: 1.5; font-weight: 300; }
+
+/* Columns with a rule on top (no cards) */
+.cols { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 32px; }
+.cols > div { border-top: 1px solid var(--rule); padding-top: 16px; display: grid; gap: 10px; align-content: start; }
+.cols p { color: var(--ink-2); font-size: 16px; }
+@media (max-width: 960px) { .cols { --n: 2 !important; } }
+@media (max-width: 560px) { .cols { --n: 1 !important; } }
+.cols .facts { margin: 6px 0 0; padding: 0; list-style: none; font-size: 15px; color: var(--ink-2); display: grid; gap: 4px; }
+
+/* Screenshot */
+.screen { margin: 0; display: grid; gap: 10px; }
+.screen img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); }
+.screen figcaption { font-size: 14px; color: var(--ink-2); }
+
+/* Terminal samples: real commands of each edition */
+.term { background: var(--term); color: var(--term-ink); font: 400 13.5px/1.7 var(--mono); padding: 14px 16px; overflow-x: auto; white-space: pre; }
+.term .p { color: #FF6A2A; user-select: none; }
+.term .o { color: #9AA2AA; }
+
+/* Divided list */
+.divided { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+.divided li { border-top: 1px solid var(--rule); padding-block: 14px; display: grid; gap: 4px; }
+.divided b { font-weight: 500; }
+.divided span { color: var(--ink-2); font-size: 16px; }
+@media (max-width: 720px) { .divided { grid-template-columns: 1fr; } }
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 16px; }
+th, td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 500; font-size: 14px; color: var(--ink-2); }
+td.num, th.num { text-align: right; padding-right: 0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Steps: a real sequence */
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.steps li { counter-increment: s; border-top: 1px solid var(--rule); padding-top: 16px; display: grid; gap: 10px; align-content: start; }
+.steps li::before { content: counter(s); font: 300 36px/1 var(--sans); color: var(--ink-2); }
+.steps p { color: var(--ink-2); font-size: 16px; }
+@media (max-width: 960px) { .steps { grid-template-columns: 1fr; } }
+
+.notice { font-size: 16px; color: var(--ink-2); max-width: 44em; }
+.notice b { color: var(--ink); font-weight: 500; }
+
+/* FAQ */
+.faq details { border-top: 1px solid var(--rule); }
+.faq details:last-child { border-bottom: 1px solid var(--rule); }
+.faq summary { cursor: pointer; padding-block: 14px; font-size: 19px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; font-family: var(--mono); color: var(--ink-2); }
+.faq details[open] summary::after { content: "−"; }
+.faq details p { color: var(--ink-2); padding-bottom: 16px; max-width: 44em; }
+
+footer { background: var(--paper-2); border-top: 1px solid var(--rule); padding-block: 40px; font-size: 14px; color: var(--ink-2); }
+footer .wrap { display: grid; gap: 12px; }
+footer svg { height: 24px; width: auto; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Trota OS, inizio pagina"><span class="logo-light">{{LOGO_LIGHT}}</span><span class="logo-dark">{{LOGO_DARK}}</span></a>
+    <nav aria-label="Sezioni">
+      <a href="#desktop">Desktop</a>
+      <a href="#edizioni">Server, cloud e kiosk</a>
+      <a href="#sicurezza">Sicurezza</a>
+      <a href="#domande">Domande</a>
+    </nav>
+    <a class="btn primary small" href="#download">Scarica</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div>
+        <h1 id="hero-title">Trota OS 1.0</h1>
+        <p>Il sistema operativo leggero di TestardStudios. Lo stesso sistema per il portatile, il server, il cloud e lo schermo di un chiosco, con gli aggiornamenti di sicurezza che si installano da soli.</p>
+        <div class="actions">
+          <a class="btn primary" href="#download">Scarica Trota OS</a>
+          <a class="btn" href="#edizioni">Scegli l'edizione</a>
+        </div>
+        <p class="meta">1.0 “Fario” · amd64 · BIOS e UEFI con Secure Boot</p>
+      </div>
+      <canvas id="facets" width="900" height="900" role="img" aria-label="La trota del logo di Trota OS scomposta in sfaccettature geometriche, con la banda arancione lungo il fianco"></canvas>
+    </div>
+  </section>
+
+  <section class="section" id="desktop" aria-labelledby="desktop-title">
+    <div class="wrap row">
+      <h2 id="desktop-title">Desktop</h2>
+      <div class="content">
+        <p>GNOME su Wayland, tema scuro, Firefox, LibreOffice e gli strumenti per programmare. All'accesso il sistema usa circa 0,9 GB di memoria: niente indicizzatore dei file, niente negozio di app in background, niente notifiche promozionali.</p>
+        <figure class="screen">
+          <img src="{{SHOT}}" width="1280" height="800" alt="Desktop di Trota OS: a sinistra il dock, al centro la finestra Welcome con il logo e i pulsanti Controlla aggiornamenti, Apri Impostazioni e Informazioni di sistema">
+          <figcaption>Trota OS 1.0 in sessione live, con la finestra di benvenuto. Screenshot dai test automatici.</figcaption>
+        </figure>
+        <div class="cols" style="--n:4">
+          <div><h3>Welcome</h3><p>Impostazioni, aggiornamenti, driver e documentazione al primo avvio.</p></div>
+          <div><h3>System Info</h3><p>Versione, processore, memoria, dischi, rete e grafica, in un testo da copiare quando chiedi aiuto.</p></div>
+          <div><h3>Diagnostics</h3><p>Controlli in sola lettura, con un suggerimento per ogni problema.</p></div>
+          <div><h3>Package Helper</h3><p>Cerca nel catalogo dei pacchetti e mostra il comando per installare.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="edizioni" aria-labelledby="ed-title">
+    <div class="wrap row">
+      <h2 id="ed-title">Server, cloud e kiosk</h2>
+      <div class="content">
+        <p>Immagini disco pronte all'uso: si scrivono su un disco o si importano in una piattaforma di virtualizzazione. Al primo avvio cloud-init allarga il disco, crea le chiavi SSH e configura rete e utente.</p>
+        <div class="cols">
+          <div>
+            <h3>Server ed edge</h3>
+            <p>Senza interfaccia grafica, con SSH solo a chiave, firewall attivo e container Podman anche senza root. Per server, mini PC e gateway.</p>
+            <ul class="facts"><li>circa 270 MB di RAM in uso</li><li>380 pacchetti</li></ul>
+            <div class="term"><span class="p">$ </span>podman run --rm -it alpine
+<span class="p">$ </span>sudo ufw status
+<span class="o">Status: active</span></div>
+          </div>
+          <div>
+            <h3>Cloud</h3>
+            <p>Kernel per hardware virtuale e agente QEMU. L'accesso avviene con le chiavi SSH che la piattaforma passa a cloud-init.</p>
+            <ul class="facts"><li>qcow2 di circa 0,55 GB</li><li>EC2, Azure, GCE, OpenStack, NoCloud</li></ul>
+            <div class="term"><span class="p">$ </span>cloud-init status
+<span class="o">status: done</span></div>
+          </div>
+          <div>
+            <h3>Kiosk e signage</h3>
+            <p>Una pagina web a tutto schermo su un sistema bloccato. Se il browser si chiude riparte; ogni notte si riavvia pulito.</p>
+            <ul class="facts"><li>Firefox in modalità kiosk</li><li>configurabile con cloud-init</li></ul>
+            <div class="term"><span class="o"># /etc/trota-kiosk.conf</span>
+TROTA_KIOSK_URL=https://menu.bar.it</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="sicurezza" aria-labelledby="sec-title">
+    <div class="wrap row">
+      <h2 id="sec-title">Sicurezza e privacy</h2>
+      <div class="content">
+        <ul class="divided">
+          <li><b>Nessuna telemetria</b><span>Nessun programma raccoglie o invia dati sul tuo uso. Nessun account obbligatorio.</span></li>
+          <li><b>Aggiornamenti automatici</b><span>Le correzioni di sicurezza si installano da sole fino ad aprile 2029, comprese quelle di Firefox.</span></li>
+          <li><b>Secure Boot</b><span>Si avvia con Secure Boot attivo, e anche sui PC con BIOS tradizionale.</span></li>
+          <li><b>Nessuna porta aperta</b><span>Sul desktop nessun servizio ascolta in rete. Sui server solo SSH con chiave.</span></li>
+          <li><b>AppArmor</b><span>I profili di sicurezza sono attivi. Le app Trota non chiedono mai i permessi di amministratore.</span></li>
+          <li><b>Applicazioni isolate</b><span>Le app di Flathub girano separate dal sistema e si aggiornano una volta al giorno.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="download" aria-labelledby="dl-title">
+    <div class="wrap row">
+      <h2 id="dl-title">Download</h2>
+      <div class="content">
+        <p class="notice"><b>Versione di anteprima.</b> Trota OS 1.0 è stato provato in macchine virtuali, compresi installazione e avvio con Secure Boot, ma non ancora su un ampio numero di computer reali.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Edizione</th><th>File</th><th class="num">Dimensione</th></tr></thead>
+            <tbody>
+              <tr><td>Desktop</td><td><code>trota-os-1.0-amd64.iso</code></td><td class="num">2,0 GB</td></tr>
+              <tr><td>Server ed edge</td><td><code>trota-os-server-1.0-amd64.img.xz</code></td><td class="num">0,96 GB</td></tr>
+              <tr><td>Cloud</td><td><code>trota-os-cloud-1.0-amd64.qcow2</code></td><td class="num">0,55 GB</td></tr>
+              <tr><td>Kiosk e signage</td><td><code>trota-os-kiosk-1.0-amd64.img.xz</code></td><td class="num">1,2 GB</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="actions">
+          <a class="btn primary" href="{{RELEASE_URL}}" target="_blank" rel="noopener">Vai ai file del rilascio</a>
+          <a class="btn" href="{{DOCS_URL}}" target="_blank" rel="noopener">Guida all'installazione</a>
+        </div>
+        <ol class="steps">
+          <li><h3>Verifica il file</h3><p>Ogni file ha accanto il suo checksum SHA-256.</p><div class="term"><span class="p">$ </span>sha256sum -c trota-os-1.0-amd64.iso.sha256
+<span class="o">trota-os-1.0-amd64.iso: OK</span></div></li>
+          <li><h3>Prepara la chiavetta</h3><p>Usa balenaEtcher o GNOME Disks. Dal terminale, il comando cancella il disco indicato.</p><div class="term"><span class="p">$ </span>sudo dd if=trota-os-1.0-amd64.iso \
+  of=/dev/sdX bs=4M conv=fsync</div></li>
+          <li><h3>Avvia e prova</h3><p>Avvia il computer dalla chiavetta: Trota OS parte senza installare nulla. L'icona sul desktop avvia l'installazione.</p></li>
+        </ol>
+        <p class="notice">Per il desktop servono un processore x86 a 64 bit, 4 GB di RAM (meglio 8) e 25 GB di disco. Server, cloud e kiosk partono da 2 GB di RAM e 4 GB di disco.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="domande" aria-labelledby="faq-title">
+    <div class="wrap row">
+      <h2 id="faq-title">Domande</h2>
+      <div class="faq">
+        <details><summary>Quanto costa?</summary><p>Niente. Le parti originali di Trota OS sono sotto licenza GPL-3.0, grafica e documentazione sotto CC BY-SA 4.0.</p></details>
+        <details><summary>I programmi per Linux funzionano?</summary><p>Sì. Trota OS usa i pacchetti di Ubuntu 24.04 LTS, quindi i pacchetti .deb, i PPA e i repository pensati per quella versione funzionano anche qui. In più ci sono le app Flatpak di Flathub.</p></details>
+        <details><summary>Fino a quando riceve aggiornamenti?</summary><p>Gli aggiornamenti di sicurezza arrivano fino ad aprile 2029 e si installano da soli. Le nuove versioni di Trota OS escono come nuove immagini.</p></details>
+        <details><summary>Perché non ci sono gli snap?</summary><p>Per tenere il sistema leggero: Firefox è il pacchetto ufficiale di Mozilla e le altre applicazioni arrivano da Flathub. Chi vuole gli snap può riattivarli.</p></details>
+        <details><summary>Serve un account o una connessione?</summary><p>No. La rete serve solo per gli aggiornamenti e per installare nuove applicazioni.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="logo-light">{{LOGO_LIGHT}}</span><span class="logo-dark">{{LOGO_DARK}}</span>
+    <p>Sviluppato e pubblicato da TestardStudios. Codice e documentazione nel <a href="{{REPO_URL}}" target="_blank" rel="noopener">repository del progetto</a>.</p>
+    <p>Trota OS non è un prodotto di Canonical né del progetto Ubuntu. Ubuntu è un marchio registrato di Canonical Ltd. Firefox è un marchio di Mozilla Foundation.</p>
+  </div>
+</footer>
+
+<script>
+// Hero graphic: the trout of the logo, built from the same straight segments,
+// broken into flat facets in the carbon/steel range; the orange lateral band
+// is the only colour. Drawn once, deterministic (seeded), no animation loop.
+(function () {
+  const c = document.getElementById("facets");
+  if (!c || !c.getContext) return;
+  const g = c.getContext("2d");
+  const W = c.width, H = c.height;
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  // Logo geometry (256-unit grid of trota-symbol.svg), scaled to the canvas.
+  const s = W / 256 * 0.92, ox = W * 0.02, oy = H * 0.5 - 119 * (W / 256 * 0.92);
+  const P = (x, y) => [ox + x * s, oy + y * s];
+  const body = [P(60,128), P(102,94), P(198,94), P(238,128), P(198,162), P(102,162)];
+  const tail = [P(52,128), P(16,98), P(28,128), P(16,158)];
+  const fin = [P(124,94), P(142,76), P(174,76), P(164,94)];
+  // Background facets: a loose triangulated field behind the fish.
+  const pts = [];
+  for (let i = 0; i < 26; i++) pts.push([rnd() * W, rnd() * H]);
+  pts.push([0,0],[W,0],[0,H],[W,H],[W/2,0],[0,H/2],[W,H/2],[W/2,H]);
+  const shades = ["#14171A", "#171B1F", "#1B1F24", "#111316"];
+  // Simple fan triangulation around the centre, good enough for a backdrop.
+  const cx = W * 0.55, cy = H * 0.5;
+  pts.sort((a, b) => Math.atan2(a[1]-cy, a[0]-cx) - Math.atan2(b[1]-cy, b[0]-cx));
+  for (let i = 0; i < pts.length; i++) {
+    const a = pts[i], b = pts[(i + 1) % pts.length];
+    g.beginPath(); g.moveTo(cx, cy); g.lineTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.closePath();
+    g.fillStyle = shades[i % shades.length]; g.fill();
+  }
+  // Facets of a polygon: triangles from its centroid, alternating steel tones.
+  function facets(poly, tones) {
+    const m = poly.reduce((acc, p) => [acc[0] + p[0] / poly.length, acc[1] + p[1] / poly.length], [0, 0]);
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i], b = poly[(i + 1) % poly.length];
+      g.beginPath(); g.moveTo(m[0], m[1]); g.lineTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.closePath();
+      g.fillStyle = tones[i % tones.length]; g.fill();
+    }
+  }
+  facets(tail, ["#5E666F", "#737B84", "#4A5158", "#666E77"]);
+  facets(fin, ["#737B84", "#88909A"]);
+  facets(body, ["#C9CED3", "#E8ECEF", "#AEB4BA", "#D7DBDF", "#9CA3AA", "#BEC4C9"]);
+  // Lateral band (orange), eye and gill cut-outs, as in the logo.
+  const band = [P(88,123), P(214,123), P(219,128), P(214,133), P(88,133), P(83,128)];
+  g.beginPath(); band.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath();
+  g.fillStyle = "#FF6A2A"; g.fill();
+  g.fillStyle = "#101214";
+  const e = P(206,112); g.fillRect(e[0], e[1], 8 * s, 8 * s);
+  g.strokeStyle = "#101214"; g.lineWidth = 5 * s; g.lineJoin = "miter";
+  g.beginPath(); const g1 = P(182,102), g2 = P(191,128), g3 = P(182,154);
+  g.moveTo(g1[0], g1[1]); g.lineTo(g2[0], g2[1]); g.lineTo(g3[0], g3[1]); g.stroke();
+})();
+</script>
