@@ -1,0 +1,33 @@
+# Trota Fleet panel on a Trota OS Server (or any systemd host), behind Caddy.
+# Install: see fleet/README.md
+[Unit]
+Description=Trota Fleet panel
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=trota-fleet
+Group=trota-fleet
+Environment=PYTHONPATH=/opt/trota-fleet TZ=Europe/Rome
+Environment=TROTA_FLEET_DB=/var/lib/trota-fleet-panel/fleet.db TROTA_FLEET_LISTEN=127.0.0.1:8080
+Environment=TROTA_FLEET_BEHIND_PROXY=1
+EnvironmentFile=-/etc/default/trota-fleet-panel
+ExecStart=/usr/bin/python3 -m trota_fleet serve
+StateDirectory=trota-fleet-panel
+StateDirectoryMode=0700
+Restart=on-failure
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

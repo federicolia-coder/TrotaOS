@@ -80,7 +80,7 @@ jobs:
               dosfstools rsync grub-pc-bin grub-efi-amd64-bin dpkg-dev python3 python3-pytest gettext
 
       - name: Unit tests
-        run: python3 -m pytest -q -p no:cacheprovider tests --deselect tests/test_ui_smoke.py
+        run: python3 -m pytest -q -p no:cacheprovider tests fleet/tests --deselect tests/test_ui_smoke.py
 
       # One retry: a mirror occasionally fails to serve a package.
       - name: Build packages

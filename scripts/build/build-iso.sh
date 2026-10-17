@@ -22,7 +22,7 @@ STAGES_ALL=(bootstrap packages trota customize iso checksum)
 cleanup() { [ -d "$CHROOT" ] && chroot_umount "$CHROOT" || true; }
 
 # Trota OS packages of the desktop image (the server ones go to build-image.sh).
-desktop_debs() { find "$PKG_DIR" -maxdepth 1 -name '*.deb' ! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*' | sort; }
+desktop_debs() { find "$PKG_DIR" -maxdepth 1 -name '*.deb' ! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*' ! -name 'trota-fleet-agent_*' | sort; }
 trap cleanup EXIT
 
 # ---------------------------------------------------------------------------

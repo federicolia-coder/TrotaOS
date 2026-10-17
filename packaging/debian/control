@@ -175,3 +175,15 @@ Description: Trota OS Kiosk and digital signage session
   * page and console access set in /etc/trota-kiosk.conf, also with
     cloud-init for many screens at once.
 
+Package: trota-fleet-agent
+Architecture: all
+Section: admin
+Depends: ${misc:Depends}, ${python3:Depends}, python3:any, ca-certificates, iproute2
+Description: Trota Fleet agent for remote management
+ Connects a Trota OS Server, Cloud or Kiosk device to a Trota Fleet panel:
+ the device reports its status (system, uptime, memory, disk, addresses,
+ pending updates, kiosk page) and receives a fixed set of commands: change
+ the kiosk page, restart the kiosk, install updates, reboot.
+  * the device calls the panel over HTTPS: no port is opened on the device;
+  * the panel cannot run arbitrary programs or shell commands;
+  * does nothing until a panel is configured in /etc/trota-fleet.conf.

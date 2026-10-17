@@ -5,7 +5,7 @@
 export DH_VERBOSE = 1
 export PYTHONDONTWRITEBYTECODE = 1
 
-APPS := trota-common trota-welcome trota-system-info trota-diagnostics trota-package-helper
+APPS := trota-common trota-welcome trota-system-info trota-diagnostics trota-package-helper trota-fleet-agent
 ICON_SIZES := 16 24 32 48 64 128 256 512
 ART := debian/trota-artwork
 SET := debian/trota-desktop-settings
@@ -71,6 +71,10 @@ override_dh_auto_install:
 	install -D -m 644 packaging/files/kiosk/policies.json debian/trota-kiosk/etc/firefox/policies/policies.json
 	install -D -m 644 packaging/files/kiosk/index.html debian/trota-kiosk/usr/share/trota-kiosk/index.html
 	install -D -m 644 packaging/files/kiosk/README debian/trota-kiosk/usr/share/doc/trota-kiosk/README
+	# --- trota-fleet-agent -------------------------------------------------
+	install -D -m 755 packaging/files/bin/trota-fleet-agent debian/trota-fleet-agent/usr/bin/trota-fleet-agent
+	install -D -m 644 packaging/files/fleet/trota-fleet.conf debian/trota-fleet-agent/etc/trota-fleet.conf
+	install -D -m 644 packaging/files/fleet/README debian/trota-fleet-agent/usr/share/doc/trota-fleet-agent/README
 	# --- trota-server-settings -------------------------------------------
 	install -D -m 644 packaging/files/server/60-trota-hardening.conf \
 		debian/trota-server-settings/etc/ssh/sshd_config.d/60-trota-hardening.conf
@@ -135,6 +139,7 @@ override_dh_installsystemd:
 	dh_installsystemd -ptrota-software-sources --name=trota-flatpak-update
 	dh_installsystemd -ptrota-kiosk --name=trota-kiosk --no-start
 	dh_installsystemd -ptrota-kiosk --name=trota-kiosk-restart
+	dh_installsystemd -ptrota-fleet-agent --name=trota-fleet-agent --no-start
 
 override_dh_python3:
 	dh_python3 --no-ext-rename

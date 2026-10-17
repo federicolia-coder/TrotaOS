@@ -65,6 +65,8 @@ listen="$(ss -Htln 2>/dev/null | awk '{print $4}' | grep -vE '^(127\.|\[::1\]|::
 [ -z "$listen" ] && result open_tcp_ports PASS "only SSH (22) on external addresses" || result open_tcp_ports FAIL "$listen"
 check journald_limit sh -c 'systemd-analyze cat-config systemd/journald.conf 2>/dev/null | grep -q "^SystemMaxUse=500M" && echo "SystemMaxUse=500M"'
 
+check fleet_agent_idle sh -c 'trota-fleet-agent status >/dev/null && systemctl is-enabled trota-fleet-agent.service >/dev/null && ! systemctl is-active -q trota-fleet-agent.service && echo "installed, waiting for a panel"'
+
 section "containers"
 check podman_rootless sh -c 'podman info --format "{{.Host.Security.Rootless}} {{.Version.Version}}" 2>&1 | grep -q "^true" && podman info --format "rootless {{.Version.Version}}, {{.Host.NetworkBackend}}"'
 # A rootless container without downloads: a minimal root file system with

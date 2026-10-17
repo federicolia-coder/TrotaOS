@@ -55,7 +55,7 @@ EOF
     log "packages: $SRC_NAME $version"
     rm -rf "$PKG_CHROOT/build" && mkdir -p "$PKG_CHROOT$src"
     rsync -a --delete \
-        --exclude '/build/' --exclude '/dist/' --exclude '/logs/' --exclude '/checksums/' --exclude '/.git/' \
+        --exclude '/build/' --exclude '/dist/' --exclude '/logs/' --exclude '/checksums/' --exclude '/fleet/' --exclude '/.git/' \
         --exclude '__pycache__' --exclude '.pytest_cache' \
         "$TROTA_ROOT/" "$PKG_CHROOT$src/"
     cp -r "$TROTA_ROOT/packaging/debian" "$PKG_CHROOT$src/debian"

@@ -1,0 +1,25 @@
+[Unit]
+Description=Trota Fleet agent (connection to the management panel)
+Documentation=file:///usr/share/doc/trota-fleet-agent/README
+Wants=network-online.target
+After=network-online.target cloud-config.service
+
+[Service]
+Type=simple
+# Not configured (no panel address): the unit is skipped, not failed.
+ExecCondition=/usr/bin/trota-fleet-agent configured
+ExecStart=/usr/bin/trota-fleet-agent run
+Restart=on-failure
+RestartSec=60
+# 2: not configured, 3: removed from the panel. Restarting would not help.
+RestartPreventExitStatus=2 3
+# Runs as root: the commands restart services, install updates and reboot.
+PrivateTmp=yes
+ProtectHome=read-only
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+LockPersonality=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -58,6 +58,7 @@ build_root() {
     chroot_mount "$ROOT"
     write_apt_sources "$ROOT"
     echo "trota-$EDITION" > "$ROOT/etc/hostname"
+    echo "$EDITION" > "$ROOT/etc/trota-edition"   # shown in the Trota Fleet panel
     printf '127.0.0.1 localhost\n127.0.1.1 trota-%s\n::1 localhost ip6-localhost ip6-loopback\n' "$EDITION" > "$ROOT/etc/hosts"
     prepare_chroot "$ROOT" "$M/server-excluded.list"
     [ "$EDITION" != cloud ] && install -D -m 644 "$TROTA_ROOT/packaging/files/settings/trota-firmware-exclude" \
@@ -78,7 +79,8 @@ build_root() {
 
     log "packages: Trota OS"
     rm -rf "$ROOT/tmp/trota-debs" && mkdir -p "$ROOT/tmp/trota-debs"
-    cp "$PKG_DIR"/trota-release_*.deb "$PKG_DIR"/trota-server-settings_*.deb "$ROOT/tmp/trota-debs/"
+    cp "$PKG_DIR"/trota-release_*.deb "$PKG_DIR"/trota-server-settings_*.deb \
+        "$PKG_DIR"/trota-fleet-agent_*.deb "$ROOT/tmp/trota-debs/"
     in_chroot "$ROOT" sh -c 'apt-get -y --no-install-recommends install /tmp/trota-debs/*.deb'
     if [ "$EDITION" = kiosk ]; then
         # Firefox comes from Mozilla's repository, configured by trota-software-sources.

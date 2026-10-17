@@ -89,6 +89,12 @@ Primo accesso come per Server (utente `trota`, password `trota` da cambiare,
 solo sulla porta seriale o via SSH con chiave, perché lo schermo è occupato
 dal kiosk).
 
+## Gestione remota
+
+Le tre immagini contengono l'agente di **Trota Fleet**, fermo finché non viene
+collegato a un pannello: stato dei dispositivi, cambio della pagina del kiosk,
+aggiornamenti e riavvii da remoto. Vedi [fleet.md](fleet.md).
+
 ## Rispetto all'offerta "By solution / By industry" di Canonical
 
 Molte voci di quella pagina sono **servizi commerciali** di Canonical
@@ -104,7 +110,7 @@ cosa copre Trota OS oggi.
 | Edge computing | **Server / Edge** su x86-64 | |
 | Public cloud, Private cloud | **Cloud** (immagine qcow2 con cloud-init) | Le immagini non sono pubblicate nei marketplace dei provider |
 | Signage, Kiosk | **Kiosk** | |
-| Automation | cloud-init al primo avvio; Ansible e simili funzionano via SSH | |
+| Automation | cloud-init al primo avvio; Ansible e simili funzionano via SSH; pannello Trota Fleet | |
 | IoT, Robotics, Automotive, Industrial | Solo hardware x86-64 | Le schede ARM (Raspberry Pi, ecc.) richiederebbero una build dedicata, non ancora disponibile |
 | AI/ML, HPC, Data, Storage | Server + container | Driver NVIDIA e CUDA si installano a parte; nessuno stack (Ceph, Spark, MLOps) è preconfigurato |
 | Confidential computing, Telco, Managed infrastructure, Financial/Public sector | Non coperto | Richiedono hardware, certificazioni o servizi specifici |

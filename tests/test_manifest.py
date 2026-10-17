@@ -145,4 +145,4 @@ def test_kiosk_package():
     assert policies["DisableTelemetry"] and policies["DisableAppUpdate"] and not policies["PasswordManagerEnabled"]
     # kiosk and server packages never reach the desktop ISO
     build = (ROOT / "scripts/build/build-iso.sh").read_text()
-    assert "! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*'" in build
+    assert "! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*' ! -name 'trota-fleet-agent_*'" in build
