@@ -67,8 +67,9 @@ check journald_limit sh -c 'systemd-analyze cat-config systemd/journald.conf 2>/
 
 section "containers"
 check podman_rootless sh -c 'podman info --format "{{.Host.Security.Rootless}} {{.Version.Version}}" 2>&1 | grep -q "^true" && podman info --format "rootless {{.Version.Version}}, {{.Host.NetworkBackend}}"'
-# A rootless container without downloads: the host file system as read-only rootfs.
-check podman_run sh -c 'out=$(timeout 600 podman run --rm --network none --read-only --rootfs / /bin/echo container-ok 2>&1); echo "$out" | grep -q container-ok && echo "rootless container ran" || { echo "$out" | tail -1; exit 1; }'
+# A rootless container without downloads: a minimal root file system with
+# /bin/echo and the libraries it needs.
+check podman_run sh -c 'r=$(mktemp -d) && mkdir -p "$r/bin" && cp /bin/echo "$r/bin/" && for l in $(ldd /bin/echo | grep -o "/[^ ]*"); do mkdir -p "$r$(dirname "$l")" && cp -L "$l" "$r$l"; done && out=$(timeout 600 podman run --rm --network none --rootfs "$r" /bin/echo container-ok 2>&1); rm -rf "$r"; echo "$out" | grep -q container-ok && echo "rootless container ran" || { echo "$out" | tail -1; exit 1; }'
 if out="$(timeout 600 podman pull -q docker.io/library/busybox:latest 2>&1)"; then
     result podman_pull PASS "busybox pulled from Docker Hub"
 else
