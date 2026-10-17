@@ -54,11 +54,14 @@ jobs:
 
       - name: Upload to R2
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          KEY: ${{ secrets.R2_ACCESS_KEY_ID }}
+          SECRET: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: auto
           TAG: ${{ inputs.tag || 'v1.0.0' }}
         run: |
+          # Secrets pasted with a trailing newline or spaces break the signature.
+          export AWS_ACCESS_KEY_ID="$(printf '%s' "$KEY" | tr -d '[:space:]')"
+          export AWS_SECRET_ACCESS_KEY="$(printf '%s' "$SECRET" | tr -d '[:space:]')"
           version="${TAG#v}"; version="${version%.0}"   # v1.0.0 -> 1.0
           endpoint="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
           cat files/*.sha256 > files/SHA256SUMS
