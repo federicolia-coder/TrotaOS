@@ -71,11 +71,13 @@ jobs:
       - name: Unit tests
         run: python3 -m pytest -q -p no:cacheprovider tests --deselect tests/test_ui_smoke.py
 
+      # One retry: the Azure mirror occasionally fails to serve a package.
       - name: Build packages
-        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh
 
+      # The hosted runner has 2 CPUs: xz with 1 MiB blocks takes ~40 minutes.
       - name: Build ISO
-        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-iso.sh
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-iso.sh || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-iso.sh bootstrap packages trota customize iso checksum
 
       - name: Prepare release files
         run: |
