@@ -1,15 +1,15 @@
 <title>Trota OS</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Trota OS, il sistema operativo leggero di TestardStudios: desktop, server, cloud e chioschi.">
+<meta name="description" content="Trota OS, il sistema operativo leggero di TestardStudios per desktop, server, cloud, chioschi e dispositivi IoT ed edge. Gratis per uso personale.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: an engineering product site. A 12-column grid; every section opens
    with a hairline rule, its title in the left quarter and the content in the
-   right three quarters. One dark band (the hero) carries the faceted trout
-   graphic; everything else is paper, ink and hairlines, orange only for the
-   main action and the trout's lateral line. */
+   right three quarters. Two dark bands (hero and IoT) carry the graphics;
+   everything else is paper, ink and hairlines, orange only for the main
+   action, the trout's lateral line and the data in the diagrams. */
 :root {
   --paper: #FFFFFF;
   --paper-2: #F5F6F7;    /* alternate band, table head */
@@ -19,7 +19,10 @@
   --orange: #E2541B;     /* action; darker than the brand orange for text-size contrast on white */
   --orange-hover: #C8460F;
   --on-orange: #FFFFFF;
-  --band: #101214;       /* hero band: brand carbon in both themes */
+  --steel: #8C949C;      /* neutral marks in diagrams */
+  --band: #101214;       /* dark bands: brand carbon in both themes */
+  --band-2: #1A1D21;
+  --band-rule: #2E343A;
   --band-ink: #E8ECEF;
   --band-ink-2: #9AA2AA;
   --term: #101214;
@@ -30,16 +33,17 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #141619; --paper-2: #1B1E22; --ink: #E8ECEF; --ink-2: #A3AAB1; --rule: #2C3238;
-    --orange: #FF6A2A; --orange-hover: #FF7F47; --on-orange: #101214;
-    --band: #0B0C0E; --term: #0B0C0E; color-scheme: dark;
+    --orange: #FF6A2A; --orange-hover: #FF7F47; --on-orange: #101214; --steel: #6B737B;
+    --band: #0B0C0E; --band-2: #15181B; --term: #0B0C0E; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #141619; --paper-2: #1B1E22; --ink: #E8ECEF; --ink-2: #A3AAB1; --rule: #2C3238;
-  --orange: #FF6A2A; --orange-hover: #FF7F47; --on-orange: #101214;
-  --band: #0B0C0E; --term: #0B0C0E; color-scheme: dark;
+  --orange: #FF6A2A; --orange-hover: #FF7F47; --on-orange: #101214; --steel: #6B737B;
+  --band: #0B0C0E; --band-2: #15181B; --term: #0B0C0E; color-scheme: dark;
 }
 * { box-sizing: border-box; }
+html { scroll-padding-top: 64px; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-underline-offset: 3px; }
 :focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
@@ -51,6 +55,7 @@ h2 { font-size: clamp(28px, 3vw, 36px); line-height: 1.15; }
 h3 { font-size: 21px; line-height: 1.3; font-weight: 400; }
 p { margin: 0; }
 .muted { color: var(--ink-2); }
+.eyebrow { font: 500 13px/1.4 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-2); }
 
 /* Header */
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
@@ -62,45 +67,65 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo-dark { display: block; } :root:not([data-theme="light"]) .logo-light { display: none; } }
 :root[data-theme="dark"] .logo-dark { display: block; }
 :root[data-theme="dark"] .logo-light { display: none; }
-.top nav { display: flex; gap: 24px; flex: 1; }
+.top nav { display: flex; gap: 22px; flex: 1; }
 .top nav a { text-decoration: none; font-size: 15px; color: var(--ink-2); padding-block: 16px; }
 .top nav a:hover { color: var(--ink); }
-@media (max-width: 720px) { .top nav { display: none; } .top .wrap { justify-content: space-between; } }
+@media (max-width: 900px) { .top nav { display: none; } .top .wrap { justify-content: space-between; } }
 
 /* Buttons: square, as on engineering sites */
-.btn { display: inline-block; text-decoration: none; font: 400 16px/1.25 var(--sans); padding: 10px 20px; border: 1px solid var(--ink); color: var(--ink); background: transparent; }
+.btn { display: inline-block; text-decoration: none; font: 400 16px/1.25 var(--sans); padding: 10px 20px; border: 1px solid var(--ink); color: var(--ink); background: transparent; cursor: pointer; }
 .btn:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
 .btn.primary { background: var(--orange); border-color: var(--orange); color: var(--on-orange); }
 .btn.primary:hover { background: var(--orange-hover); border-color: var(--orange-hover); }
 .btn.small { padding: 7px 14px; font-size: 15px; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
-/* Hero band */
-.hero { background: var(--band); color: var(--band-ink); overflow: hidden; }
-.hero .wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; align-items: center; min-height: 440px; padding-block: 56px; }
+/* Dark bands */
+.hero, .band { background: var(--band); color: var(--band-ink); }
+.hero { overflow: hidden; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; align-items: center; min-height: 460px; padding-block: 56px; }
 .hero p { color: var(--band-ink-2); font-size: 20px; line-height: 1.5; max-width: 32em; margin-top: 20px; font-weight: 300; }
 .hero .actions { margin-top: 32px; }
-.hero .btn { border-color: var(--band-ink); color: var(--band-ink); }
-.hero .btn:hover { background: rgb(232 236 239 / 0.08); }
+.hero .btn, .band .btn { border-color: var(--band-ink); color: var(--band-ink); }
+.hero .btn:hover, .band .btn:hover { background: rgb(232 236 239 / 0.08); }
 .hero .btn.primary { color: #FFFFFF; border-color: #E2541B; background: #E2541B; }
 .hero .btn.primary:hover { background: #C8460F; border-color: #C8460F; }
 .hero .meta { margin-top: 20px; font: 400 13px/1.5 var(--mono); color: var(--band-ink-2); }
 .hero canvas { width: 100%; height: auto; aspect-ratio: 1 / 1; max-width: 100%; display: block; }
 @media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; min-height: 0; } .hero canvas { max-width: 380px; margin-inline: auto; } }
 
+/* Facts strip under the hero */
+.facts-strip { border-bottom: 1px solid var(--rule); }
+.facts-strip dl { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.facts-strip dl > div { padding: 22px 16px 22px 0; display: grid; gap: 2px; }
+.facts-strip dl > div + div { border-left: 1px solid var(--rule); padding-left: 20px; }
+.facts-strip dt { font: 300 32px/1.1 var(--sans); font-variant-numeric: tabular-nums; }
+.facts-strip dd { margin: 0; font-size: 15px; color: var(--ink-2); }
+@media (max-width: 760px) {
+  .facts-strip dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts-strip dl > div:nth-child(3) { border-left: 0; padding-left: 0; }
+  .facts-strip dl > div:nth-child(n+3) { border-top: 1px solid var(--rule); }
+}
+
 /* Sections: rule, title left, content right */
 .section { padding-block: 64px; }
 .section.alt { background: var(--paper-2); }
 .row { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 24px 32px; border-top: 1px solid var(--rule); padding-top: 24px; }
+.band .row { border-top-color: var(--band-rule); }
 @media (max-width: 860px) { .row { grid-template-columns: 1fr; } }
 .row > * { min-width: 0; }
+.row > header { display: grid; gap: 10px; align-content: start; }
 .content { display: grid; gap: 32px; }
 .content > p { max-width: 40em; font-size: 20px; line-height: 1.5; font-weight: 300; }
+.band .content > p, .band .eyebrow { color: var(--band-ink-2); }
+.band .content > p b { color: var(--band-ink); font-weight: 400; }
 
 /* Columns with a rule on top (no cards) */
 .cols { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 32px; }
 .cols > div { border-top: 1px solid var(--rule); padding-top: 16px; display: grid; gap: 10px; align-content: start; }
+.band .cols > div { border-top-color: var(--band-rule); }
 .cols p { color: var(--ink-2); font-size: 16px; }
+.band .cols p { color: var(--band-ink-2); }
 @media (max-width: 960px) { .cols { --n: 2 !important; } }
 @media (max-width: 560px) { .cols { --n: 1 !important; } }
 .cols .facts { margin: 6px 0 0; padding: 0; list-style: none; font-size: 15px; color: var(--ink-2); display: grid; gap: 4px; }
@@ -110,10 +135,90 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .screen img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); }
 .screen figcaption { font-size: 14px; color: var(--ink-2); }
 
+/* Included software, as a compact definition list */
+.included { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; }
+.included div { border-top: 1px solid var(--rule); padding-block: 12px; }
+.included dt { font-size: 14px; color: var(--ink-2); }
+.included dd { margin: 2px 0 0; }
+@media (max-width: 720px) { .included { grid-template-columns: 1fr; } }
+
 /* Terminal samples: real commands of each edition */
 .term { background: var(--term); color: var(--term-ink); font: 400 13.5px/1.7 var(--mono); padding: 14px 16px; overflow-x: auto; white-space: pre; }
+.band .term { background: var(--band-2); }
 .term .p { color: #FF6A2A; user-select: none; }
 .term .o { color: #9AA2AA; }
+
+/* Diagram 1: one base, four editions (HTML, so it reflows on a phone) */
+.stack { margin: 0; display: grid; gap: 8px; }
+.stack-top { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.stack-ed { border: 1px solid var(--rule); background: var(--paper); padding: 14px 14px 12px; display: grid; gap: 6px; align-content: start; }
+.section.alt .stack-ed { background: var(--paper); }
+.stack-ed b { font-weight: 500; }
+.stack-ed span { font-size: 14px; color: var(--ink-2); }
+.stack-ed .ram { font: 400 13px/1.3 var(--mono); color: var(--ink); border-top: 1px solid var(--rule); padding-top: 8px; margin-top: 4px; }
+.stack-ed .ram i { font-style: normal; color: var(--ink-2); }
+.stack-base { background: var(--band); color: var(--band-ink); padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 6px 20px; align-items: baseline; border-bottom: 3px solid #FF6A2A; }
+.stack-base b { font-weight: 500; }
+.stack-base span { font: 400 13px/1.5 var(--mono); color: var(--band-ink-2); }
+@media (max-width: 760px) { .stack-top { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Diagram 2: IoT data flow */
+.flow { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1.25fr) 40px minmax(0, 1fr) 40px minmax(0, 1fr); align-items: stretch; }
+.node { border: 1px solid var(--band-rule); background: var(--band-2); padding: 14px; display: grid; gap: 6px; align-content: start; }
+.node.main { border-color: #FF6A2A; }
+.node .eyebrow { font-size: 11.5px; }
+.node b { font-weight: 500; font-size: 17px; }
+.node ul { margin: 4px 0 0; padding: 0; list-style: none; font: 400 13px/1.6 var(--mono); color: var(--band-ink-2); }
+.node.main ul li::before { content: "▸ "; color: #FF6A2A; }
+.link { position: relative; display: grid; place-items: center; }
+.link::before { content: ""; position: absolute; left: 4px; right: 4px; top: 50%; height: 2px; margin-top: -1px;
+  background: repeating-linear-gradient(90deg, #FF6A2A 0 6px, transparent 6px 12px); background-size: 12px 2px; animation: flow 0.9s linear infinite; }
+.link::after { content: ""; position: absolute; right: 2px; top: 50%; margin-top: -5px; border: 5px solid transparent; border-left-color: #FF6A2A; border-right: 0; }
+.link span { position: relative; top: -16px; font: 400 11px/1 var(--mono); color: var(--band-ink-2); background: var(--band); padding: 0 2px; }
+@keyframes flow { to { background-position: 12px 0; } }
+@media (prefers-reduced-motion: reduce) { .link::before { animation: none; } }
+@media (max-width: 960px) {
+  .flow { grid-template-columns: minmax(0, 1fr); }
+  .link { height: 40px; }
+  .link::before { left: 50%; right: auto; top: 4px; bottom: 4px; height: auto; width: 2px; margin: 0 0 0 -1px;
+    background: repeating-linear-gradient(180deg, #FF6A2A 0 6px, transparent 6px 12px); background-size: 2px 12px; animation-name: flow-v; }
+  .link::after { right: auto; left: 50%; top: auto; bottom: 2px; margin: 0 0 0 -5px; border: 5px solid transparent; border-top-color: #FF6A2A; border-bottom: 0; }
+  .link span { top: 0; left: 20px; }
+}
+@keyframes flow-v { to { background-position: 0 12px; } }
+.content > .hw-note { font-size: 15px; font-weight: 400; color: var(--band-ink-2); border-left: 2px solid #FF6A2A; padding-left: 14px; max-width: 46em; }
+.hw-note b { color: var(--band-ink); font-weight: 500; }
+
+/* Use cases */
+.uses { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 32px; }
+.uses li { border-top: 1px solid var(--rule); padding-block: 16px 20px; display: grid; gap: 6px; align-content: start; }
+.uses p { color: var(--ink-2); font-size: 16px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font: 400 12px/1 var(--mono); padding: 4px 6px; border: 1px solid var(--rule); color: var(--ink-2); }
+@media (max-width: 960px) { .uses { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .uses { grid-template-columns: 1fr; } }
+
+/* Chart: memory in use after boot, one series */
+.chart { margin: 0; display: grid; gap: 14px; }
+.chart figcaption { display: grid; gap: 2px; }
+.chart figcaption b { font-weight: 500; }
+.chart figcaption span { font-size: 14px; color: var(--ink-2); }
+.bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.bars li { display: grid; grid-template-columns: 120px minmax(0, 1fr) 64px; gap: 12px; align-items: center; }
+.bars .lbl { font-size: 15px; }
+.bars .val { font: 400 14px/1 var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.track { position: relative; height: 22px; background-image: repeating-linear-gradient(90deg, var(--rule) 0 1px, transparent 1px 20%); background-size: 100% 100%; }
+.bar { position: absolute; left: 0; top: 3px; bottom: 3px; width: var(--w); background: var(--orange); border-radius: 0 4px 4px 0; outline: none; }
+.bar::after { content: attr(data-tip); position: absolute; left: 100%; bottom: calc(100% + 6px); transform: translateX(-50%); white-space: nowrap;
+  background: var(--ink); color: var(--paper); font: 400 13px/1.3 var(--sans); padding: 6px 8px; opacity: 0; pointer-events: none; transition: opacity .12s; z-index: 2; }
+.bar:hover::after, .bar:focus-visible::after { opacity: 1; }
+.bar:focus-visible { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--orange); }
+.axis { display: grid; grid-template-columns: 120px minmax(0, 1fr) 64px; gap: 12px; font: 400 12px/1 var(--mono); color: var(--ink-2); }
+.axis div { position: relative; height: 12px; }
+.axis div span { position: absolute; left: var(--x); transform: translateX(-50%); }
+.axis div span:first-child { transform: none; }
+.axis div span:last-child { transform: translateX(-100%); }
+@media (max-width: 560px) { .bars li, .axis { grid-template-columns: 64px minmax(0, 1fr) 40px; gap: 8px; } }
 
 /* Divided list */
 .divided { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
@@ -121,6 +226,32 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .divided b { font-weight: 500; }
 .divided span { color: var(--ink-2); font-size: 16px; }
 @media (max-width: 720px) { .divided { grid-template-columns: 1fr; } }
+
+/* Diagram 3: support timeline */
+.timeline { display: grid; gap: 10px; }
+.tl-bar { position: relative; height: 12px; background: var(--paper-2); border: 1px solid var(--rule); }
+.section.alt .tl-bar { background: var(--paper); }
+.tl-fill { position: absolute; inset: -1px auto -1px 0; width: var(--w); background: var(--orange); }
+.tl-now { position: absolute; top: -6px; bottom: -6px; left: var(--x); width: 2px; background: var(--ink); }
+.tl-labels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; font-size: 14px; color: var(--ink-2); }
+.tl-labels b { display: block; color: var(--ink); font-weight: 500; font-size: 15px; }
+.tl-labels div:nth-child(2) { text-align: center; }
+.tl-labels div:nth-child(3) { text-align: right; }
+
+/* Pricing */
+.plans { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.plan { border-top: 3px solid var(--ink); padding-top: 18px; display: grid; gap: 14px; align-content: start; }
+.plan.biz { border-top-color: var(--orange); }
+.plan .price { font: 300 44px/1 var(--sans); }
+.plan .price small { font-size: 16px; color: var(--ink-2); font-weight: 400; margin-left: 6px; }
+.plan ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; }
+.plan li { border-top: 1px solid var(--rule); padding-block: 9px; font-size: 16px; display: flex; gap: 10px; }
+.plan li::before { content: "—"; color: var(--ink-2); font-family: var(--mono); }
+.plan.biz li::before { content: "+"; color: var(--orange); }
+.mail { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mail output { font: 400 15px/1.2 var(--mono); padding: 10px 12px; border: 1px solid var(--rule); background: var(--paper-2); user-select: all; }
+.mail .copied { font-size: 14px; color: var(--ink-2); min-width: 6em; }
+@media (max-width: 760px) { .plans { grid-template-columns: 1fr; } }
 
 /* Tables */
 .table-wrap { overflow-x: auto; }
@@ -148,9 +279,13 @@ td.num, th.num { text-align: right; padding-right: 0; font-variant-numeric: tabu
 .faq details[open] summary::after { content: "−"; }
 .faq details p { color: var(--ink-2); padding-bottom: 16px; max-width: 44em; }
 
-footer { background: var(--paper-2); border-top: 1px solid var(--rule); padding-block: 40px; font-size: 14px; color: var(--ink-2); }
-footer .wrap { display: grid; gap: 12px; }
-footer svg { height: 24px; width: auto; }
+footer { background: var(--paper-2); border-top: 1px solid var(--rule); padding-block: 48px 32px; font-size: 14px; color: var(--ink-2); }
+footer .cols-f { display: grid; grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); gap: 32px; }
+footer h3 { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+footer svg { height: 26px; width: auto; }
+footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rule); display: grid; gap: 6px; }
+@media (max-width: 760px) { footer .cols-f { grid-template-columns: 1fr; } }
 </style>
 
 <header class="top">
@@ -158,8 +293,10 @@ footer svg { height: 24px; width: auto; }
     <a class="brand" href="#top" aria-label="Trota OS, inizio pagina"><span class="logo-light">{{LOGO_LIGHT}}</span><span class="logo-dark">{{LOGO_DARK}}</span></a>
     <nav aria-label="Sezioni">
       <a href="#desktop">Desktop</a>
-      <a href="#edizioni">Server, cloud e kiosk</a>
-      <a href="#sicurezza">Sicurezza</a>
+      <a href="#edizioni">Edizioni</a>
+      <a href="#iot">IoT ed edge</a>
+      <a href="#usi">Usi</a>
+      <a href="#prezzi">Prezzi</a>
       <a href="#domande">Domande</a>
     </nav>
     <a class="btn primary small" href="#download">Scarica</a>
@@ -171,26 +308,45 @@ footer svg { height: 24px; width: auto; }
     <div class="wrap">
       <div>
         <h1 id="hero-title">Trota OS 1.0</h1>
-        <p>Il sistema operativo leggero di TestardStudios. Lo stesso sistema per il portatile, il server, il cloud e lo schermo di un chiosco, con gli aggiornamenti di sicurezza che si installano da soli.</p>
+        <p>Il sistema operativo leggero di TestardStudios. Lo stesso sistema per il portatile, il server, il cloud, lo schermo di un chiosco e il mini PC che raccoglie i dati dei sensori in fabbrica.</p>
         <div class="actions">
           <a class="btn primary" href="#download">Scarica Trota OS</a>
           <a class="btn" href="#edizioni">Scegli l'edizione</a>
         </div>
-        <p class="meta">1.0 “Fario” · amd64 · BIOS e UEFI con Secure Boot</p>
+        <p class="meta">1.0 “Fario” · amd64 · BIOS e UEFI con Secure Boot · gratis per uso personale</p>
       </div>
       <canvas id="facets" width="900" height="900" role="img" aria-label="La trota del logo di Trota OS scomposta in sfaccettature geometriche, con la banda arancione lungo il fianco"></canvas>
     </div>
   </section>
 
+  <div class="facts-strip">
+    <div class="wrap">
+      <dl>
+        <div><dt>4</dt><dd>edizioni da una sola base</dd></div>
+        <div><dt>271 MB</dt><dd>di RAM in uso, edizione Server</dd></div>
+        <div><dt>apr 2029</dt><dd>aggiornamenti di sicurezza fino a</dd></div>
+        <div><dt>0</dt><dd>dati di utilizzo raccolti</dd></div>
+      </dl>
+    </div>
+  </div>
+
   <section class="section" id="desktop" aria-labelledby="desktop-title">
     <div class="wrap"><div class="row">
-      <h2 id="desktop-title">Desktop</h2>
+      <header><p class="eyebrow">Edizione Desktop</p><h2 id="desktop-title">Un desktop che non ti rallenta</h2></header>
       <div class="content">
-        <p>GNOME su Wayland, tema scuro, Firefox, LibreOffice e gli strumenti per programmare. All'accesso il sistema usa circa 0,9 GB di memoria: niente indicizzatore dei file, niente negozio di app in background, niente notifiche promozionali.</p>
+        <p>GNOME su Wayland, tema scuro, Firefox, LibreOffice e gli strumenti per programmare. All'accesso il sistema usa circa 0,9 GB di memoria: niente indicizzatore dei file, niente negozio di app che lavora in background, niente notifiche promozionali.</p>
         <figure class="screen">
           <img src="{{SHOT}}" width="1280" height="800" alt="Desktop di Trota OS: a sinistra il dock, al centro la finestra Welcome con il logo e i pulsanti Controlla aggiornamenti, Apri Impostazioni e Informazioni di sistema">
           <figcaption>Trota OS 1.0 in sessione live, con la finestra di benvenuto. Screenshot dai test automatici.</figcaption>
         </figure>
+        <dl class="included">
+          <div><dt>Internet</dt><dd>Firefox dal repository ufficiale di Mozilla</dd></div>
+          <div><dt>Ufficio</dt><dd>LibreOffice Writer, Calc, Impress, con dizionari italiani</dd></div>
+          <div><dt>App in più</dt><dd>Flatpak con Flathub già configurato</dd></div>
+          <div><dt>Sviluppo</dt><dd>Git, compilatori, Python 3, Vim, curl</dd></div>
+          <div><dt>Stampa</dt><dd>CUPS con i driver delle stampanti più diffuse</dd></div>
+          <div><dt>Sistema</dt><dd>Dischi, Monitor di sistema, Terminale, Editor di testo</dd></div>
+        </dl>
         <div class="cols" style="--n:4">
           <div><h3>Welcome</h3><p>Impostazioni, aggiornamenti, driver e documentazione al primo avvio.</p></div>
           <div><h3>System Info</h3><p>Versione, processore, memoria, dischi, rete e grafica, in un testo da copiare quando chiedi aiuto.</p></div>
@@ -203,14 +359,24 @@ footer svg { height: 24px; width: auto; }
 
   <section class="section alt" id="edizioni" aria-labelledby="ed-title">
     <div class="wrap"><div class="row">
-      <h2 id="ed-title">Server, cloud e kiosk</h2>
+      <header><p class="eyebrow">Edizioni</p><h2 id="ed-title">Una base, quattro edizioni</h2></header>
       <div class="content">
-        <p>Immagini disco pronte all'uso: si scrivono su un disco o si importano in una piattaforma di virtualizzazione. Al primo avvio cloud-init allarga il disco, crea le chiavi SSH e configura rete e utente.</p>
+        <p>Le quattro edizioni nascono dallo stesso repository e ricevono gli stessi aggiornamenti. Cambia solo quello che c'è sopra la base: chi gestisce un ufficio usa lo stesso sistema sui PC, sul server e sugli schermi della reception.</p>
+        <figure class="stack" aria-label="Schema: le quattro edizioni poggiano sulla stessa base">
+          <div class="stack-top">
+            <div class="stack-ed"><b>Desktop</b><span>GNOME, app, installer</span><span class="ram">0,9 GB <i>RAM</i></span></div>
+            <div class="stack-ed"><b>Server ed edge</b><span>SSH, firewall, Podman</span><span class="ram">271 MB <i>RAM</i></span></div>
+            <div class="stack-ed"><b>Cloud</b><span>kernel virtuale, cloud-init</span><span class="ram">294 MB <i>RAM</i></span></div>
+            <div class="stack-ed"><b>Kiosk</b><span>cage, Firefox a tutto schermo</span><span class="ram">309 MB <i>RAM</i></span></div>
+          </div>
+          <div class="stack-base"><b>Base Trota OS 1.0</b><span>kernel Linux · systemd · APT · AppArmor · aggiornamenti automatici fino ad aprile 2029</span></div>
+        </figure>
+        <p class="notice">Le edizioni Server, Cloud e Kiosk sono immagini disco pronte: si scrivono su un disco o si importano in una piattaforma di virtualizzazione. Al primo avvio cloud-init allarga il disco, crea le chiavi SSH e configura rete e utente.</p>
         <div class="cols">
           <div>
             <h3>Server ed edge</h3>
             <p>Senza interfaccia grafica, con SSH solo a chiave, firewall attivo e container Podman anche senza root. Per server, mini PC e gateway.</p>
-            <ul class="facts"><li>circa 270 MB di RAM in uso</li><li>380 pacchetti</li></ul>
+            <ul class="facts"><li>380 pacchetti</li><li>hardening del kernel di serie</li></ul>
             <div class="term"><span class="p">$ </span>podman run --rm -it alpine
 <span class="p">$ </span>sudo ufw status
 <span class="o">Status: active</span></div>
@@ -218,7 +384,7 @@ footer svg { height: 24px; width: auto; }
           <div>
             <h3>Cloud</h3>
             <p>Kernel per hardware virtuale e agente QEMU. L'accesso avviene con le chiavi SSH che la piattaforma passa a cloud-init.</p>
-            <ul class="facts"><li>qcow2 di circa 0,55 GB</li><li>EC2, Azure, GCE, OpenStack, NoCloud</li></ul>
+            <ul class="facts"><li>qcow2 di circa 0,55 GB</li><li>EC2, Azure, GCE, OpenStack, Proxmox, NoCloud</li></ul>
             <div class="term"><span class="p">$ </span>cloud-init status
 <span class="o">status: done</span></div>
           </div>
@@ -234,25 +400,150 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
     </div></div>
   </section>
 
+  <section class="section band" id="iot" aria-labelledby="iot-title">
+    <div class="wrap"><div class="row">
+      <header><p class="eyebrow">IoT ed edge</p><h2 id="iot-title">Dal sensore allo schermo</h2></header>
+      <div class="content">
+        <p>Un mini PC con <b>Trota OS Server</b> fa da gateway: riceve i dati dei sensori, li elabora sul posto anche senza internet e li manda al server centrale. Gli schermi con <b>Trota OS Kiosk</b> mostrano la dashboard. Tutto con lo stesso sistema, gli stessi aggiornamenti e la stessa configurazione cloud-init.</p>
+        <figure class="flow" aria-label="Schema del flusso dei dati: sensori, gateway Trota OS Server, server centrale Trota OS Cloud, schermi Trota OS Kiosk">
+          <div class="node"><span class="eyebrow">Campo</span><b>Sensori e macchine</b><ul><li>temperatura, energia</li><li>PLC, contatori</li><li>Modbus, seriale, MQTT</li></ul></div>
+          <div class="link" aria-hidden="true"><span>MQTT</span></div>
+          <div class="node main"><span class="eyebrow">Edge · Trota OS Server</span><b>Gateway</b><ul><li>Mosquitto in Podman</li><li>Node-RED in Podman</li><li>firewall, SSH a chiave</li><li>lavora anche offline</li></ul></div>
+          <div class="link" aria-hidden="true"><span>HTTPS</span></div>
+          <div class="node"><span class="eyebrow">Trota OS Cloud</span><b>Server centrale</b><ul><li>database, storico</li><li>API, backup</li></ul></div>
+          <div class="link" aria-hidden="true"><span>web</span></div>
+          <div class="node"><span class="eyebrow">Trota OS Kiosk</span><b>Schermi</b><ul><li>dashboard di reparto</li><li>totem, reception</li></ul></div>
+        </figure>
+        <div class="cols">
+          <div>
+            <h3>Container per ogni servizio</h3>
+            <p>Broker MQTT, Node-RED, database e il tuo codice girano in container Podman separati, senza root. Si aggiornano uno alla volta senza toccare il sistema.</p>
+          </div>
+          <div>
+            <h3>Cento dispositivi, una configurazione</h3>
+            <p>Lo stesso file cloud-init imposta nome, chiavi SSH, rete e servizi su ogni gateway e su ogni schermo. Una chiavetta <code>CIDATA</code> basta anche senza cloud.</p>
+          </div>
+          <div>
+            <h3>Fatto per stare acceso</h3>
+            <p>Journal limitato a 500 MB per non riempire dischi piccoli, aggiornamenti di sicurezza automatici, console seriale per l'accesso senza schermo.</p>
+          </div>
+        </div>
+        <div class="term"><span class="o"># sul gateway: broker MQTT e Node-RED</span>
+<span class="p">$ </span>podman run -d --name mqtt -p 1883:1883 docker.io/library/eclipse-mosquitto
+<span class="p">$ </span>podman run -d --name flows -p 1880:1880 docker.io/nodered/node-red
+<span class="p">$ </span>sudo ufw allow 1883/tcp &amp;&amp; sudo ufw allow 1880/tcp</div>
+        <p class="hw-note"><b>Hardware:</b> PC x86 a 64 bit, come mini PC, PC industriali fanless e thin client, da 2 GB di RAM. Le schede ARM, come Raspberry Pi, non sono ancora supportate.</p>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section" id="usi" aria-labelledby="usi-title">
+    <div class="wrap"><div class="row">
+      <header><p class="eyebrow">Usi</p><h2 id="usi-title">Per cosa si usa</h2></header>
+      <ul class="uses">
+        <li><h3>Casa e ufficio</h3><p>Navigare, scrivere, fare i conti, stampare, videochiamare. Senza account e senza pubblicità.</p><div class="tags"><span class="tag">Desktop</span></div></li>
+        <li><h3>Scuole e laboratori</h3><p>Le stesse postazioni per tutta l'aula, e uno schermo in corridoio con orari e avvisi.</p><div class="tags"><span class="tag">Desktop</span><span class="tag">Kiosk</span></div></li>
+        <li><h3>Sviluppo software</h3><p>Git, compilatori e container sul portatile, lo stesso sistema sul server di prova.</p><div class="tags"><span class="tag">Desktop</span><span class="tag">Server</span></div></li>
+        <li><h3>Gateway industriali</h3><p>Raccolta dati da macchine e sensori, elaborazione locale, invio al gestionale.</p><div class="tags"><span class="tag">Server ed edge</span></div></li>
+        <li><h3>Menu digitali e totem</h3><p>Il menu del bar, il listino del negozio, il totem per prendere il numero.</p><div class="tags"><span class="tag">Kiosk</span></div></li>
+        <li><h3>Dashboard di reparto</h3><p>Produzione, ordini e allarmi su uno schermo in fabbrica o in magazzino.</p><div class="tags"><span class="tag">Kiosk</span></div></li>
+        <li><h3>Home lab e self-hosting</h3><p>Cloud personale, domotica, backup e media server in container su un mini PC.</p><div class="tags"><span class="tag">Server</span></div></li>
+        <li><h3>Macchine virtuali</h3><p>Immagini qcow2 per Proxmox, OpenStack e KVM, configurate al primo avvio.</p><div class="tags"><span class="tag">Cloud</span></div></li>
+        <li><h3>PC da rimettere in uso</h3><p>Un computer di qualche anno con 4 GB di RAM torna utile come desktop o come piccolo server.</p><div class="tags"><span class="tag">Desktop</span><span class="tag">Server</span></div></li>
+      </ul>
+    </div></div>
+  </section>
+
+  <section class="section alt" id="leggero" aria-labelledby="light-title">
+    <div class="wrap"><div class="row">
+      <header><p class="eyebrow">Prestazioni</p><h2 id="light-title">Leggero davvero</h2></header>
+      <div class="content">
+        <figure class="chart">
+          <figcaption><b>Memoria in uso dopo l'avvio, in MB</b><span>Misurata nei test automatici in macchina virtuale, un minuto dopo l'accesso.</span></figcaption>
+          <ul class="bars">
+            <li><span class="lbl">Desktop</span><span class="track"><span class="bar" style="--w:93.5%" tabindex="0" data-tip="Desktop: 935 MB con GNOME avviato"></span></span><span class="val">935</span></li>
+            <li><span class="lbl">Kiosk</span><span class="track"><span class="bar" style="--w:30.9%" tabindex="0" data-tip="Kiosk: 309 MB con Firefox a tutto schermo"></span></span><span class="val">309</span></li>
+            <li><span class="lbl">Cloud</span><span class="track"><span class="bar" style="--w:29.4%" tabindex="0" data-tip="Cloud: 294 MB dopo cloud-init"></span></span><span class="val">294</span></li>
+            <li><span class="lbl">Server</span><span class="track"><span class="bar" style="--w:27.1%" tabindex="0" data-tip="Server: 271 MB senza servizi aggiunti"></span></span><span class="val">271</span></li>
+          </ul>
+          <div class="axis" aria-hidden="true"><span></span><div><span style="--x:0%">0</span><span style="--x:20%">200</span><span style="--x:40%">400</span><span style="--x:60%">600</span><span style="--x:80%">800</span><span style="--x:100%">1000</span></div><span></span></div>
+        </figure>
+        <ul class="divided">
+          <li><b>Niente snap</b><span>Firefox arriva come pacchetto normale da Mozilla, le altre app da Flathub. Avvii più rapidi e nessun servizio in più.</span></li>
+          <li><b>Niente indicizzatore</b><span>La ricerca dei file in background è spenta: il disco resta libero mentre lavori.</span></li>
+          <li><b>Niente pubblicità</b><span>Nessuna offerta di servizi a pagamento nel terminale, nelle notifiche o all'avvio.</span></li>
+          <li><b>Solo i firmware utili</b><span>Fuori i firmware per le schede da data center: immagine più piccola, aggiornamenti più leggeri.</span></li>
+        </ul>
+      </div>
+    </div></div>
+  </section>
+
   <section class="section" id="sicurezza" aria-labelledby="sec-title">
     <div class="wrap"><div class="row">
-      <h2 id="sec-title">Sicurezza e privacy</h2>
+      <header><p class="eyebrow">Sicurezza</p><h2 id="sec-title">Sicurezza e ciclo di vita</h2></header>
       <div class="content">
+        <div class="timeline" role="img" aria-label="Ciclo di vita: Trota OS 1.0 esce a ottobre 2026 e riceve aggiornamenti di sicurezza fino ad aprile 2029">
+          <div class="tl-bar"><span class="tl-fill" style="--w:100%"></span><span class="tl-now" style="--x:0%"></span></div>
+          <div class="tl-labels">
+            <div><b>Ottobre 2026</b>uscita di Trota OS 1.0</div>
+            <div><b>2027 – 2028</b>correzioni automatiche ogni giorno</div>
+            <div><b>Aprile 2029</b>fine degli aggiornamenti di sicurezza</div>
+          </div>
+        </div>
         <ul class="divided">
           <li><b>Nessuna telemetria</b><span>Nessun programma raccoglie o invia dati sul tuo uso. Nessun account obbligatorio.</span></li>
-          <li><b>Aggiornamenti automatici</b><span>Le correzioni di sicurezza si installano da sole fino ad aprile 2029, comprese quelle di Firefox.</span></li>
+          <li><b>Aggiornamenti automatici</b><span>Le correzioni di sicurezza si installano da sole, comprese quelle di Firefox.</span></li>
           <li><b>Secure Boot</b><span>Si avvia con Secure Boot attivo, e anche sui PC con BIOS tradizionale.</span></li>
           <li><b>Nessuna porta aperta</b><span>Sul desktop nessun servizio ascolta in rete. Sui server solo SSH con chiave.</span></li>
-          <li><b>AppArmor</b><span>I profili di sicurezza sono attivi. Le app Trota non chiedono mai i permessi di amministratore.</span></li>
+          <li><b>AppArmor e hardening</b><span>Profili di sicurezza attivi; sui server, limiti del kernel su ptrace, BPF e redirect di rete.</span></li>
           <li><b>Applicazioni isolate</b><span>Le app di Flathub girano separate dal sistema e si aggiornano una volta al giorno.</span></li>
         </ul>
       </div>
     </div></div>
   </section>
 
-  <section class="section alt" id="download" aria-labelledby="dl-title">
+  <section class="section alt" id="prezzi" aria-labelledby="price-title">
     <div class="wrap"><div class="row">
-      <h2 id="dl-title">Download</h2>
+      <header><p class="eyebrow">Prezzi</p><h2 id="price-title">Gratis a casa, su misura in azienda</h2></header>
+      <div class="content">
+        <div class="plans">
+          <div class="plan">
+            <h3>Uso personale</h3>
+            <p class="price">Gratis</p>
+            <ul>
+              <li>Tutte e quattro le edizioni</li>
+              <li>Aggiornamenti di sicurezza fino ad aprile 2029</li>
+              <li>Su tutti i computer che vuoi</li>
+              <li>Documentazione e segnalazioni sul repository</li>
+            </ul>
+            <div class="actions"><a class="btn" href="#download">Scarica</a></div>
+          </div>
+          <div class="plan biz">
+            <h3>Aziende ed enti</h3>
+            <p class="price">Su misura</p>
+            <ul>
+              <li>Supporto diretto da TestardStudios</li>
+              <li>Immagini personalizzate con le tue app e il tuo logo</li>
+              <li>Configurazioni cloud-init per flotte di gateway e schermi</li>
+              <li>Uso del marchio Trota OS nei tuoi prodotti</li>
+              <li>Formazione per chi gestisce i sistemi</li>
+            </ul>
+            <div class="mail">
+              <a class="btn primary" href="mailto:sales@testardstudios.it?subject=Trota%20OS%20per%20la%20mia%20azienda">Scrivi a sales</a>
+              <output id="sales">sales@testardstudios.it</output>
+              <button class="btn small" type="button" id="copy">Copia</button>
+              <span class="copied" id="copied" role="status"></span>
+            </div>
+          </div>
+        </div>
+        <p class="notice">Per l'uso in azienda, a scuola o in un ente pubblico scrivi a <b>sales@testardstudios.it</b> con il numero di postazioni o dispositivi: ti rispondiamo con un'offerta. Trota OS contiene software libero di terze parti, distribuito secondo le rispettive licenze open source.</p>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section" id="download" aria-labelledby="dl-title">
+    <div class="wrap"><div class="row">
+      <header><p class="eyebrow">Download</p><h2 id="dl-title">Scarica Trota OS 1.0</h2></header>
       <div class="content">
         <p class="notice"><b>Versione di anteprima.</b> Trota OS 1.0 è stato provato in macchine virtuali, compresi installazione e avvio con Secure Boot, ma non ancora su un ampio numero di computer reali.</p>
         <div class="table-wrap">
@@ -277,20 +568,34 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
   of=/dev/sdX bs=4M conv=fsync</div></li>
           <li><h3>Avvia e prova</h3><p>Avvia il computer dalla chiavetta: Trota OS parte senza installare nulla. L'icona sul desktop avvia l'installazione.</p></li>
         </ol>
-        <p class="notice">Per il desktop servono un processore x86 a 64 bit, 4 GB di RAM (meglio 8) e 25 GB di disco. Server, cloud e kiosk partono da 2 GB di RAM e 4 GB di disco.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Requisiti minimi</th><th>Processore</th><th class="num">RAM</th><th class="num">Disco</th></tr></thead>
+            <tbody>
+              <tr><td>Desktop</td><td>x86 a 64 bit</td><td class="num">4 GB (meglio 8)</td><td class="num">25 GB</td></tr>
+              <tr><td>Server ed edge</td><td>x86 a 64 bit</td><td class="num">2 GB</td><td class="num">4 GB</td></tr>
+              <tr><td>Cloud</td><td>x86 a 64 bit, virtuale</td><td class="num">1 GB</td><td class="num">4 GB</td></tr>
+              <tr><td>Kiosk e signage</td><td>x86 a 64 bit, con uscita video</td><td class="num">2 GB</td><td class="num">4 GB</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div></div>
   </section>
 
-  <section class="section" id="domande" aria-labelledby="faq-title">
+  <section class="section alt" id="domande" aria-labelledby="faq-title">
     <div class="wrap"><div class="row">
-      <h2 id="faq-title">Domande</h2>
+      <header><p class="eyebrow">Domande</p><h2 id="faq-title">Domande frequenti</h2></header>
       <div class="faq">
-        <details><summary>Quanto costa?</summary><p>Niente. Le parti originali di Trota OS sono sotto licenza GPL-3.0, grafica e documentazione sotto CC BY-SA 4.0.</p></details>
-        <details><summary>I programmi per Linux funzionano?</summary><p>Sì. Trota OS usa i pacchetti di Ubuntu 24.04 LTS, quindi i pacchetti .deb, i PPA e i repository pensati per quella versione funzionano anche qui. In più ci sono le app Flatpak di Flathub.</p></details>
+        <details><summary>Quanto costa?</summary><p>Per uso personale niente, su tutti i computer che vuoi. Per aziende, scuole ed enti TestardStudios prepara un'offerta con supporto, immagini personalizzate e uso del marchio: scrivi a sales@testardstudios.it.</p></details>
+        <details><summary>Posso provarlo senza installarlo?</summary><p>Sì. La ISO desktop parte dalla chiavetta in modalità live: il disco del computer non viene toccato finché non scegli di installare.</p></details>
+        <details><summary>Si può usare per l'IoT?</summary><p>Sì, su hardware x86 a 64 bit: l'edizione Server fa da gateway con broker MQTT, Node-RED e i tuoi servizi in container Podman; l'edizione Kiosk mostra le dashboard. Le schede ARM come Raspberry Pi non sono ancora supportate.</p></details>
+        <details><summary>Come configuro tanti dispositivi uguali?</summary><p>Con cloud-init: un file <code>user-data</code> con nome, chiavi SSH, rete e servizi, passato dalla piattaforma cloud o da una chiavetta con etichetta CIDATA. Lo stesso file vale per ogni gateway o schermo.</p></details>
+        <details><summary>I programmi per Linux funzionano?</summary><p>Sì. Trota OS è compatibile con i pacchetti .deb, i PPA e i repository pensati per Ubuntu 24.04 LTS. In più ci sono le app Flatpak di Flathub.</p></details>
         <details><summary>Fino a quando riceve aggiornamenti?</summary><p>Gli aggiornamenti di sicurezza arrivano fino ad aprile 2029 e si installano da soli. Le nuove versioni di Trota OS escono come nuove immagini.</p></details>
         <details><summary>Perché non ci sono gli snap?</summary><p>Per tenere il sistema leggero: Firefox è il pacchetto ufficiale di Mozilla e le altre applicazioni arrivano da Flathub. Chi vuole gli snap può riattivarli.</p></details>
         <details><summary>Serve un account o una connessione?</summary><p>No. La rete serve solo per gli aggiornamenti e per installare nuove applicazioni.</p></details>
+        <details><summary>Funziona in macchina virtuale?</summary><p>Sì: tutte le edizioni sono provate in QEMU/KVM con firmware BIOS, UEFI e Secure Boot. L'edizione Cloud è fatta apposta per Proxmox, OpenStack e i cloud pubblici.</p></details>
       </div>
     </div></div>
   </section>
@@ -298,9 +603,30 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
 
 <footer>
   <div class="wrap">
-    <span class="logo-light">{{LOGO_LIGHT}}</span><span class="logo-dark">{{LOGO_DARK}}</span>
-    <p>Sviluppato e pubblicato da TestardStudios. Codice e documentazione nel <a href="{{REPO_URL}}" target="_blank" rel="noopener">repository del progetto</a>.</p>
-    <p>Trota OS non è un prodotto di Canonical né del progetto Ubuntu. Ubuntu è un marchio registrato di Canonical Ltd. Firefox è un marchio di Mozilla Foundation.</p>
+    <div class="cols-f">
+      <div style="display:grid;gap:12px;align-content:start">
+        <span class="logo-light">{{LOGO_LIGHT}}</span><span class="logo-dark">{{LOGO_DARK}}</span>
+        <p>Trota OS è sviluppato e pubblicato da TestardStudios.</p>
+      </div>
+      <div>
+        <h3>Sistema</h3>
+        <ul>
+          <li><a href="#download">Download</a></li>
+          <li><a href="{{DOCS_URL}}" target="_blank" rel="noopener">Guida all'installazione</a></li>
+          <li><a href="{{REPO_URL}}" target="_blank" rel="noopener">Codice e documentazione</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contatti</h3>
+        <ul>
+          <li><a href="mailto:sales@testardstudios.it">sales@testardstudios.it</a></li>
+          <li><a href="#prezzi">Offerte per aziende</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <p>Trota OS non è un prodotto di Canonical né del progetto Ubuntu. Ubuntu è un marchio registrato di Canonical Ltd. Firefox è un marchio di Mozilla Foundation.</p>
+    </div>
   </div>
 </footer>
 
@@ -355,5 +681,22 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
   g.strokeStyle = "#101214"; g.lineWidth = 5 * s; g.lineJoin = "miter";
   g.beginPath(); const g1 = P(182,102), g2 = P(191,128), g3 = P(182,154);
   g.moveTo(g1[0], g1[1]); g.lineTo(g2[0], g2[1]); g.lineTo(g3[0], g3[1]); g.stroke();
+})();
+
+// Copy the sales address; falls back to selecting it where the clipboard API is blocked.
+(function () {
+  const btn = document.getElementById("copy"), out = document.getElementById("sales"), msg = document.getElementById("copied");
+  if (!btn || !out) return;
+  btn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(out.textContent.trim());
+      msg.textContent = "Copiato";
+    } catch (e) {
+      const r = document.createRange(); r.selectNodeContents(out);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      msg.textContent = "Premi Ctrl+C";
+    }
+    setTimeout(() => { msg.textContent = ""; }, 2500);
+  });
 })();
 </script>
