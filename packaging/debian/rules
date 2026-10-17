@@ -70,6 +70,7 @@ override_dh_auto_install:
 	install -D -m 644 packaging/files/settings/90_trota-os.gschema.override \
 		$(SET)/usr/share/glib-2.0/schemas/90_trota-os.gschema.override
 	install -D -m 644 packaging/files/settings/dconf-profile-user $(SET)/etc/dconf/profile/user
+	install -D -m 644 packaging/files/settings/trota-firmware-exclude $(SET)/etc/dpkg/dpkg.cfg.d/trota-firmware-exclude
 	install -D -m 644 packaging/files/settings/10-trota-terminal $(SET)/etc/dconf/db/trota.d/10-trota-terminal
 	# --- Python applications ---------------------------------------------
 	set -e; for app in $(APPS); do \

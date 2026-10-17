@@ -1,8 +1,8 @@
 # Build the Trota OS ISO on a GitHub-hosted runner and publish it as a
 # GitHub release. Started by hand: Actions → "Build and release ISO" → Run workflow.
 #
-# GitHub limits release assets to 2 GiB per file, so the ISO is attached in
-# parts (see docs/release-notes.md for how to join them).
+# GitHub limits release assets to 2 GiB per file: the ISO is attached as a
+# single file when it fits, otherwise in parts (see docs/release-notes.md).
 name: Build and release ISO
 
 on:
@@ -16,6 +16,10 @@ on:
         description: "Mark the release as a pre-release"
         type: boolean
         default: true
+      replace:
+        description: "Delete an existing release with this tag (and the tag) first"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -34,13 +38,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Refuse an existing tag
+      - name: Check the tag
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag }}
+          REPLACE: ${{ inputs.replace }}
         run: |
           if gh release view "$TAG" >/dev/null 2>&1 || git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
-            echo "::error::release or tag $TAG already exists"; exit 1
+            if [ "$REPLACE" = true ]; then
+              echo "::notice::release $TAG will be replaced after a successful build"
+            else
+              echo "::error::release or tag $TAG already exists (run again with 'replace' to overwrite it)"; exit 1
+            fi
           fi
 
       # The build needs ~25 GB; the runner image ships ~20 GB free.
@@ -72,17 +81,27 @@ jobs:
         run: |
           sudo chown -R "$(id -u):$(id -g)" dist
           mkdir -p release
-          split -b 1900M -d -a 1 --numeric-suffixes=1 "$ISO" "release/$(basename "$ISO").part"
+          name="$(basename "$ISO")"
+          bytes="$(stat -c %s "$ISO")"
+          # GitHub release assets must be smaller than 2 GiB.
+          if [ "$bytes" -lt 2147483648 ]; then
+            mv "$ISO" release/
+            single=true
+          else
+            echo "::warning::ISO is $bytes bytes (over 2 GiB): attached in parts"
+            split -b 1900M -d -a 1 --numeric-suffixes=1 "$ISO" "release/$name.part"
+            (cd release && sha256sum ./*.part* > SHA256SUMS-parts \
+              && cat ./*.part* | sha256sum -c <(sed 's/  .*/  -/' "../$ISO.sha256"))
+            single=false
+          fi
           cp "$ISO.sha256" dist/trota-os-1.0-amd64.manifest release/
-          (cd release && sha256sum *.part* > SHA256SUMS-parts && cat ./*.part* | sha256sum -c <(sed 's/  .*/  -/' "$(basename "$ISO").sha256"))
           ls -l release
           sha="$(cut -d' ' -f1 "$ISO.sha256")"
-          size="$(du -h --apparent-size "$ISO" | cut -f1)"
-          parts="$(cd release && ls *.part* | paste -sd' ')"
-          winparts="$(cd release && ls *.part* | paste -sd+ | sed 's/+/ + /g')"
+          size="$(numfmt --to=si --suffix=B "$bytes")"
+          url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}"
           {
             if [ "${{ inputs.prerelease }}" = true ]; then
-              echo "**Anteprima.** Build automatica su GitHub Actions; l'immagine ha superato \`verify-iso.sh\`. I test in macchina virtuale e su hardware reale sono descritti in [docs/testing.md](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/docs/testing.md)."
+              echo "**Anteprima.** Build automatica su GitHub Actions; l'immagine ha superato \`verify-iso.sh\`. I test in macchina virtuale e su hardware reale sono descritti in [docs/testing.md]($url/docs/testing.md)."
               echo
             fi
             echo "Trota OS 1.0 \"Fario\" di TestardStudios, basato su Ubuntu 24.04 LTS (GNOME 46, kernel HWE)."
@@ -92,21 +111,25 @@ jobs:
             echo "- Secure Boot con shim e GRUB firmati."
             echo
             echo "### Download ($size)"
-            echo "GitHub accetta file fino a 2 GiB: la ISO è divisa in parti ($parts). Scaricale tutte nella stessa cartella."
+            if [ "$single" = true ]; then
+              echo "Scarica \`$name\` e verificalo:"
+              echo '```sh'
+              echo "sha256sum -c $name.sha256"
+              echo '```'
+              echo "Su Windows: \`certutil -hashfile $name SHA256\`."
+            else
+              parts="$(cd release && ls ./*.part* | sed 's#^\./##' | paste -sd' ')"
+              winparts="$(echo "$parts" | sed 's/ / + /g')"
+              echo "GitHub accetta file fino a 2 GiB: la ISO è divisa in parti ($parts). Scaricale tutte nella stessa cartella."
+              echo '```sh'
+              echo "cat $name.part* > $name && sha256sum -c $name.sha256"
+              echo '```'
+              echo "Su Windows: \`copy /b $winparts $name\`, poi \`certutil -hashfile $name SHA256\`."
+            fi
             echo
-            echo "Linux/macOS:"
-            echo '```sh'
-            echo "cat trota-os-1.0-amd64.iso.part* > trota-os-1.0-amd64.iso"
-            echo "sha256sum -c trota-os-1.0-amd64.iso.sha256"
-            echo '```'
-            echo "Windows (cmd):"
-            echo '```'
-            echo "copy /b $winparts trota-os-1.0-amd64.iso"
-            echo "certutil -hashfile trota-os-1.0-amd64.iso SHA256"
-            echo '```'
             echo "SHA-256 della ISO: \`$sha\`"
             echo
-            echo "Note di rilascio e problemi noti: [docs/release-notes.md](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/docs/release-notes.md) · Installazione: [docs/installation.md](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}/docs/installation.md)"
+            echo "Note di rilascio e problemi noti: [docs/release-notes.md]($url/docs/release-notes.md) · Installazione: [docs/installation.md]($url/docs/installation.md)"
           } > release-body.md
           cat release-body.md
 
@@ -115,6 +138,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.tag }}
         run: |
+          if [ "${{ inputs.replace }}" = true ] && gh release view "$TAG" >/dev/null 2>&1; then
+            gh release delete "$TAG" --cleanup-tag --yes
+          elif [ "${{ inputs.replace }}" = true ] && git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
+            git push origin ":refs/tags/$TAG"
+          fi
           flags=()
           [ "${{ inputs.prerelease }}" = true ] && flags+=(--prerelease)
           gh release create "$TAG" release/* --target "$GITHUB_SHA" \

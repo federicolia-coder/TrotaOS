@@ -81,6 +81,10 @@ stage_packages() {
     printf '127.0.0.1 localhost\n127.0.1.1 trota\n::1 localhost ip6-localhost ip6-loopback\n' > "$CHROOT/etc/hosts"
 
     prepare_chroot
+    # Same dpkg filter as trota-desktop-settings, in place before linux-firmware
+    # is unpacked (data-centre firmware, ~170 MB, see the file for details).
+    install -D -m 644 "$TROTA_ROOT/packaging/files/settings/trota-firmware-exclude" \
+        "$CHROOT/etc/dpkg/dpkg.cfg.d/trota-firmware-exclude"
     in_chroot "$CHROOT" apt-get update
     in_chroot "$CHROOT" apt-get -y full-upgrade
 
@@ -129,6 +133,12 @@ stage_trota() {
             | awk '/^ii/{print $2}'
     done)"
     [ -z "$bad" ] || die "excluded packages installed: $bad"
+    # The dpkg firmware filter must have kept the data-centre firmware out.
+    local d
+    for d in mellanox mrvl/prestera netronome qed; do
+        [ -z "$(find "$CHROOT/usr/lib/firmware/$d" -type f 2>/dev/null | head -1)" ] \
+            || die "firmware filter not applied: usr/lib/firmware/$d"
+    done
 }
 
 # ---------------------------------------------------------------------------
@@ -259,7 +269,10 @@ stage_iso() {
 
     log "iso: squashfs ($TROTA_SQUASHFS_COMP)"
     rm -f "$ISO_DIR/casper/filesystem.squashfs"
-    mksquashfs "$CHROOT" "$ISO_DIR/casper/filesystem.squashfs" -noappend -comp "$TROTA_SQUASHFS_COMP" \
+    # xz: 1 MiB blocks and the x86 BCJ filter make the image ~5% smaller.
+    local sqopts=()
+    [ "$TROTA_SQUASHFS_COMP" = xz ] && sqopts=(-b 1M -Xbcj x86)
+    mksquashfs "$CHROOT" "$ISO_DIR/casper/filesystem.squashfs" -noappend -comp "$TROTA_SQUASHFS_COMP" "${sqopts[@]}" \
         -wildcards -e 'proc/*' 'sys/*' 'dev/*' 'run/*' 'tmp/*' 'var/tmp/*' 'var/cache/apt/archives/*.deb'
 
     # Medium identity, read by casper and ubiquity (RELEASE name in the UI).

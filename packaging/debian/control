@@ -53,7 +53,8 @@ Description: Trota OS default desktop configuration
  GSettings and dconf defaults of the Trota OS GNOME desktop: dark style,
  wallpapers, dock, fonts, terminal colours, login screen logo and privacy
  defaults. Only defaults are changed: every setting remains user
- configurable.
+ configurable. A dpkg filter skips the firmware files of data-centre
+ hardware (Ethernet switch ASICs, SmartNICs, FastLinQ server adapters).
 
 Package: trota-common
 Architecture: all

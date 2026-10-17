@@ -204,6 +204,16 @@ installato. Sono aggiunti strumenti per sviluppatori, rete, sistema, LibreOffice
 e componenti Vulkan/gamemode per il gaming. `ubuntu-wallpapers` non può essere
 escluso perché `gnome-shell` di Ubuntu ne dipende.
 
+I firmware dell'hardware da data center (switch Mellanox Spectrum e Marvell
+Prestera, SmartNIC Netronome, adattatori QLogic FastLinQ, circa 170 MB già
+compressi) non vengono estratti grazie a un filtro di dpkg
+(`/etc/dpkg/dpkg.cfg.d/trota-firmware-exclude`, pacchetto
+`trota-desktop-settings`): i pacchetti restano installati, perché il
+metapacchetto del kernel dipende da `linux-firmware`, e gli aggiornamenti
+continuano a funzionare. La squashfs usa xz con blocchi da 1 MiB e filtro x86
+(circa 5% in meno). Così la ISO sta sotto i 2 GiB e si pubblica su GitHub come
+file unico.
+
 ### ADR-009 — Configurazione del desktop
 
 Nessun componente di GNOME è sostituito o modificato. Le impostazioni

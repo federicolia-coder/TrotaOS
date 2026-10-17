@@ -30,34 +30,25 @@ Base: Ubuntu 24.04 LTS (noble), kernel HWE `linux-generic-hwe-24.04`
 
 ## Artefatti
 
-Release [v1.0.0](https://github.com/federicolia-coder/TrotaOS/releases/tag/v1.0.0)
-(pre-release, costruita da GitHub Actions dal commit `e067ebc`): SHA-256
-`001da64d80308e5d3a142c1c2bfdb02df3381c813f8f6fc08bc62ace268aa94b`, 2,37 GB
-(la build precedente con gli snap era di 3,7 GB). Gli allegati scaricati dalla
-release sono stati riverificati: checksum delle parti, della ISO ricomposta e
-`verify-iso.sh` superati.
+La release [v1.0.0](https://github.com/federicolia-coder/TrotaOS/releases/tag/v1.0.0)
+(pre-release) è costruita da GitHub Actions. Ogni build ha un proprio SHA-256
+(data di build e versioni dei pacchetti cambiano): fa fede il file `.sha256`
+pubblicato accanto alla ISO.
 
-Ogni build ha un proprio SHA-256 (data di build e versioni dei pacchetti
-cambiano): fa fede il file `.sha256` pubblicato accanto alla ISO.
+Dimensione: circa 2,1 GB (la prima build con gli snap era di 3,7 GB), sotto il
+limite di 2 GiB per allegato di GitHub, quindi la ISO è un **file unico**. Se
+una build futura superasse il limite, il workflow la allegherebbe divisa in
+parti (`.part1`, `.part2`…, con `SHA256SUMS-parts`) da ricomporre con
+`cat trota-os-1.0-amd64.iso.part* > trota-os-1.0-amd64.iso`.
 
 | File | Descrizione |
 |---|---|
-| `trota-os-1.0-amd64.iso` | Immagine ISO (circa 2,4 GB) |
-| `trota-os-1.0-amd64.iso.part1`, `.part2`… | La ISO divisa in parti (GitHub accetta allegati fino a 2 GiB) |
-| `SHA256SUMS-parts` | Checksum delle singole parti |
-| `trota-os-1.0-amd64.iso.sha256` | Checksum SHA-256 della ISO intera |
+| `trota-os-1.0-amd64.iso` | Immagine ISO |
+| `trota-os-1.0-amd64.iso.sha256` | Checksum SHA-256 |
 | `trota-os-1.0-amd64.manifest` | Elenco di pacchetti e versioni |
 
-Ricomporre e verificare la ISO scaricata dalla release:
-
-```sh
-cat trota-os-1.0-amd64.iso.part* > trota-os-1.0-amd64.iso
-sha256sum -c trota-os-1.0-amd64.iso.sha256
-```
-
-Su Windows: `copy /b trota-os-1.0-amd64.iso.part1 + trota-os-1.0-amd64.iso.part2 trota-os-1.0-amd64.iso`
-(elencando tutte le parti presenti, in ordine)
-e poi `certutil -hashfile trota-os-1.0-amd64.iso SHA256`.
+Verifica dopo il download: `sha256sum -c trota-os-1.0-amd64.iso.sha256`
+(Windows: `certutil -hashfile trota-os-1.0-amd64.iso SHA256`).
 
 Le ISO non sono conservate nel repository Git: si generano con
 [building.md](building.md) oppure con il workflow *Build and release ISO* di

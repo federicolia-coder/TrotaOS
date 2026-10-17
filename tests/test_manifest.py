@@ -82,3 +82,14 @@ def test_live_only_packages_are_removed_after_install():
     # ubiquity crashes without a slideshow: ours must be built and checked by the build
     assert "Package: ubiquity-slideshow-trota" in (ROOT / "packaging/debian/control").read_text()
     assert "/usr/share/ubiquity-slideshow/slides/index.html" in build
+
+
+def test_firmware_filter_is_installed_before_the_kernel():
+    conf = ROOT / "packaging/files/settings/trota-firmware-exclude"
+    rules = (ROOT / "packaging/debian/rules").read_text()
+    build = (ROOT / "scripts/build/build-iso.sh").read_text()
+    assert "packaging/files/settings/trota-firmware-exclude $(SET)/etc/dpkg/dpkg.cfg.d/" in rules
+    # the build copies it into the chroot before any package is installed
+    assert build.index("trota-firmware-exclude") < build.index('install $(read_list "$m/base.list"')
+    patterns = [ln.split("=", 1)[1] for ln in conf.read_text().splitlines() if ln.startswith("path-exclude=")]
+    assert patterns and all(p.startswith(("/lib/firmware/", "/usr/lib/firmware/")) and p.endswith("/*") for p in patterns)

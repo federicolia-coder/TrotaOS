@@ -60,7 +60,7 @@ Le ISO non vanno aggiunte a Git (`dist/` è ignorata).
 | `packages` | Sorgenti APT ufficiali, pin temporaneo dei pacchetti esclusi, installazione dei manifest (`packages/manifest/*.list`) | 403 s |
 | `trota` | Installa i pacchetti `build/packages/*.deb` (tra cui `trota-software-sources`), poi Firefox e la sua traduzione italiana dal repository di Mozilla; fallisce se un pacchetto escluso risulta installato, se Firefox è la transizione snap di Ubuntu o se manca il remote Flathub | ~2 min |
 | `customize` | casper.conf, locale, schemi GSettings, dconf, `Prompt=never` per i rilasci, APT news disattivate, banner di login senza link Canonical, initramfs con verifica di tema Plymouth e casper, pulizia (machine-id, log, cache) | ~1 min |
-| `iso` | kernel/initrd, manifest, squashfs (xz), `.disk/info`, archivio APT del supporto (`dists/`, `pool/` con i pacchetti Trota, richiesto da ubiquity), `md5sum.txt`, GRUB BIOS ed EFI firmato, `efi.img`, `xorriso` | ~8 min (xz, 4 core) |
+| `iso` | kernel/initrd, manifest, squashfs (xz, blocchi da 1 MiB, filtro x86), `.disk/info`, archivio APT del supporto (`dists/`, `pool/` con i pacchetti Trota, richiesto da ubiquity), `md5sum.txt`, GRUB BIOS ed EFI firmato, `efi.img`, `xorriso` | ~8 min (xz, 4 core) |
 | `checksum` | SHA-256 e `verify-iso.sh` | ~30 s |
 | `clean` | Rimuove chroot e albero ISO (mantiene cache e pacchetti) | — |
 
@@ -102,11 +102,12 @@ runner GitHub (`ubuntu-24.04`) e la pubblica come release. Si avvia a mano:
 (es. `v1.0.0`) e se segnarla come pre-release.
 
 Passi: test automatici, `build-packages.sh`, `build-iso.sh` (che termina con
-`verify-iso.sh`), divisione della ISO in parti da 1900 MiB (GitHub accetta
-allegati fino a 2 GiB), checksum, creazione del release con la descrizione
-generata. Il workflow libera prima ~25 GB di disco sul runner (toolchain non
+`verify-iso.sh`), checksum, creazione del release con la descrizione
+generata. La ISO è allegata come file unico; solo se superasse i 2 GiB
+ammessi da GitHub verrebbe divisa in parti da 1900 MiB. Il workflow libera prima ~25 GB di disco sul runner (toolchain non
 usate) e usa il mirror Ubuntu di Azure. Se il tag esiste già si ferma senza
-toccare nulla; i log della build sono sempre allegati all'esecuzione come
+toccare nulla, a meno di spuntare *replace*: in quel caso, solo dopo una build
+riuscita, cancella il release e il tag esistenti e li ricrea; i log della build sono sempre allegati all'esecuzione come
 artefatto `build-logs`.
 
 I test in macchina virtuale (`tests/vm/`) non girano in CI: i runner non hanno
