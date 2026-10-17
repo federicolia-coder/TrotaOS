@@ -254,6 +254,8 @@ export_image() {
     cp "$WORK/manifest" "$DIST/$NAME.manifest"
     (cd "$DIST" && sha256sum "$NAME.qcow2" "$NAME.img.xz") > "$CHECKSUMS/$NAME.sha256"
     cp "$CHECKSUMS/$NAME.sha256" "$DIST/"
+    # The raw disk is as large as the image: keep it only on request.
+    [ -n "${TROTA_KEEP_RAW:-}" ] || rm -f "$RAW"
     ls -l "$DIST/$NAME".* >&2
 }
 
