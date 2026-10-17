@@ -1,8 +1,10 @@
 # Note di rilascio — Trota OS 1.0 "Fario"
 
-Prima versione di Trota OS, sviluppata e pubblicata da TestardStudios.
-Base: Ubuntu 24.04 LTS (noble), kernel HWE `linux-generic-hwe-24.04`
-(serie 7.0 alla data della build), GNOME 46.
+Prima versione di Trota OS, sviluppata e pubblicata da TestardStudios, in
+quattro edizioni ([editions.md](editions.md)): **Desktop** (ISO), **Server /
+Edge**, **Cloud** e **Kiosk / Signage** (immagini disco). Base tecnica: i
+pacchetti di Ubuntu 24.04 LTS (noble), kernel HWE (serie 7.0 alla data della
+build), GNOME 46.
 
 ## Contenuto
 
@@ -24,9 +26,16 @@ Base: Ubuntu 24.04 LTS (noble), kernel HWE `linux-generic-hwe-24.04`
   (Writer, Calc, Impress), strumenti GNOME, strumenti per sviluppatori
   (git, build-essential, gdb, cmake, Python), di rete e di sistema, Vulkan e
   GameMode.
-- Sicurezza e privacy: aggiornamenti di sicurezza automatici, AppArmor,
-  nessuna telemetria, nessun servizio di rete in ascolto, APT news di
-  Canonical disattivate.
+- Sicurezza e privacy: aggiornamenti di sicurezza automatici (anche di
+  Firefox), AppArmor, nessuna telemetria, nessun servizio di rete in ascolto,
+  APT news di Canonical disattivate.
+- **Identità Trota OS** anche per i programmi (`ID=trota`, `lsb_release -i`
+  → `Trota`), con compatibilità mantenuta per aggiornamenti, PPA e
+  "Software e aggiornamenti"; sessioni, banner di login, dock e app senza
+  marchi Ubuntu ([architecture.md](architecture.md), ADR-005).
+- **Desktop più leggero**: niente indicizzatore dei file, GNOME Software o
+  notifiche Ubuntu Pro all'accesso, niente `sssd`; circa 0,9 GB di RAM dopo
+  l'accesso nella sessione live (prima circa 1,2 GB).
 
 ## Artefatti
 
@@ -83,11 +92,15 @@ Non eseguito: test su hardware reale e installazione completamente senza rete.
 2. **Repository APT di Trota OS non pubblicato.** I pacchetti `trota-*`
    ricevono correzioni solo con una nuova ISO; i pacchetti Ubuntu si
    aggiornano normalmente.
-3. **Testi Ubuntu residui in modalità testo**: l'intestazione del messaggio
-   del giorno (`Welcome to Ubuntu 24.04.5 LTS`, da `/etc/lsb-release`) e alcune
-   parti dell'installer ubiquity e della *Guida del desktop* citano Ubuntu.
-   Sono file di Ubuntu lasciati intatti per non creare conflitti con gli
-   aggiornamenti.
+3. **Riferimenti a Ubuntu che restano**: la *Guida del desktop*, il pannello
+   *Impostazioni → Ubuntu Desktop*, le descrizioni in *Software e
+   aggiornamenti*, alcuni messaggi rari dell'installer (RST, BitLocker), la
+   versione del kernel (`uname -v`), le versioni dei pacchetti e gli indirizzi
+   `archive.ubuntu.com`. Modificarli significherebbe ricompilare pacchetti di
+   Ubuntu e perderne gli aggiornamenti di sicurezza. `/etc/lsb-release` è
+   riscritto con l'identità Trota: un aggiornamento di `base-files` che lo
+   cambiasse chiederà quale versione tenere (gli aggiornamenti automatici
+   lasciano quel pacchetto all'aggiornamento manuale).
 4. **Aggiornamento automatico alla LTS successiva disattivato**
    (`Prompt=never`): Trota OS 2.0 su Ubuntu 26.04 sarà distribuito come
    nuova versione.
@@ -98,17 +111,17 @@ Non eseguito: test su hardware reale e installazione completamente senza rete.
    live session)" appare troncata; con Secure Boot il GRUB firmato non carica
    font e moduli grafici esterni e il menu appare in modalità testo (voci e
    funzionamento invariati).
-7. **Icona "Mostra applicazioni" del dock**: è quella del tema Yaru di Ubuntu
-   (il dock non permette un'icona personalizzata).
+7. **Informazioni di sistema**: Trota System Info indica ancora la base
+   ("Basato su Ubuntu 24.04.5 LTS"), perché serve per il supporto tecnico.
 8. **Applicazioni solo snap**: non sono installabili finché non si rimuove il
    blocco (`/etc/apt/preferences.d/trota-no-snap.pref`); i pacchetti di
    transizione di Ubuntu che installano uno snap (es. `chromium-browser`)
    risultano non installabili. Le alternative sono su Flathub.
-9. **Sessione live su macchine molto lente**: in emulazione gnome-shell può
-   superare il timeout di avvio di systemd (90 s) e GNOME mostra "Oh no!
-   Something has gone wrong"; da verificare su hardware reale/KVM.
-10. **Menu contestuali del dock non disponibili**: manca il pacchetto
-    `gir1.2-dbusmenu-glib-0.4` (da aggiungere al manifest nella 1.0.1).
+9. **Sessione live su macchine molto lente**: in una build precedente, in
+   emulazione, gnome-shell aveva superato il timeout di avvio di systemd
+   (90 s); con il desktop alleggerito il test live UEFI è passato (51/51).
+10. **Edizioni Server, Cloud e Kiosk solo x86-64**: niente immagini per ARM
+    (Raspberry Pi e simili); vedi [editions.md](editions.md).
 11. **Indirizzo del maintainer segnaposto** nei pacchetti
    (`maintainers@testardstudios.invalid`) e verifiche su nome/marchio/domini
    da completare prima della pubblicazione ([licensing.md](licensing.md)).
