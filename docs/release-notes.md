@@ -52,7 +52,7 @@ Su Windows: `copy /b trota-os-1.0-amd64.iso.part1 + trota-os-1.0-amd64.iso.part2
 e poi `certutil -hashfile trota-os-1.0-amd64.iso SHA256`.
 
 Le ISO non sono conservate nel repository Git: si generano con
-[building.md](building.md). La release 1.0 è pubblicata su GitHub come
+[building.md](building.md). La release 1.0 va pubblicata su GitHub come
 **anteprima** (pre-release) finché la build senza snap non ha completato i
 test in VM descritti in [testing.md](testing.md).
 
