@@ -198,7 +198,7 @@ def wallpaper(uid: str, light: bool) -> str:
     else:
         bg0, bg1, line, grid_c, minor, major, mark = "#1A1E22", "#0C0E10", STEEL, FROST, 0.025, 0.05, FROST
     scale = 7
-    tx, ty = 1840, 300
+    tx, ty = 1640, 300
     x_left, x_right = tx + 20 * scale, tx + 232 * scale
     dim_y = ty + 174 * scale + 150
     dims = (
@@ -227,7 +227,7 @@ def wallpaper(uid: str, light: bool) -> str:
         f"{crop}"
         f"{fish_outline(f'translate({tx} {ty}) scale({scale})', line, 0.55, ORANGE, line)}"
         f"{dims}"
-        f'<g transform="translate(160 {h - 200}) scale(0.5)" opacity="{0.35 if not light else 0.45}">'
+        f'<g transform="translate(560 {h - 200}) scale(0.5)" opacity="{0.35 if not light else 0.45}">'
         f"{wordmark(uid, mark, ORANGE)}</g>"
     )
     return svg(w, h, body, title="Trota OS wallpaper")

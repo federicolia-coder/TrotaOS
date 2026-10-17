@@ -113,7 +113,8 @@ stage_trota() {
     # Fail the build if an excluded package slipped in anyway.
     local bad
     bad="$(read_list "$m/excluded.list" | awk '{print $1}' | while read -r p; do
-        in_chroot "$CHROOT" dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' "$p" 2>/dev/null | awk '/^ii/{print $2}'
+        { in_chroot "$CHROOT" dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' "$p" 2>/dev/null || true; } \
+            | awk '/^ii/{print $2}'
     done)"
     [ -z "$bad" ] || die "excluded packages installed: $bad"
 }
@@ -316,7 +317,8 @@ stage_iso() {
     make_cdrom_archive
 
     # Checksums of the medium, verified by casper-md5check at live boot.
-    (cd "$ISO_DIR" && find . -type f ! -name md5sum.txt ! -name boot.catalog -print0 | sort -z \
+    # eltorito.img is excluded: xorriso patches its boot-info-table later.
+    (cd "$ISO_DIR" && find . -type f ! -name md5sum.txt ! -name boot.catalog ! -name eltorito.img -print0 | sort -z \
         | xargs -0 md5sum > md5sum.txt)
 
     local efi_img="$BUILD/efi.img"

@@ -70,6 +70,21 @@ done
 for p in ubuntu-report whoopsie popularity-contest openssh-server; do
     grep -q "^${p}[[:space:]]" "$tmp/manifest" 2>/dev/null && bad "manifest contains excluded $p" || pass "excluded package $p absent"
 done
+# md5sum.txt (checked by casper-md5check at every live boot) must match the
+# files on the medium; small boot files are compared here.
+xorriso -osirrox on -indev "$ISO" -extract /md5sum.txt "$tmp/md5sum.txt" -extract /boot/grub/grub.cfg "$tmp/grub.cfg" \
+    -extract /EFI/boot/bootx64.efi "$tmp/b.efi" >/dev/null 2>&1
+if grep -q 'eltorito.img' "$tmp/md5sum.txt" 2>/dev/null; then
+    bad "md5sum.txt lists eltorito.img, which xorriso modifies (false casper-md5check error)"
+else
+    ok_md5=1
+    for pair in "grub.cfg:./boot/grub/grub.cfg" "b.efi:./EFI/boot/bootx64.efi"; do
+        f="${pair%%:*}"; path="${pair#*:}"
+        want="$(awk -v p="$path" '$2==p{print $1}' "$tmp/md5sum.txt")"
+        [ "$want" = "$(md5sum "$tmp/$f" | cut -d' ' -f1)" ] || ok_md5=0
+    done
+    [ "$ok_md5" = 1 ] && pass "md5sum.txt consistent with the medium" || bad "md5sum.txt does not match the medium"
+fi
 size="$(cat "$tmp/size" 2>/dev/null || echo 0)"
 [ "$size" -gt 1000000000 ] 2>/dev/null && pass "filesystem.size = $size bytes" || bad "implausible filesystem.size: $size"
 

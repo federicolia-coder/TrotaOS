@@ -108,7 +108,8 @@ Il supporto UEFI usa `shimx64.efi.signed` (firmato con la Microsoft UEFI CA) e
 Nessun binario di avvio è ricompilato o firmato da Trota OS. Il BIOS legacy usa
 l'immagine El Torito di GRUB `i386-pc`. Il sistema installato usa i pacchetti
 `shim-signed` e `grub-efi-amd64-signed` di Ubuntu, già presenti nella squashfs
-così che l'installazione funzioni anche senza rete.
+così che l'installer non debba scaricarli (l'installazione
+completamente senza rete non è ancora stata verificata).
 
 ### ADR-005 — Identificazione del sistema (os-release)
 

@@ -84,13 +84,14 @@ check apt_news_disabled sh -c 'pro config show apt_news 2>/dev/null | grep -q Fa
 check release_upgrade_prompt sh -c 'grep -E "^Prompt=" /etc/update-manager/release-upgrades'
 section "desktop session diagnostics"
 # "Oh no! Something has gone wrong" means gnome-session lost a required component.
-if journalctl -b --no-pager 2>/dev/null | grep -qE 'Unrecoverable failure in required component|fail-whale|Fatal IO error'; then
-    result gnome_session_healthy FAIL "$(journalctl -b --no-pager 2>/dev/null | grep -E 'Unrecoverable failure|required component|fail-whale' | tail -2 | tr '\n' ' ' | cut -c1-200)"
+if journalctl -b --no-pager 2>/dev/null | grep -qE 'Unrecoverable failure in required component|gnome-session-failed|fail-whale|gnome-shell.*(segfault|killed by signal|dumped core)'; then
+    result gnome_session_healthy FAIL "$(journalctl -b --no-pager 2>/dev/null | grep -E 'Unrecoverable failure|gnome-session-failed|fail-whale|segfault|killed by signal' | tail -2 | tr '\n' ' ' | cut -c1-200)"
 else
     result gnome_session_healthy PASS "no gnome-session failure logged"
 fi
+as_root sh -c 'journalctl -b --no-pager -o short-monotonic > /mnt/journal-full.txt' || true
 echo "--- gnome session journal"
-journalctl -b --no-pager -o short-monotonic 2>/dev/null | grep -iE 'gnome-session|gnome-shell|gsd-|mutter|Xwayland|gdm' | grep -iE 'fail|error|crit|warn|timeout|exit|killed|segfault' | tail -60
+journalctl -b --no-pager -o short-monotonic 2>/dev/null | grep -iE 'gnome-session|gnome-shell|gsd-|mutter|Xwayland|gdm' | grep -iE 'fail|error|crit|timeout|exit|killed|segfault' | grep -v 'Overwriting existing binding' | tail -60
 
 section "measurements"
 result measure_memory PASS "$(free -m | awk '/^Mem:/{printf "used %d MiB of %d MiB (available %d MiB)", $3, $2, $7}')"

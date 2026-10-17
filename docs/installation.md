@@ -9,15 +9,16 @@ Ubuntu 24.04 Desktop e non sono ancora stati verificati su hardware reale.
 | Risorsa | Minimo | Consigliato | Tipo di dato |
 |---|---|---|---|
 | Processore | x86-64 a 64 bit, 2 core, 2 GHz | 4+ core recenti | Stima |
-| Memoria RAM | 4 GB | 8 GB (16 GB per sviluppo/gaming) | Stima; uso misurato a riposo: vedi sotto |
-| Spazio su disco | 25 GB | 60 GB+ su SSD | Sistema installato misurato: vedi sotto |
+| Memoria RAM | 4 GB | 8 GB (16 GB per sviluppo/gaming) | Minimo stimato; **misurato** a riposo dopo il login: 0,7–1,4 GB (sessione live: 1,2 GB) |
+| Spazio su disco | 25 GB | 60 GB+ su SSD | **Misurato** subito dopo l'installazione: 9,5 GB (di cui 2 GB di swapfile) |
 | Grafica | 1024×768, qualsiasi scheda supportata da Linux | GPU con driver Vulkan (Intel, AMD, NVIDIA con driver proprietario) | Stima |
-| Firmware | UEFI (anche con Secure Boot) o BIOS legacy | UEFI | Entrambi verificati in VM |
+| Firmware | UEFI (anche con Secure Boot) o BIOS legacy | UEFI | UEFI + Secure Boot verificato in VM; BIOS: vedi [testing.md](testing.md) |
 | Supporto di installazione | Chiavetta USB da 8 GB o DVD dual layer | Chiavetta USB 3 | ISO misurata: 3,7 GB |
-| Rete | Facoltativa per l'installazione | Necessaria per aggiornamenti e App Center | Installazione offline verificata in VM |
+| Rete | Facoltativa per l'installazione (prevista) | Necessaria per aggiornamenti e App Center | Installazione verificata in VM **con** rete; senza rete non ancora verificata |
 
-**Misure in VM** (QEMU, 4 vCPU, 4 GB RAM, disco virtio da 25 GB): i valori
-sono riportati nella sezione "Risultati" di [testing.md](testing.md).
+Le misure provengono da una VM QEMU (4 vCPU emulate, 4 GB RAM, disco virtio da
+25 GB); dettagli in [testing.md](testing.md). I requisiti di CPU e grafica non
+sono stati misurati: su hardware reale vanno ancora verificati.
 
 ## Scaricare e verificare l'immagine
 

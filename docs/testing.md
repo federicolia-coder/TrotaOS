@@ -59,7 +59,82 @@ multi-thread, 4 vCPU, 4–6 GB RAM, disco virtio 25 GB, OVMF 2024.02
 (Secure Boot con chiavi Microsoft), rete NAT. In emulazione i tempi sono
 10–20 volte superiori a quelli su hardware reale.
 
-I risultati dettagliati sono nella sezione seguente, aggiornata a ogni release.
+### Ciclo A — UEFI con Secure Boot (build intermedie)
+
+| Scenario | Esito | Dettagli |
+|---|---|---|
+| Verifica ISO (`verify-iso.sh`) | Superato | Checksum, El Torito BIOS+UEFI, GPT ibrida, file attesi, archivio APT, firma Microsoft UEFI CA di shim |
+| Avvio ISO con Secure Boot (firmware → shim → GRUB → kernel) | Superato | Splash Plymouth Trota OS dopo ~40 s; finestra iniziale di ubiquity raggiunta |
+| Sessione live (UEFI), prima build | 30/33 superati | I 3 fallimenti (`aptsources`, `casper-md5check`, timeout della ricerca pacchetti) sono stati corretti: difetti 2–4 |
+| Installazione automatica (UEFI + Secure Boot), tentativi 1–3 | Falliti | Difetti 5 e 6 (slideshow, archivio APT sul supporto), corretti |
+| Installazione automatica (UEFI + Secure Boot), tentativo 4 | **Superato** | Completata senza interventi in 113 minuti (emulazione) |
+| Primo avvio del sistema installato (Secure Boot) | 34/39 | Avvio da voce NVRAM "Trota OS" (`\EFI\trota\shimx64.efi`), `SecureBoot enabled`; i fallimenti erano 2 errori del test (`grub.cfg` leggibile solo da root), 2 dovuti al seeding snap ancora in corso, 1 a `gnome-shell` (vedi sotto) |
+| Secondo avvio | 38/40 | Seeding completato in ~7 min al primo avvio, `systemd` *running*, **Firefox 158 avviato**; `gnome-shell` della schermata di login in crash |
+| Terzo avvio con CPU emulata `Nehalem` | 39/40 | Nessun crash della sessione GNOME; Firefox: errore dell'helper di snap (*Broken pipe*), da riverificare |
+
+**Crash di gnome-shell in emulazione.** Con `-cpu max` (TCG) `gnome-shell`
+terminava per segfault in codice generato dal JIT di `llvmpipe` (l'indirizzo
+non appartiene ad alcuna libreria). Con un modello di CPU conservativo
+(`Nehalem`, senza AVX) la sessione è stabile: si tratta di un limite
+dell'emulazione, non di Trota OS. Il driver di test usa ora `Nehalem` in TCG
+(modificabile con `TROTA_VM_CPU`). Su hardware reale o con KVM si usa la CPU
+dell'host. **Non verificato su hardware reale.**
+
+**Misure nel sistema installato** (VM, dopo il login): memoria usata
+736–1441 MiB su 3,9 GB; spazio occupato nel filesystem radice 9,5 GB, di cui
+2 GB sono il file di swap (`/swapfile`) creato dall'installer; avvio completo 1 min 47 s –
+3 min 30 s in emulazione (kernel ~20 s). Sessione live: 1235 MiB di memoria
+usata.
+
+**Comportamenti di Ubuntu osservati, non modificati.**
+- Con Secure Boot GRUB mostra brevemente `error: prohibited by secure boot
+  policy`: è la riga `hwmatch` del `grub.cfg` standard di Ubuntu, che tenta di
+  caricare un modulo non firmato; l'avvio prosegue normalmente.
+- La voce del menu GRUB del sistema installato si chiama "Trota OS GNU/Linux"
+  (regola di `10_linux` per le distribuzioni diverse da "Ubuntu").
+- Nella VM di test HTTPS non è raggiungibile direttamente, quindi la
+  registrazione del dispositivo presso lo Snap Store fallisce
+  (`Initialize device`): limite dell'ambiente di test.
+
+### Ciclo B — verifica finale (BIOS legacy e UEFI), CPU emulata `Nehalem`
+
+ISO verificata: `trota-os-1.0-amd64.iso`, SHA-256
+`e62586b3af98590e1a77036a4a0fdb3c254b90e6b0dda37b230a9383e29921ab`.
+
+| Scenario | Esito | Dettagli |
+|---|---|---|
+| Avvio ISO in BIOS (SeaBIOS → GRUB `i386-pc` → kernel) | Superato | Menu GRUB con tema Trota OS e conto alla rovescia, poi splash Plymouth ([immagine](images/grub-menu-bios.png)) |
+| Sessione live (UEFI) | 33/34 controlli superati, **ma** sessione grafica fallita | Superati: identità, `aptsources`, AppArmor, app Trota (riga di comando e GUI avviate), seeding snap completo (Firefox, App Center, runtime), audio, rete, nessuna porta aperta, nessuna telemetria. Fallito `systemd`: `snapd.seeded`/`snapd.hold` falliscono al primo tentativo e riescono al successivo. Lo screenshot finale mostrava la schermata GNOME *Oh no! Something has gone wrong* (sessione X11), non rilevata dal controllo automatico: vedi sotto |
+| Sessione live durante l'installazione BIOS | Superato (visivo) | Desktop GNOME live con wallpaper Trota OS e installer in esecuzione ([immagine](images/installer-live-desktop.png)) |
+| Installazione automatica (BIOS legacy) | **Superato** | Completata senza interventi in 146 minuti, con lo slideshow Trota OS visibile ([immagine](images/installer-slideshow.png)) |
+| Primo avvio del sistema installato (BIOS) | 36/37 superati, 1 non applicabile (EFI) | GNOME su Wayland con login automatico e Trota Welcome ([immagine](images/desktop-welcome.png)), Firefox 158 avviato, `apt update`, `unattended-upgrade --dry-run`, AppArmor, nessuna porta aperta, nessuna telemetria, APT news disattivate, `Prompt=never`. Fallito `systemd` per lo stesso primo tentativo di `snapd.seeded` (poi attivo) |
+
+Durante questo ciclo sono emersi due ulteriori difetti, corretti nella build
+successiva (tabella sotto, righe 8–9).
+
+### Ciclo C — build di rilascio
+
+ISO: `trota-os-1.0-amd64.iso`, SHA-256
+`db324d581614912d9df2628464c1b30b24f4ad9dc19bde3b5aa5d20ec7fa03c7`.
+Rispetto al ciclo B cambiano solo `md5sum.txt` e la posizione degli elementi
+nei wallpaper (pacchetto `trota-artwork`).
+
+| Scenario | Esito | Dettagli |
+|---|---|---|
+| `verify-iso.sh` | Superato | Incluso il nuovo controllo di coerenza di `md5sum.txt` |
+| Avvio ISO con Secure Boot | Superato | Menu GRUB in modalità testo (il GRUB firmato non carica font esterni), poi splash Trota OS ([immagine](images/grub-menu-secureboot.png)) |
+| Sessione live (UEFI) | 31/34 controlli superati | Falliti: `systemd` e `snaps_seeded` (seeding non ancora concluso entro il test) e `gnome_session_healthy` |
+
+**Analisi del fallimento della sessione live UEFI.** Il journal mostra
+`org.gnome.Shell@x11.service: start operation timed out`: in emulazione
+gnome-shell non completa l'avvio entro i 90 secondi concessi da systemd,
+mentre la VM esegue contemporaneamente `casper-md5check` (oltre un minuto di
+CPU) e il seeding degli snap; systemd lo termina e GNOME mostra *Oh no!
+Something has gone wrong*. Nel sistema installato la shell parte in ~43 s e
+nella sessione live del test BIOS il desktop era funzionante. Si tratta con
+ogni probabilità di un effetto della lentezza dell'emulazione (10–20 volte
+più lenta dell'hardware reale), **da confermare** con KVM o su hardware reale
+prima della pubblicazione.
 
 ### Difetti trovati dai test e corretti
 
@@ -75,3 +150,7 @@ che impedisce di ripresentarlo.
 | 5 | Test di installazione (Secure Boot) | Ubiquity andava in crash all'avvio della copia: senza slideshow `start_slideshow()` riduce i privilegi senza ripristinarli e `debconf-communicate` (Perl) rifiuta di partire (*Insecure $ENV{PATH} while running setuid*) | Nuovo pacchetto `ubiquity-slideshow-trota` | La build fallisce se lo slideshow manca; `test_manifest.py` |
 | 6 | Test di installazione (Secure Boot) | *apt configuration problem*: il wrapper `apt-setup` di ubiquity forza `OVERRIDE_BASE_INSTALLABLE=1` ed esegue sempre `apt-cdrom add` sul supporto; senza indici di pacchetti l'installazione veniva interrotta. Un primo tentativo (non creare `.disk/base_installable`) si è rivelato insufficiente al test successivo | La ISO contiene un piccolo archivio APT (`dists/`, `pool/` con i pacchetti Trota OS), verificato con il vero `apt-cdrom` | `verify-iso.sh` |
 | 7 | Build | Eseguendo il solo stadio `iso` lo script terminava senza messaggi (`grep` senza risultati con `pipefail`) | `chroot_umount` tollera l'assenza di mount; trap `ERR` che mostra il comando fallito | `test_build_scripts.py` |
+| 8 | Test live (journal) | `md5sum.txt` conteneva il checksum di `eltorito.img` prima che `xorriso` vi scrivesse la boot-info-table: `casper-md5check` segnalava un falso errore | `eltorito.img` escluso da `md5sum.txt` | `verify-iso.sh` controlla la coerenza di `md5sum.txt` |
+| 9 | Screenshot del desktop live | Su schermi 16:10 e 4:3 il marchio del wallpaper veniva tagliato | Posizione del marchio e della trota rivista | Anteprime 4:3, 16:10, 16:9 |
+| 10 | Test di installazione e sessione live | Con `-cpu max` in emulazione TCG gnome-shell andava in segfault nel codice JIT di llvmpipe e lo slideshow non veniva disegnato | Non è un difetto di Trota OS: il driver di test usa `Nehalem` | `TROTA_VM_CPU` |
+
