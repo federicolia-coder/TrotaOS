@@ -139,6 +139,10 @@ EOF
         # No data source: cloud-init still runs (growpart, SSH host keys).
         printf 'datasource_list: [ NoCloud, ConfigDrive, OpenStack, Ec2, Azure, GCE, Oracle, None ]\n' \
             > "$ROOT/etc/cloud/cloud.cfg.d/91-trota-datasources.cfg"
+        # ds-identify disables cloud-init when it finds no data source: keep it
+        # enabled, so that the "None" source still grows the disk, creates the
+        # SSH host keys and configures DHCP on the first network card.
+        printf 'policy: search,found=all,maybe=all,notfound=enabled\n' > "$ROOT/etc/cloud/ds-identify.cfg"
         in_chroot "$ROOT" useradd -m -s /bin/bash -c "Trota OS" -G adm,sudo,systemd-journal trota
         echo 'trota:trota' | in_chroot "$ROOT" chpasswd
         in_chroot "$ROOT" chage -d 0 trota

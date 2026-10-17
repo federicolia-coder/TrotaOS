@@ -45,14 +45,19 @@ fi
 check grub_trota_entry sh -c 'printf "%s\n" "$0" | sudo -S -p "" grep -m1 "^menuentry" /boot/grub/grub.cfg | grep -q "Trota OS" && echo "Trota OS entry"' "$PW"
 
 section "security"
-check ssh_running systemctl is-active ssh.service
-check ssh_keys_only sh -c 'printf "%s\n" "$0" | sudo -S -p "" sshd -T 2>/dev/null | grep -E "^(passwordauthentication|permitrootlogin) " | tr "\n" " " | grep -q "passwordauthentication no" && printf "%s\n" "$0" | sudo -S -p "" sshd -T | grep -E "^(passwordauthentication|permitrootlogin) " | tr "\n" " "' "$PW"
+# Ubuntu 24.04 starts sshd on the first connection (ssh.socket).
+check ssh_listening sh -c 'systemctl is-active ssh.socket ssh.service | grep -qx active && ss -Htln | grep -E ":22\b" | head -1'
+check ssh_keys_only sh -c 'printf "%s\n" "$0" | sudo -S -p "" install -d -m 755 /run/sshd; printf "%s\n" "$0" | sudo -S -p "" sshd -T 2>/dev/null | grep -E "^(passwordauthentication|permitrootlogin) " | tr "\n" " " | grep -q "passwordauthentication no" && printf "%s\n" "$0" | sudo -S -p "" sshd -T | grep -E "^(passwordauthentication|permitrootlogin) " | tr "\n" " "' "$PW"
 check firewall sh -c 'printf "%s\n" "$0" | sudo -S -p "" ufw status | grep -q "Status: active" && printf "%s\n" "$0" | sudo -S -p "" ufw status | grep -E "OpenSSH|22" | head -1' "$PW"
 check sysctl_hardening sh -c 'test "$(sysctl -n kernel.kptr_restrict)" = 2 && test "$(sysctl -n kernel.dmesg_restrict)" = 1 && test "$(sysctl -n net.ipv4.conf.all.accept_redirects)" = 0 && echo "kptr_restrict=2 dmesg_restrict=1 accept_redirects=0"'
 check apparmor sh -c 'printf "%s\n" "$0" | sudo -S -p "" aa-status --enabled && echo enabled' "$PW"
 check uu_security_origin sh -c 'apt-config dump Unattended-Upgrade::Allowed-Origins | grep -q "Ubuntu:\${distro_codename}-security" && systemctl is-enabled unattended-upgrades'
 check no_snapd sh -c '! command -v snap && echo "no snapd"'
-check no_mozilla_source sh -c '! test -e /etc/apt/sources.list.d/mozilla.sources && echo "base archive only"'
+if [ "$EDITION" = kiosk ]; then
+    check mozilla_source_only sh -c 'ls /etc/apt/sources.list.d/ | tr "\n" " " | grep -q mozilla && echo "base archive and Mozilla (Firefox)"'
+else
+    check no_mozilla_source sh -c '! test -e /etc/apt/sources.list.d/mozilla.sources && echo "base archive only"'
+fi
 check no_pro_apt_hook sh -c 'systemctl is-enabled esm-cache.service apt-news.service 2>&1 | tr "\n" " " | grep -q "^masked masked" && echo masked'
 bad="$(dpkg-query -W -f='${db:Status-Abbrev} ${Package}\n' ubuntu-report whoopsie popularity-contest apport snapd landscape-common 2>/dev/null | awk '/^ii/{print $2}')"
 [ -z "$bad" ] && result no_telemetry PASS "none installed" || result no_telemetry FAIL "$bad"
@@ -62,7 +67,13 @@ check journald_limit sh -c 'systemd-analyze cat-config systemd/journald.conf 2>/
 
 section "containers"
 check podman_rootless sh -c 'podman info --format "{{.Host.Security.Rootless}} {{.Version.Version}}" 2>&1 | grep -q "^true" && podman info --format "rootless {{.Version.Version}}, {{.Host.NetworkBackend}}"'
-check podman_run sh -c 'timeout 900 podman run --rm docker.io/library/busybox:latest echo container-ok 2>&1 | tail -1 | grep -q container-ok && echo "busybox ran rootless"'
+# A rootless container without downloads: the host file system as read-only rootfs.
+check podman_run sh -c 'out=$(timeout 600 podman run --rm --network none --read-only --rootfs / /bin/echo container-ok 2>&1); echo "$out" | grep -q container-ok && echo "rootless container ran" || { echo "$out" | tail -1; exit 1; }'
+if out="$(timeout 600 podman pull -q docker.io/library/busybox:latest 2>&1)"; then
+    result podman_pull PASS "busybox pulled from Docker Hub"
+else
+    result podman_pull SKIP "registry not reachable from the test VM: $(echo "$out" | tail -1 | cut -c1-100)"
+fi
 
 if [ "$EDITION" = kiosk ]; then
     section "kiosk"
