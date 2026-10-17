@@ -13,6 +13,11 @@ path-exclude=/usr/share/backgrounds/ubuntu-default-greyscale-wallpaper.png
 # Ubuntu logo on the "show applications" button of the dock: the Trota OS
 # icon of the same name (trota-artwork, hicolor theme) is used instead.
 path-exclude=/usr/share/icons/Yaru/scalable/actions/view-app-grid-ubuntu-symbolic.svg
+# Ubuntu logo on the installer icon of the live session: the Trota OS one
+# (ubiquity-slideshow-trota) is used instead.
+path-exclude=/usr/share/icons/Yaru/*/apps/ubiquity.png
+path-exclude=/usr/share/icons/Humanity/apps/*/ubiquity.svg
+path-exclude=/usr/share/icons/hicolor/64x64/apps/ubiquity.svg
 # Background services started at every login:
 #  * GNOME Software in the background (~150 MB of RAM): Flatpak applications
 #    are updated by trota-flatpak-update.timer instead, APT by the updater;

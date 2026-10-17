@@ -44,6 +44,7 @@ check tracker_masked sh -c 'test "$(readlink /etc/systemd/user/tracker-miner-fs-
 check no_software_autostart sh -c '! test -e /etc/xdg/autostart/org.gnome.Software.desktop && ! test -e /etc/xdg/autostart/ubuntu-advantage-notification.desktop && echo "not started at login"'
 check flatpak_update_timer systemctl is-enabled trota-flatpak-update.timer
 check dock_icon_trota sh -c '! test -e /usr/share/icons/Yaru/scalable/actions/view-app-grid-ubuntu-symbolic.svg && test -e /usr/share/icons/hicolor/scalable/actions/view-app-grid-ubuntu-symbolic.svg && echo "Trota grid icon"'
+check installer_icon_trota sh -c 'test -f /usr/share/icons/hicolor/scalable/apps/ubiquity.svg && ! ls /usr/share/icons/Yaru/*/apps/ubiquity.png /usr/share/icons/hicolor/64x64/apps/ubiquity.svg 2>/dev/null | grep -q . && echo "Trota installer icon"'
 check installer_icon_trusted sh -c 'f="$(xdg-user-dir DESKTOP)/ubiquity.desktop"; test "$(gio info -a metadata::trusted "$f" 2>/dev/null | awk "/trusted/{print \$2}")" = true && echo trusted'
 check no_sssd sh -c '! systemctl list-unit-files sssd.service --no-legend | grep -q . && echo "sssd not installed"'
 result memory_after_login PASS "$(free -m | awk '/^Mem:/{print $3 " MB used of " $2 " MB"}')"
