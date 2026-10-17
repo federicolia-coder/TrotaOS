@@ -30,19 +30,31 @@ Base: Ubuntu 24.04 LTS (noble), kernel HWE `linux-generic-hwe-24.04`
 
 ## Artefatti
 
-Build di rilascio: SHA-256
-`db324d581614912d9df2628464c1b30b24f4ad9dc19bde3b5aa5d20ec7fa03c7`.
-
+Build di rilascio (senza snap): SHA-256
+`e299274241c4bd96ef24f8ac38d9ec474ca27836e578c304e9dcf9f58eb6824c`, 2,37 GB
+(la build precedente con gli snap era di 3,7 GB).
 
 | File | Descrizione |
 |---|---|
-| `trota-os-1.0-amd64.iso` | Immagine ISO (circa 3,7 GB) |
-| `trota-os-1.0-amd64.iso.sha256` | Checksum SHA-256 |
+| `trota-os-1.0-amd64.iso` | Immagine ISO (circa 2,4 GB) |
+| `trota-os-1.0-amd64.iso.part1`, `.part2` | La ISO divisa in due parti per la release di GitHub (limite di 2 GiB per file) |
+| `trota-os-1.0-amd64.iso.sha256` | Checksum SHA-256 della ISO intera |
 | `trota-os-1.0-amd64.manifest` | Elenco di pacchetti e versioni |
 
+Ricomporre e verificare la ISO scaricata dalla release:
+
+```sh
+cat trota-os-1.0-amd64.iso.part1 trota-os-1.0-amd64.iso.part2 > trota-os-1.0-amd64.iso
+sha256sum -c trota-os-1.0-amd64.iso.sha256
+```
+
+Su Windows: `copy /b trota-os-1.0-amd64.iso.part1 + trota-os-1.0-amd64.iso.part2 trota-os-1.0-amd64.iso`
+e poi `certutil -hashfile trota-os-1.0-amd64.iso SHA256`.
+
 Le ISO non sono conservate nel repository Git: si generano con
-[building.md](building.md) e si pubblicano come allegati di una release solo
-dopo la verifica descritta in [testing.md](testing.md).
+[building.md](building.md). La release 1.0 è pubblicata su GitHub come
+**anteprima** (pre-release) finché la build senza snap non ha completato i
+test in VM descritti in [testing.md](testing.md).
 
 ## Stato rispetto ai criteri di completamento
 

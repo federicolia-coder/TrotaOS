@@ -10,7 +10,7 @@ non viene modificato, a parte l'installazione degli strumenti elencati sotto.
 |---|---|
 | Sistema host | Ubuntu 24.04 LTS (amd64), fisico, VM o container privilegiato |
 | Privilegi | `root` (debootstrap, chroot, mount di proc/sys/dev) |
-| Spazio su disco | ~25 GB liberi (chroot ~9 GB, ISO tree ~4 GB, cache, ISO ~3,5 GB) |
+| Spazio su disco | ~25 GB liberi (chroot ~9 GB, ISO tree ~2,5 GB, cache, ISO ~2,4 GB) |
 | RAM | 4 GB minimo, 8 GB consigliati (mksquashfs parallelo) |
 | Rete | HTTP verso archive.ubuntu.com / security.ubuntu.com, HTTPS verso packages.mozilla.org (Firefox) |
 | Tempo | ~45–60 minuti al primo avvio su 4 core (misure sotto) |
@@ -98,7 +98,7 @@ dell'host sono inoltrate al chroot.
 
 Le risorse gratuite di CI (GitHub Actions: 14 GB di disco, limiti sugli
 artefatti) non bastano in modo affidabile per costruire e conservare una ISO
-da ~3,5 GB. La CI può eseguire i test e la compilazione dei pacchetti; la ISO
+da ~2,4 GB. La CI può eseguire i test e la compilazione dei pacchetti; la ISO
 si costruisce in locale con la procedura sopra.
 
 ## Problemi di build comuni
