@@ -200,6 +200,11 @@ make_disk() {
     in_chroot "$MNT" grub-install --target=i386-pc "$LOOP"
     in_chroot "$MNT" update-initramfs -u -k all
     in_chroot "$MNT" update-grub
+    # Without udev there is no /dev/disk/by-uuid in the build environment and
+    # grub-mkconfig falls back to the loop device name: use the UUID (installed
+    # systems regenerate grub.cfg with the UUID by themselves).
+    sed -i "s#root=${LOOP}p3#root=UUID=${root_uuid}#g" "$MNT/boot/grub/grub.cfg"
+    ! grep -q "$LOOP" "$MNT/boot/grub/grub.cfg" || die "grub.cfg still refers to $LOOP"
     grep -q 'menuentry .Trota OS' "$MNT/boot/grub/grub.cfg" || die "no Trota OS entry in grub.cfg"
     chroot_umount "$MNT"
     write_esp "$root_uuid"

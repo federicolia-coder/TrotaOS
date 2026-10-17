@@ -506,7 +506,7 @@ def scenario_image(args, out: Path) -> int:
     """Disk image (server/cloud edition): first boot on a larger disk, with a
     cloud-init NoCloud seed (cloud) or without any data source (server)."""
     image = args.image.resolve()
-    edition = "cloud" if "-cloud-" in image.name else "server"
+    edition = next((e for e in ("cloud", "kiosk") if f"-{e}-" in image.name), "server")
     disk = out / "disk.qcow2"
     subprocess.run(["qemu-img", "create", "-q", "-f", "qcow2", "-b", str(image), "-F", "qcow2", str(disk),
                     f"{args.disk_gb}G"], check=True)
@@ -528,6 +528,7 @@ def scenario_image(args, out: Path) -> int:
                                     "@DISK_GB@": str(args.disk_gb)},
                              password=password)
         results["login_time"] = {"status": "PASS", "note": f"{time.time() - t0:.0f} s from power on to shell (emulated)"}
+        vm.screenshot(f"{edition}-screen")
     finally:
         vm.stop()
     return report(results, out)
@@ -565,7 +566,8 @@ def main() -> int:
     if args.scenario == "image" and not args.image:
         print("--image is required for the 'image' scenario", file=sys.stderr)
         return 2
-    name = args.scenario if args.scenario != "image" else "image-" + ("cloud" if "-cloud-" in args.image.name else "server")
+    name = args.scenario if args.scenario != "image" else "image-" + next(
+        (e for e in ("cloud", "kiosk") if f"-{e}-" in args.image.name), "server")
     out = args.out or ROOT / "build" / "vm" / f"{name}-{args.firmware}"
     if out.exists() and args.scenario != "installed":
         shutil.rmtree(out)

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trota OS 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
-"POT-Creation-Date: 2026-10-17 10:21+0000\n"
+"POT-Creation-Date: 2026-10-17 11:11+0000\n"
 "PO-Revision-Date: 2026-10-16 12:00+0000\n"
 "Last-Translator: TestardStudios\n"
 "Language-Team: Italian\n"
@@ -48,7 +48,7 @@ msgstr "Spazio su disco"
 
 #: applications/trota-common/trota_common/diagnostics.py:117
 #: applications/trota-system-info/trota_system_info/app.py:138
-#: applications/trota-welcome/trota_welcome/app.py:185
+#: applications/trota-welcome/trota_welcome/app.py:182
 msgid "Network"
 msgstr "Rete"
 
@@ -454,7 +454,7 @@ msgstr "Impostazioni di rete"
 
 #: applications/trota-diagnostics/trota_diagnostics/app.py:31
 #: applications/trota-package-helper/trota_package_helper/app.py:63
-#: applications/trota-welcome/trota_welcome/app.py:190
+#: applications/trota-welcome/trota_welcome/app.py:187
 msgid "Software Updater"
 msgstr "Aggiornamenti software"
 
@@ -469,7 +469,7 @@ msgid "System Monitor"
 msgstr "Monitor di sistema"
 
 #: applications/trota-diagnostics/trota_diagnostics/app.py:34
-#: applications/trota-welcome/trota_welcome/app.py:192
+#: applications/trota-welcome/trota_welcome/app.py:189
 msgid "Software & Updates"
 msgstr "Software e aggiornamenti"
 
@@ -508,7 +508,7 @@ msgid "Suggestion"
 msgstr "Suggerimento"
 
 #: applications/trota-diagnostics/trota_diagnostics/app.py:126
-#: applications/trota-welcome/trota_welcome/app.py:204
+#: applications/trota-welcome/trota_welcome/app.py:201
 msgid "Trota Diagnostics"
 msgstr "Diagnostica Trota"
 
@@ -547,8 +547,8 @@ msgstr "Assistente pacchetti"
 
 #: applications/trota-package-helper/trota_package_helper/app.py:51
 #: applications/trota-system-info/trota_system_info/app.py:100
-#: applications/trota-welcome/trota_welcome/app.py:191
-#: applications/trota-welcome/trota_welcome/app.py:220
+#: applications/trota-welcome/trota_welcome/app.py:188
+#: applications/trota-welcome/trota_welcome/app.py:217
 msgid "Software"
 msgstr "Software"
 
@@ -668,8 +668,8 @@ msgid "Graphical applications may also be available there"
 msgstr "Le applicazioni grafiche potrebbero essere disponibili anche lì"
 
 #: applications/trota-package-helper/trota_package_helper/app.py:220
-#: applications/trota-welcome/trota_welcome/app.py:207
-#: applications/trota-welcome/trota_welcome/app.py:221
+#: applications/trota-welcome/trota_welcome/app.py:204
+#: applications/trota-welcome/trota_welcome/app.py:218
 msgid "Trota Package Helper"
 msgstr "Assistente pacchetti Trota"
 
@@ -823,7 +823,7 @@ msgid "Could not save the report: {error}"
 msgstr "Impossibile salvare il rapporto: {error}"
 
 #: applications/trota-system-info/trota_system_info/app.py:186
-#: applications/trota-welcome/trota_welcome/app.py:201
+#: applications/trota-welcome/trota_welcome/app.py:198
 msgid "Trota System Info"
 msgstr "Informazioni di sistema Trota"
 
@@ -988,232 +988,227 @@ msgstr "Applicazioni"
 msgid "Help and support"
 msgstr "Aiuto e supporto"
 
-#: applications/trota-welcome/trota_welcome/app.py:137
-#, python-brace-format
-msgid "Based on {base}"
-msgstr "Basato su {base}"
-
-#: applications/trota-welcome/trota_welcome/app.py:139
+#: applications/trota-welcome/trota_welcome/app.py:136
 msgid "Developed and published by TestardStudios"
 msgstr "Sviluppato e pubblicato da TestardStudios"
 
-#: applications/trota-welcome/trota_welcome/app.py:145
-msgid "Trota OS is a desktop operating system for development, system administration, gaming, study and everyday use. It is built on Ubuntu LTS, so it uses the same packages, drivers and security updates. There is no mandatory account and no telemetry."
-msgstr "Trota OS è un sistema operativo desktop per sviluppo, amministrazione di sistemi, gaming, studio e uso quotidiano. È basato su Ubuntu LTS, quindi usa gli stessi pacchetti, driver e aggiornamenti di sicurezza. Nessun account obbligatorio e nessuna telemetria."
+#: applications/trota-welcome/trota_welcome/app.py:142
+msgid "Trota OS is a light desktop operating system for development, system administration, gaming, study and everyday use. Security updates arrive automatically, .deb packages and Flatpak applications work out of the box, and there is no mandatory account and no telemetry."
+msgstr "Trota OS è un sistema operativo desktop leggero per sviluppo, amministrazione di sistemi, gaming, studio e uso quotidiano. Gli aggiornamenti di sicurezza arrivano automaticamente, i pacchetti .deb e le applicazioni Flatpak funzionano subito, e non ci sono account obbligatori né telemetria."
 
-#: applications/trota-welcome/trota_welcome/app.py:153
+#: applications/trota-welcome/trota_welcome/app.py:150
 msgid "Check for updates"
 msgstr "Cerca aggiornamenti"
 
-#: applications/trota-welcome/trota_welcome/app.py:154
+#: applications/trota-welcome/trota_welcome/app.py:151
 msgid "Open Settings"
 msgstr "Apri le Impostazioni"
 
-#: applications/trota-welcome/trota_welcome/app.py:155
+#: applications/trota-welcome/trota_welcome/app.py:152
 msgid "System information"
 msgstr "Informazioni di sistema"
 
-#: applications/trota-welcome/trota_welcome/app.py:163
+#: applications/trota-welcome/trota_welcome/app.py:160
 msgid "Show this window at login"
 msgstr "Mostra questa finestra all'accesso"
 
-#: applications/trota-welcome/trota_welcome/app.py:164
+#: applications/trota-welcome/trota_welcome/app.py:161
 msgid "You can always open it from the applications menu"
 msgstr "Puoi sempre aprirla dal menu delle applicazioni"
 
-#: applications/trota-welcome/trota_welcome/app.py:174
+#: applications/trota-welcome/trota_welcome/app.py:171
 #, python-brace-format
 msgid "Could not save the preference: {error}"
 msgstr "Impossibile salvare la preferenza: {error}"
 
-#: applications/trota-welcome/trota_welcome/app.py:177
+#: applications/trota-welcome/trota_welcome/app.py:174
 msgid "Personalize"
 msgstr "Personalizza"
 
-#: applications/trota-welcome/trota_welcome/app.py:178
+#: applications/trota-welcome/trota_welcome/app.py:175
 msgid "Appearance"
 msgstr "Aspetto"
 
-#: applications/trota-welcome/trota_welcome/app.py:178
+#: applications/trota-welcome/trota_welcome/app.py:175
 msgid "Light or dark style, accent color, dock"
 msgstr "Stile chiaro o scuro, colore d'accento, dock"
 
-#: applications/trota-welcome/trota_welcome/app.py:179
+#: applications/trota-welcome/trota_welcome/app.py:176
 msgid "Choose one of the Trota OS wallpapers or your own pictures"
 msgstr "Scegli uno sfondo di Trota OS o una tua immagine"
 
-#: applications/trota-welcome/trota_welcome/app.py:179
+#: applications/trota-welcome/trota_welcome/app.py:176
 msgid "Wallpaper"
 msgstr "Sfondo"
 
-#: applications/trota-welcome/trota_welcome/app.py:180
+#: applications/trota-welcome/trota_welcome/app.py:177
 msgid "Displays"
 msgstr "Schermi"
 
-#: applications/trota-welcome/trota_welcome/app.py:180
+#: applications/trota-welcome/trota_welcome/app.py:177
 msgid "Resolution, scaling and night light"
 msgstr "Risoluzione, ridimensionamento e luce notturna"
 
-#: applications/trota-welcome/trota_welcome/app.py:181
+#: applications/trota-welcome/trota_welcome/app.py:178
 msgid "Accessibility"
 msgstr "Accessibilità"
 
-#: applications/trota-welcome/trota_welcome/app.py:181
+#: applications/trota-welcome/trota_welcome/app.py:178
 msgid "Screen reader, large text, high contrast, zoom"
 msgstr "Lettore dello schermo, testo grande, contrasto elevato, ingrandimento"
 
-#: applications/trota-welcome/trota_welcome/app.py:183
+#: applications/trota-welcome/trota_welcome/app.py:180
 msgid "Connect"
 msgstr "Connessioni"
 
-#: applications/trota-welcome/trota_welcome/app.py:184
+#: applications/trota-welcome/trota_welcome/app.py:181
 msgid "Connect to a wireless network"
 msgstr "Connettiti a una rete wireless"
 
-#: applications/trota-welcome/trota_welcome/app.py:184
+#: applications/trota-welcome/trota_welcome/app.py:181
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
 
-#: applications/trota-welcome/trota_welcome/app.py:185
+#: applications/trota-welcome/trota_welcome/app.py:182
 msgid "Wired connections, VPN and proxy"
 msgstr "Connessioni cablate, VPN e proxy"
 
-#: applications/trota-welcome/trota_welcome/app.py:186
+#: applications/trota-welcome/trota_welcome/app.py:183
 msgid "Accounts, passwords and fingerprint login"
 msgstr "Account, password e accesso con impronta digitale"
 
-#: applications/trota-welcome/trota_welcome/app.py:186
+#: applications/trota-welcome/trota_welcome/app.py:183
 msgid "Users"
 msgstr "Utenti"
 
-#: applications/trota-welcome/trota_welcome/app.py:187
+#: applications/trota-welcome/trota_welcome/app.py:184
 msgid "Privacy and security"
 msgstr "Privacy e sicurezza"
 
-#: applications/trota-welcome/trota_welcome/app.py:187
+#: applications/trota-welcome/trota_welcome/app.py:184
 msgid "Screen lock, location services, file history"
 msgstr "Blocco schermo, servizi di localizzazione, cronologia dei file"
 
-#: applications/trota-welcome/trota_welcome/app.py:189
+#: applications/trota-welcome/trota_welcome/app.py:186
 msgid "Software and updates"
 msgstr "Software e aggiornamenti"
 
-#: applications/trota-welcome/trota_welcome/app.py:190
+#: applications/trota-welcome/trota_welcome/app.py:187
 msgid "Install updates now"
 msgstr "Installa ora gli aggiornamenti"
 
-#: applications/trota-welcome/trota_welcome/app.py:191
+#: applications/trota-welcome/trota_welcome/app.py:188
 msgid "Find and install applications"
 msgstr "Trova e installa applicazioni"
 
-#: applications/trota-welcome/trota_welcome/app.py:192
+#: applications/trota-welcome/trota_welcome/app.py:189
 msgid "Repositories and automatic update policy"
 msgstr "Repository e criteri di aggiornamento automatico"
 
-#: applications/trota-welcome/trota_welcome/app.py:193
+#: applications/trota-welcome/trota_welcome/app.py:190
 msgid "Additional Drivers"
 msgstr "Driver aggiuntivi"
 
-#: applications/trota-welcome/trota_welcome/app.py:193
+#: applications/trota-welcome/trota_welcome/app.py:190
 msgid "Proprietary graphics and Wi-Fi drivers (e.g. NVIDIA)"
 msgstr "Driver proprietari per grafica e Wi-Fi (es. NVIDIA)"
 
-#: applications/trota-welcome/trota_welcome/app.py:198
+#: applications/trota-welcome/trota_welcome/app.py:195
 msgid "Trota OS tools"
 msgstr "Strumenti di Trota OS"
 
-#: applications/trota-welcome/trota_welcome/app.py:199
+#: applications/trota-welcome/trota_welcome/app.py:196
 msgid "Original utilities of Trota OS. They work offline and never send data anywhere."
 msgstr "Utility originali di Trota OS. Funzionano offline e non inviano mai dati."
 
-#: applications/trota-welcome/trota_welcome/app.py:202
+#: applications/trota-welcome/trota_welcome/app.py:199
 msgid "Version, kernel, CPU, memory, disks, network and graphics"
 msgstr "Versione, kernel, CPU, memoria, dischi, rete e grafica"
 
-#: applications/trota-welcome/trota_welcome/app.py:205
+#: applications/trota-welcome/trota_welcome/app.py:202
 msgid "Safe, read-only checks with clear suggestions"
 msgstr "Controlli sicuri, in sola lettura, con suggerimenti chiari"
 
-#: applications/trota-welcome/trota_welcome/app.py:208
+#: applications/trota-welcome/trota_welcome/app.py:205
 msgid "Search the package catalogue and learn how to install software"
 msgstr "Cerca nel catalogo dei pacchetti e scopri come installare software"
 
-#: applications/trota-welcome/trota_welcome/app.py:219
+#: applications/trota-welcome/trota_welcome/app.py:216
 msgid "More software"
 msgstr "Altro software"
 
-#: applications/trota-welcome/trota_welcome/app.py:220
+#: applications/trota-welcome/trota_welcome/app.py:217
 msgid "Thousands of applications from Flathub, including Steam and VS Code"
 msgstr "Migliaia di applicazioni da Flathub, tra cui Steam e VS Code"
 
-#: applications/trota-welcome/trota_welcome/app.py:221
+#: applications/trota-welcome/trota_welcome/app.py:218
 msgid "Search the APT catalogue"
 msgstr "Cerca nel catalogo APT"
 
-#: applications/trota-welcome/trota_welcome/app.py:226
+#: applications/trota-welcome/trota_welcome/app.py:223
 msgid "Documentation"
 msgstr "Documentazione"
 
-#: applications/trota-welcome/trota_welcome/app.py:229
+#: applications/trota-welcome/trota_welcome/app.py:226
 msgid "Offline guide installed on this computer"
 msgstr "Guida offline installata su questo computer"
 
-#: applications/trota-welcome/trota_welcome/app.py:229
+#: applications/trota-welcome/trota_welcome/app.py:226
 msgid "Trota OS documentation"
 msgstr "Documentazione di Trota OS"
 
-#: applications/trota-welcome/trota_welcome/app.py:230
+#: applications/trota-welcome/trota_welcome/app.py:227
 msgid "Latest version of the guides"
 msgstr "Versione più recente delle guide"
 
-#: applications/trota-welcome/trota_welcome/app.py:230
+#: applications/trota-welcome/trota_welcome/app.py:227
 msgid "Online documentation"
 msgstr "Documentazione online"
 
-#: applications/trota-welcome/trota_welcome/app.py:231
+#: applications/trota-welcome/trota_welcome/app.py:228
 msgid "Desktop guide"
 msgstr "Guida del desktop"
 
-#: applications/trota-welcome/trota_welcome/app.py:231
+#: applications/trota-welcome/trota_welcome/app.py:228
 msgid "How to use the GNOME desktop"
 msgstr "Come usare il desktop GNOME"
 
-#: applications/trota-welcome/trota_welcome/app.py:234
+#: applications/trota-welcome/trota_welcome/app.py:231
 msgid "Support"
 msgstr "Supporto"
 
-#: applications/trota-welcome/trota_welcome/app.py:235
+#: applications/trota-welcome/trota_welcome/app.py:232
 msgid "Trota OS is a community project by TestardStudios, provided without commercial support. Security updates for the Ubuntu base come from the Ubuntu archive for the whole LTS lifetime (standard support until April 2029)."
 msgstr "Trota OS è un progetto comunitario di TestardStudios, fornito senza supporto commerciale. Gli aggiornamenti di sicurezza della base Ubuntu arrivano dall'archivio Ubuntu per tutto il ciclo di vita LTS (supporto standard fino ad aprile 2029)."
 
-#: applications/trota-welcome/trota_welcome/app.py:239
+#: applications/trota-welcome/trota_welcome/app.py:236
 msgid "Open an issue on the project tracker"
 msgstr "Apri una segnalazione nel tracker del progetto"
 
-#: applications/trota-welcome/trota_welcome/app.py:239
+#: applications/trota-welcome/trota_welcome/app.py:236
 msgid "Report a problem"
 msgstr "Segnala un problema"
 
-#: applications/trota-welcome/trota_welcome/app.py:240
+#: applications/trota-welcome/trota_welcome/app.py:237
 msgid "Read the security policy first"
 msgstr "Leggi prima la politica di sicurezza"
 
-#: applications/trota-welcome/trota_welcome/app.py:240
+#: applications/trota-welcome/trota_welcome/app.py:237
 msgid "Report a security vulnerability"
 msgstr "Segnala una vulnerabilità di sicurezza"
 
-#: applications/trota-welcome/trota_welcome/app.py:241
+#: applications/trota-welcome/trota_welcome/app.py:238
 msgid "Copy system information"
 msgstr "Copia le informazioni di sistema"
 
-#: applications/trota-welcome/trota_welcome/app.py:242
+#: applications/trota-welcome/trota_welcome/app.py:239
 msgid "Paste it in your report: it contains no personal files"
 msgstr "Incollale nella segnalazione: non contengono file personali"
 
-#: applications/trota-welcome/trota_welcome/app.py:251
+#: applications/trota-welcome/trota_welcome/app.py:248
 msgid "Trota Welcome"
 msgstr "Benvenuto in Trota OS"
 
-#: applications/trota-welcome/trota_welcome/app.py:252
+#: applications/trota-welcome/trota_welcome/app.py:249
 msgid "Getting started with Trota OS"
 msgstr "Primi passi con Trota OS"

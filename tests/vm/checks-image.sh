@@ -64,6 +64,23 @@ section "containers"
 check podman_rootless sh -c 'podman info --format "{{.Host.Security.Rootless}} {{.Version.Version}}" 2>&1 | grep -q "^true" && podman info --format "rootless {{.Version.Version}}, {{.Host.NetworkBackend}}"'
 check podman_run sh -c 'timeout 900 podman run --rm docker.io/library/busybox:latest echo container-ok 2>&1 | tail -1 | grep -q container-ok && echo "busybox ran rootless"'
 
+if [ "$EDITION" = kiosk ]; then
+    section "kiosk"
+    check kiosk_service systemctl is-active trota-kiosk.service
+    check kiosk_default_target sh -c 'test "$(systemctl get-default)" = graphical.target && echo graphical.target'
+    if wait_for 600 pgrep -u kiosk -x cage; then result kiosk_cage PASS "cage running as kiosk"
+    else result kiosk_cage FAIL "$(journalctl -u trota-kiosk -b --no-pager 2>/dev/null | tail -3 | tr '\n' ' ')"; fi
+    if wait_for 600 pgrep -u kiosk -f firefox; then result kiosk_firefox PASS "firefox running as kiosk"
+    else result kiosk_firefox FAIL "no firefox for the kiosk user"; fi
+    check kiosk_policies sh -c 'python3 -c "import json; p = json.load(open(\"/etc/firefox/policies/policies.json\"))[\"policies\"]; assert p[\"DisableTelemetry\"]; print(len(p), \"policies\")"'
+    check kiosk_restart_timer systemctl is-enabled trota-kiosk-restart.timer
+    check kiosk_no_vt_switch sh -c 'grep -q "^TROTA_KIOSK_VT_SWITCH=no" /etc/trota-kiosk.conf && echo "VT switching off"'
+    check kiosk_firefox_mozilla sh -c 'v=$(dpkg-query -W -f="\${Version}" firefox) && case "$v" in *snap*) exit 1;; esac && echo "firefox $v"'
+    # Restart on crash: kill the browser, the service brings it back.
+    pkill_out="$(printf '%s\n' "$PW" | sudo -S -p '' pkill -u kiosk -x cage; sleep 20; pgrep -u kiosk -x cage)"
+    [ -n "$pkill_out" ] && result kiosk_restarts PASS "cage back after being killed" || result kiosk_restarts FAIL "not restarted"
+fi
+
 section "updates"
 if as_root timeout 900 apt-get update >/tmp/apt-update.log 2>&1; then
     result apt_update PASS "$(grep -c '^\(Hit\|Get\)' /tmp/apt-update.log) indexes"

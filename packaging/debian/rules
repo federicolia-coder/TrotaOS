@@ -44,6 +44,8 @@ override_dh_auto_install:
 	install -m 644 branding/themes/grub/trota/theme.txt build-art/grub/trota/background.png \
 		$(ART)/usr/share/grub/themes/trota/
 	install -m 644 branding/icons/*.svg $(ART)/usr/share/icons/hicolor/scalable/apps/
+	install -D -m 644 branding/icons/actions/view-app-grid-ubuntu-symbolic.svg \
+		$(ART)/usr/share/icons/hicolor/scalable/actions/view-app-grid-ubuntu-symbolic.svg
 	install -m 644 branding/logo/trota-symbol.svg $(ART)/usr/share/icons/hicolor/scalable/apps/trota-os-logo.svg
 	install -m 644 branding/logo/trota-symbol.svg $(ART)/usr/share/icons/hicolor/scalable/apps/trota-os-logo-dark.svg
 	install -m 644 branding/logo/trota-logo-light.svg $(ART)/usr/share/icons/hicolor/scalable/apps/trota-os-logo-text.svg
@@ -120,6 +122,8 @@ override_dh_auto_install:
 	install -D -m 644 branding/slideshow/slideshow.conf debian/ubiquity-slideshow-trota/usr/share/ubiquity-slideshow/slideshow.conf
 	install -D -m 644 branding/slideshow/slides/index.html debian/ubiquity-slideshow-trota/usr/share/ubiquity-slideshow/slides/index.html
 	install -m 644 branding/logo/trota-logo-dark.svg debian/ubiquity-slideshow-trota/usr/share/ubiquity-slideshow/slides/
+	install -D -m 644 packaging/files/live/trota-live-installer-icon.desktop \
+		debian/ubiquity-slideshow-trota/etc/xdg/autostart/trota-live-installer-icon.desktop
 	# --- trota-docs --------------------------------------------------------
 	install -d debian/trota-docs/usr/share/doc/trota-docs/html
 	cp -r build-docs/. debian/trota-docs/usr/share/doc/trota-docs/html/

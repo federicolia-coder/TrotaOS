@@ -133,18 +133,15 @@ class WelcomeWindow(Adw.ApplicationWindow):
         if rel.is_trota and rel.codename:
             version = f"{rel.name} {rel.version} “{rel.codename}”"
         hero.append(Gtk.Label(label=version, xalign=0, css_classes=["title-3"], selectable=True))
-        if rel.base_description:
-            hero.append(Gtk.Label(label=_("Based on {base}").format(base=rel.base_description), xalign=0,
-                                  css_classes=["dim-label"], selectable=True))
         hero.append(Gtk.Label(label=_("Developed and published by TestardStudios"), xalign=0, css_classes=["dim-label"]))
         return hero
 
     def _page_welcome(self) -> Gtk.Widget:
         intro = Gtk.Label(
             wrap=True, xalign=0,
-            label=_("Trota OS is a desktop operating system for development, system administration, "
-                    "gaming, study and everyday use. It is built on Ubuntu LTS, so it uses the same "
-                    "packages, drivers and security updates. There is no mandatory account and "
+            label=_("Trota OS is a light desktop operating system for development, system administration, "
+                    "gaming, study and everyday use. Security updates arrive automatically, .deb packages "
+                    "and Flatpak applications work out of the box, and there is no mandatory account and "
                     "no telemetry."),
         )
         buttons = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, max_children_per_line=3,
