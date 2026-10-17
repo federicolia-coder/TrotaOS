@@ -451,7 +451,7 @@ def scenario_installed(args, out: Path) -> int:
         vm.serial.run("for i in $(seq 120); do pgrep -u \"$USER\" -f trota-welcome >/dev/null && break; sleep 5; done", 700)
         time.sleep(45)
         vm.screenshot("desktop-welcome")
-        results = run_checks(vm, HERE / "checks-installed.sh", out, timeout=3600,
+        results = run_checks(vm, args.checks or HERE / "checks-installed.sh", out, timeout=3600,
                              subst={"@PASSWORD@": creds["password"], "@FIRMWARE@": args.firmware},
                              password=creds["password"])
         vm.screenshot("desktop-end")
@@ -550,6 +550,7 @@ def main() -> int:
     ap.add_argument("--iso", type=Path, default=ROOT / "dist" / "trota-os-1.0-amd64.iso")
     ap.add_argument("--firmware", choices=["bios", "uefi", "secureboot"], default="uefi")
     ap.add_argument("--image", type=Path, help="disk image (qcow2) for the 'image' scenario")
+    ap.add_argument("--checks", type=Path, help="check script to run instead of the default one (installed)")
     ap.add_argument("--memory", type=int, default=4096)
     ap.add_argument("--disk-gb", type=int, default=25)
     ap.add_argument("--minutes", type=float, default=None,
