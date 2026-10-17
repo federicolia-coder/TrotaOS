@@ -217,7 +217,8 @@ export_image() {
 main() {
     require_root
     require_cmds debootstrap sfdisk losetup partx mkfs.vfat mkfs.ext4 blkid rsync qemu-img xz sha256sum
-    ls "$PKG_DIR"/trota-server-settings_*.deb "$PKG_DIR"/trota-kiosk_*.deb >/dev/null 2>&1 || die "no Trota OS packages: run scripts/build/build-packages.sh first"
+    ls "$PKG_DIR"/trota-server-settings_*.deb >/dev/null 2>&1 || die "no Trota OS packages: run scripts/build/build-packages.sh first"
+    [ "$EDITION" != kiosk ] || ls "$PKG_DIR"/trota-kiosk_*.deb >/dev/null 2>&1 || die "no trota-kiosk package: run scripts/build/build-packages.sh"
     mkdir -p "$BUILD" "$LOGS"
     exec > >(tee -a "$LOGS/build-image-$EDITION-$(timestamp).log") 2>&1
     local t0=$SECONDS
