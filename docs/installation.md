@@ -13,7 +13,7 @@ Ubuntu 24.04 Desktop e non sono ancora stati verificati su hardware reale.
 | Spazio su disco | 25 GB | 60 GB+ su SSD | **Misurato** subito dopo l'installazione: 9,5 GB (di cui 2 GB di swapfile) |
 | Grafica | 1024×768, qualsiasi scheda supportata da Linux | GPU con driver Vulkan (Intel, AMD, NVIDIA con driver proprietario) | Stima |
 | Firmware | UEFI (anche con Secure Boot) o BIOS legacy | UEFI | UEFI + Secure Boot verificato in VM; BIOS: vedi [testing.md](testing.md) |
-| Supporto di installazione | Chiavetta USB da 4 GB o DVD | Chiavetta USB 3 | ISO misurata: 2,37 GB |
+| Supporto di installazione | Chiavetta USB da 4 GB o DVD | Chiavetta USB 3 | ISO misurata: 2,06 GB |
 | Rete | Facoltativa per l'installazione (prevista) | Necessaria per aggiornamenti e per installare applicazioni (GNOME Software, Flathub) | Installazione verificata in VM **con** rete; senza rete non ancora verificata |
 
 Le misure provengono da una VM QEMU (4 vCPU emulate, 4 GB RAM, disco virtio da

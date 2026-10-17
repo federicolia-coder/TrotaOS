@@ -35,7 +35,7 @@ La release [v1.0.0](https://github.com/federicolia-coder/TrotaOS/releases/tag/v1
 (data di build e versioni dei pacchetti cambiano): fa fede il file `.sha256`
 pubblicato accanto alla ISO.
 
-Dimensione: circa 2,1 GB (la prima build con gli snap era di 3,7 GB), sotto il
+Dimensione: 2,06 GB (la prima build con gli snap era di 3,7 GB), sotto il
 limite di 2 GiB per allegato di GitHub, quindi la ISO è un **file unico**. Se
 una build futura superasse il limite, il workflow la allegherebbe divisa in
 parti (`.part1`, `.part2`…, con `SHA256SUMS-parts`) da ricomporre con
