@@ -47,6 +47,7 @@ TCG) con dischi virtuali nuovi in `build/vm/`; non tocca dischi reali.
 | Sessione live | `vmtest.py live` | Avvio live con console seriale; login; esegue `tests/vm/checks-live.sh` |
 | Installazione | `vmtest.py install --firmware secureboot` | Installazione automatica con ubiquity (preseed di test con password casuale) su disco virtuale vuoto |
 | Primo avvio | `vmtest.py installed --firmware secureboot` | Avvio del disco installato, login seriale, `tests/vm/checks-installed.sh`, screenshot del desktop |
+| Immagine disco | `vmtest.py image --image dist/trota-os-<edizione>-1.0-amd64.qcow2 --firmware …` | Primo avvio di un'immagine Server, Cloud o Kiosk su un disco da 25 GB (cloud: con data source NoCloud; server e kiosk: senza, con cambio password al primo accesso), `tests/vm/checks-image.sh` |
 
 Gli script di controllo vengono passati alla VM tramite una cartella condivisa
 virtio-9p; ogni controllo stampa `RESULT <nome> PASS|FAIL|SKIP <nota>`.
@@ -136,6 +137,35 @@ ogni probabilità di un effetto della lentezza dell'emulazione (10–20 volte
 più lenta dell'hardware reale), **da confermare** con KVM o su hardware reale
 prima della pubblicazione.
 
+### Ciclo D — identità Trota OS, desktop alleggerito, edizioni
+
+**Desktop** (ISO senza snap, `ID=trota`, desktop alleggerito): sessione live
+UEFI **51/51** controlli superati, tra cui avvio di gnome-shell (fallito nel
+ciclo C), identità (`lsb_release`, python-apt), origini degli aggiornamenti
+automatici, nomi delle sessioni GDM, servizi tolti dall'accesso, Firefox di
+Mozilla, Flathub. Memoria usata dopo l'accesso: 923 MB (ciclo C: circa
+1,2 GB).
+
+**Immagini disco** (primo avvio, 2 GB di RAM, disco da 25 GB):
+
+| Edizione | Firmware | Esito | Avvio fino alla console* | RAM usata | Pacchetti |
+|---|---|---|---|---|---|
+| Server / Edge | UEFI, e UEFI con Secure Boot | 37/37 (1 saltato) | circa 4 min | 271 MB | 380 |
+| Cloud (NoCloud) | BIOS | tutti i controlli salvo `podman_run` (difetto del test, corretto e riverificato sull'immagine Server) | circa 5 min | 294 MB | 361 |
+| Kiosk | UEFI | tutti i controlli salvo `podman_run` (difetto del test, corretto e riverificato sull'immagine Server) | circa 4 min | 309 MB | 556 |
+
+\* In emulazione TCG; il primo avvio comprende cloud-init (chiavi SSH,
+allargamento del disco).
+
+Verificati tra l'altro: avvio con shim e GRUB firmati, partizione radice
+allargata al disco intero, chiavi SSH generate al primo avvio, SSH solo con
+chiave, firewall attivo con la sola porta 22, parametri sysctl di hardening,
+AppArmor, origini degli aggiornamenti automatici, container Podman rootless;
+per il Kiosk: servizio attivo, cage e Firefox in esecuzione come utente
+`kiosk`, policy di Firefox, riavvio automatico dopo l'uccisione del browser.
+Il download di un'immagine da Docker Hub non è verificabile dalla rete delle
+VM di test (controllo `podman_pull` saltato).
+
 ### Difetti trovati dai test e corretti
 
 Ogni difetto è stato riprodotto, corretto e coperto da un controllo automatico
@@ -153,4 +183,8 @@ che impedisce di ripresentarlo.
 | 8 | Test live (journal) | `md5sum.txt` conteneva il checksum di `eltorito.img` prima che `xorriso` vi scrivesse la boot-info-table: `casper-md5check` segnalava un falso errore | `eltorito.img` escluso da `md5sum.txt` | `verify-iso.sh` controlla la coerenza di `md5sum.txt` |
 | 9 | Screenshot del desktop live | Su schermi 16:10 e 4:3 il marchio del wallpaper veniva tagliato | Posizione del marchio e della trota rivista | Anteprime 4:3, 16:10, 16:9 |
 | 10 | Test di installazione e sessione live | Con `-cpu max` in emulazione TCG gnome-shell andava in segfault nel codice JIT di llvmpipe e lo slideshow non veniva disegnato | Non è un difetto di Trota OS: il driver di test usa `Nehalem` | `TROTA_VM_CPU` |
-
+| 11 | Build (controllo di identità) | Con `ID=trota` python-apt non trovava il calendario delle versioni (`trota.csv`) e *Software e aggiornamenti* non avrebbe funzionato | Collegamenti `Trota.info`, `Trota.mirrors`, `trota.csv` in `trota-release` | La build fallisce se python-apt non gestisce la distribuzione |
+| 12 | Screenshot del desktop live | Logo Ubuntu sul pulsante "Mostra applicazioni" del dock; "Based on Ubuntu" nell'app Welcome; icona dell'installer non attendibile ("ubiquity.desktop") nella sessione live | Icona Trota al posto di quella di Yaru (filtro dpkg), testi rivisti, icona dell'installer segnata come attendibile | Controlli VM `dock_icon_trota`, `installer_icon_trusted` |
+| 13 | Test delle immagini | Il primo avvio si fermava nell'initramfs: senza udev `grub-mkconfig` scriveva `root=/dev/loop0p3` | `root=UUID=…` nel `grub.cfg` dell'immagine | La build fallisce se `grub.cfg` cita il dispositivo loop |
+| 14 | Test delle immagini | Senza data source cloud-init veniva disattivato: niente DHCP, chiavi SSH né allargamento del disco | Policy di ds-identify `notfound=enabled` (data source *None*) | Controlli VM `network`, `ssh_host_keys`, `root_grown` |
+| 15 | Build delle immagini | Il kernel dell'host di build non monta FAT; mancavano `initramfs-tools` e gli strumenti di partizionamento con `--no-install-recommends` | ESP scritta con mtools; pacchetti aggiunti al manifest | La build verifica `EFI/BOOT/BOOTX64.EFI` |
