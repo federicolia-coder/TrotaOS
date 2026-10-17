@@ -17,7 +17,8 @@ intero, genera le chiavi SSH, crea l'utente, configura la rete.
 
 ## Server / Edge
 
-- Nessuna interfaccia grafica: circa 650 pacchetti, kernel generico con i
+- Nessuna interfaccia grafica: circa 380 pacchetti e 270 MB di RAM in uso
+  dopo l'avvio, kernel generico con i
   firmware per l'hardware reale (esclusi quelli da data center, vedi
   [architecture.md](architecture.md)).
 - **SSH solo con chiave**, root senza accesso remoto, firewall (`ufw`) attivo
