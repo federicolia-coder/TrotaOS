@@ -105,7 +105,7 @@ Passi: test automatici, `build-packages.sh`, `build-iso.sh` (che termina con
 `verify-iso.sh`), checksum, creazione del release con la descrizione
 generata. La ISO è allegata come file unico; solo se superasse i 2 GiB
 ammessi da GitHub verrebbe divisa in parti da 1900 MiB. Il workflow libera prima ~25 GB di disco sul runner (toolchain non
-usate) e usa il mirror Ubuntu di Azure. Se il tag esiste già si ferma senza
+usate) e usa il mirror principale `archive.ubuntu.com` (quello di Azure dei runner ha perso pacchetti in più esecuzioni); compilazione dei pacchetti e della ISO sono ritentate una volta. Se il tag esiste già si ferma senza
 toccare nulla, a meno di spuntare *replace*: in quel caso, solo dopo una build
 riuscita, cancella il release e il tag esistenti e li ricrea; i log della build sono sempre allegati all'esecuzione come
 artefatto `build-logs`.

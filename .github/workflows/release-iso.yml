@@ -33,7 +33,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 240
     env:
-      TROTA_MIRROR: http://azure.archive.ubuntu.com/ubuntu
+      # The Azure mirror of the hosted runners dropped packages in three runs.
+      TROTA_MIRROR: http://archive.ubuntu.com/ubuntu
       ISO: dist/trota-os-1.0-amd64.iso
     steps:
       - uses: actions/checkout@v4
@@ -71,7 +72,7 @@ jobs:
       - name: Unit tests
         run: python3 -m pytest -q -p no:cacheprovider tests --deselect tests/test_ui_smoke.py
 
-      # One retry: the Azure mirror occasionally fails to serve a package.
+      # One retry: a mirror occasionally fails to serve a package.
       - name: Build packages
         run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh
 
