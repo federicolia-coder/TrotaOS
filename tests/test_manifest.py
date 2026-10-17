@@ -123,7 +123,8 @@ def test_image_build_editions():
     assert "cloud)  KERNEL=linux-image-virtual-hwe-24.04" in script
     # BIOS and UEFI (Secure Boot shim, fallback path) on the same disk
     assert "grub-install --target=i386-pc" in script
-    assert script.count("--uefi-secure-boot") == 2 and "--removable" in script
+    for f in ("shimx64.efi.signed", "grubx64.efi.signed", "EFI/BOOT/BOOTX64.EFI", "fbx64.efi", "BOOTX64.CSV"):
+        assert f in script, f
     # the desktop sources (Mozilla, Flathub) reach only the kiosk (Firefox)
     kiosk_branch = script.split('if [ "$EDITION" = kiosk ]; then', 1)[1].split("\n    fi\n", 1)[0]
     assert script.count("trota-software-sources") == kiosk_branch.count("trota-software-sources") > 0

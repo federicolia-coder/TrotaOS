@@ -4,6 +4,9 @@
 #   sudo ./scripts/build/build-image.sh server   # servers, edge devices, VMs
 #   sudo ./scripts/build/build-image.sh cloud    # public and private clouds
 #   sudo ./scripts/build/build-image.sh kiosk    # kiosks, totems, digital signage
+#   sudo ./scripts/build/build-image.sh server disk export   # only some stages
+#
+# Stages: root (system tree), disk (partitioned raw image), export (qcow2, xz).
 #
 # Output in dist/: trota-os-<edition>-<version>-amd64.qcow2 (VMs and clouds)
 # and .img.xz (raw disk, to write to a disk or USB drive), with .sha256.
@@ -33,7 +36,7 @@ LOOP=""
 
 cleanup() {
     [ -d "$MNT" ] && chroot_umount "$MNT" 2>/dev/null || true
-    for m in "$MNT/boot/efi" "$MNT"; do mountpoint -q "$m" && umount "$m"; done
+    mountpoint -q "$MNT" && umount "$MNT"
     [ -d "$ROOT" ] && chroot_umount "$ROOT" || true
     if [ -n "$LOOP" ]; then partx -d "$LOOP" 2>/dev/null || true; losetup -d "$LOOP" || true; LOOP=""; fi
 }
@@ -174,32 +177,61 @@ make_disk() {
     log "disk: $SIZE raw image"
     rm -f "$RAW"
     truncate -s "$SIZE" "$RAW"
-    printf 'label: gpt\n,1MiB,21686148-6449-6E6F-744E-656564454649,name="bios"\n,255MiB,U,name="ESP"\n,,L,name="root"\n' \
-        | sfdisk -q "$RAW"
+    printf '%s\n' 'label: gpt' \
+        'size=1MiB, type=21686148-6449-6E6F-744E-656564454649, name="bios"' \
+        'size=255MiB, type=U, name="ESP"' \
+        'type=L, name="root"' | sfdisk -q "$RAW"
     LOOP="$(losetup -f --show "$RAW")"
     partx -a "$LOOP"
     mkfs.vfat -F 32 -n TROTA-ESP "${LOOP}p2" >/dev/null
     mkfs.ext4 -q -L trota-root "${LOOP}p3"
+    local root_uuid esp_uuid
+    root_uuid="$(blkid -s UUID -o value "${LOOP}p3")"
+    esp_uuid="$(blkid -s UUID -o value "${LOOP}p2")"
     mkdir -p "$MNT"
     mount "${LOOP}p3" "$MNT"
     rsync -aHAX "$ROOT"/ "$MNT"/
     mkdir -p "$MNT/boot/efi"
-    mount "${LOOP}p2" "$MNT/boot/efi"
     printf 'UUID=%s / ext4 defaults,discard,errors=remount-ro 0 1\nUUID=%s /boot/efi vfat umask=0077 0 1\n' \
-        "$(blkid -s UUID -o value "${LOOP}p3")" "$(blkid -s UUID -o value "${LOOP}p2")" > "$MNT/etc/fstab"
+        "$root_uuid" "$esp_uuid" > "$MNT/etc/fstab"
 
-    log "disk: boot loader (BIOS + UEFI with the signed shim)"
+    log "disk: boot loader (BIOS, and UEFI with the signed shim)"
     chroot_mount "$MNT"
     in_chroot "$MNT" grub-install --target=i386-pc "$LOOP"
-    in_chroot "$MNT" grub-install --target=x86_64-efi --efi-directory=/boot/efi --uefi-secure-boot --no-nvram
-    # Fallback path, used by firmware without a boot entry (new disks, clouds).
-    in_chroot "$MNT" grub-install --target=x86_64-efi --efi-directory=/boot/efi --uefi-secure-boot --no-nvram --removable
     in_chroot "$MNT" update-initramfs -u -k all
     in_chroot "$MNT" update-grub
     grep -q 'menuentry .Trota OS' "$MNT/boot/grub/grub.cfg" || die "no Trota OS entry in grub.cfg"
     chroot_umount "$MNT"
-    umount "$MNT/boot/efi" "$MNT"
+    write_esp "$root_uuid"
+    umount "$MNT"
     partx -d "$LOOP"; losetup -d "$LOOP"; LOOP=""
+}
+
+# EFI system partition, written with mtools (the build host may lack vfat
+# support). Same layout as "grub-install --uefi-secure-boot": shim signed by
+# Microsoft, GRUB signed by Canonical, a stub grub.cfg that loads the real one
+# from the root file system. Later updates of shim-signed/grub-efi-amd64-signed
+# run grub-install on the mounted ESP as usual.
+write_esp() {
+    local root_uuid="$1" esp="$WORK/esp" d
+    rm -rf "$esp" && mkdir -p "$esp/EFI/BOOT" "$esp/EFI/trota" "$esp/EFI/ubuntu"
+    local shim="$MNT/usr/lib/shim/shimx64.efi.signed.latest"
+    [ -f "$shim" ] || shim="$MNT/usr/lib/shim/shimx64.efi.signed"
+    printf 'search.fs_uuid %s root\nset prefix=($root)/boot/grub\nconfigfile $prefix/grub.cfg\n' "$root_uuid" > "$esp/grub.cfg"
+    # Removable path: firmware without a boot entry (new disks, clouds).
+    cp "$shim" "$esp/EFI/BOOT/BOOTX64.EFI"
+    cp "$MNT/usr/lib/shim/fbx64.efi" "$MNT/usr/lib/shim/mmx64.efi" "$esp/EFI/BOOT/"
+    # Distribution path: fbx64.efi creates the "Trota OS" boot entry from BOOTX64.CSV.
+    cp "$shim" "$esp/EFI/trota/shimx64.efi"
+    cp "$MNT/usr/lib/shim/mmx64.efi" "$esp/EFI/trota/"
+    printf 'shimx64.efi,Trota OS,,This is the boot entry for Trota OS\n' | iconv -t UTF-16LE > "$esp/EFI/trota/BOOTX64.CSV"
+    for d in BOOT trota ubuntu; do
+        [ "$d" = ubuntu ] || cp "$MNT/usr/lib/grub/x86_64-efi-signed/grubx64.efi.signed" "$esp/EFI/$d/grubx64.efi"
+        cp "$esp/grub.cfg" "$esp/EFI/$d/grub.cfg"
+    done
+    rm "$esp/grub.cfg"
+    mcopy -s -i "${LOOP}p2" "$esp/EFI" ::/
+    mdir -i "${LOOP}p2" -/ -b ::/EFI | grep -qi '/EFI/BOOT/BOOTX64.EFI$' || die "no EFI/BOOT/BOOTX64.EFI on the EFI partition"
 }
 
 export_image() {
@@ -216,17 +248,23 @@ export_image() {
 
 main() {
     require_root
-    require_cmds debootstrap sfdisk losetup partx mkfs.vfat mkfs.ext4 blkid rsync qemu-img xz sha256sum
+    require_cmds debootstrap sfdisk losetup partx mkfs.vfat mkfs.ext4 blkid rsync mcopy mdir iconv qemu-img xz sha256sum
     ls "$PKG_DIR"/trota-server-settings_*.deb >/dev/null 2>&1 || die "no Trota OS packages: run scripts/build/build-packages.sh first"
     [ "$EDITION" != kiosk ] || ls "$PKG_DIR"/trota-kiosk_*.deb >/dev/null 2>&1 || die "no trota-kiosk package: run scripts/build/build-packages.sh"
     mkdir -p "$BUILD" "$LOGS"
     exec > >(tee -a "$LOGS/build-image-$EDITION-$(timestamp).log") 2>&1
-    local t0=$SECONDS
-    build_root
-    configure_root
-    make_disk
-    export_image
+    local t0=$SECONDS stages=("${@:2}")
+    [ ${#stages[@]} -gt 0 ] || stages=(root disk export)
+    for s in "${stages[@]}"; do
+        log "=== $EDITION: $s ==="
+        case "$s" in
+            root) build_root; configure_root ;;
+            disk) [ -d "$ROOT/etc" ] || die "no system tree: run the root stage first"; make_disk ;;
+            export) [ -f "$RAW" ] || die "no disk image: run the disk stage first"; export_image ;;
+            *) die "unknown stage: $s (valid: root disk export)" ;;
+        esac
+    done
     log "image $NAME done in $((SECONDS - t0))s"
 }
 
-main
+main "$@"
