@@ -25,6 +25,10 @@ on:
         description: "Also build the Server, Cloud and Kiosk disk images"
         type: boolean
         default: true
+      iso:
+        description: "Build the desktop ISO (off: only add the disk images to the existing release)"
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -35,6 +39,7 @@ concurrency:
 
 jobs:
   iso:
+    if: ${{ inputs.iso }}
     runs-on: ubuntu-24.04
     timeout-minutes: 240
     env:
@@ -175,7 +180,8 @@ jobs:
 
   images:
     needs: iso
-    if: ${{ inputs.images }}
+    # Also when the ISO job was skipped (images only, added to the existing release).
+    if: ${{ always() && inputs.images && (needs.iso.result == 'success' || needs.iso.result == 'skipped') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
@@ -190,7 +196,7 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends debootstrap rsync dosfstools fdisk qemu-utils xz-utils \
+          sudo apt-get install -y --no-install-recommends debootstrap rsync dosfstools mtools fdisk qemu-utils xz-utils \
               dpkg-dev python3 python3-pytest gettext
 
       - name: Build packages
