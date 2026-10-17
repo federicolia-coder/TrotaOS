@@ -56,15 +56,15 @@ trota-diagnostics --text --no-dns; rc=$?
 [ $rc -le 1 ] && result diagnostics PASS "exit $rc" || result diagnostics FAIL "exit $rc"
 
 section "software and updates"
-# Seeding installs all snaps in one change; wait for it to finish (slow in emulation).
-if as_root timeout 2700 snap wait system seed.loaded && snap list firefox >/dev/null && snap list snap-store >/dev/null; then
-    result snaps_installed PASS "$(snap list | awk 'NR>1{print $1}' | tr '\n' ' ')"
-else
-    result snaps_installed FAIL "$(snap changes 2>&1 | tail -3 | tr '\n' ' ')"
-fi
-echo "--- snapd diagnostics"; snap changes 2>&1 | tail -8; systemctl status snapd.seeded.service --no-pager 2>&1 | head -8
-check snapd_seeded_service systemctl is-active snapd.seeded.service
-check firefox_runs sh -c 'timeout 300 snap run firefox --version'
+check no_snapd sh -c '! command -v snap && ! dpkg-query -W -f="\${db:Status-Abbrev}\n" snapd 2>/dev/null | grep -q "^ii"; test $? -eq 0 && echo "snapd not installed"'
+check snapd_blocked sh -c '! apt-get -s -o Debug::NoLocking=1 install snapd >/dev/null 2>&1 && apt-cache policy snapd | grep -m1 "Candidate"'
+check firefox_mozilla_deb sh -c 'v="$(dpkg-query -W -f="\${Version}" firefox)" && case "$v" in *snap*) exit 1;; esac && test -f /etc/apt/sources.list.d/mozilla.sources && echo "firefox $v"'
+check firefox_runs sh -c 'timeout 300 firefox --version'
+check firefox_italian sh -c 'dpkg-query -W -f="\${Package} \${Version}\n" firefox-l10n-it'
+check gnome_software sh -c 'command -v gnome-software && dpkg-query -W -f="\${Package} \${Version}\n" gnome-software-plugin-flatpak'
+check flathub_remote sh -c 'flatpak remotes --system --columns=name,url | grep "^flathub"'
+check no_pro_apt_hook sh -c 'test -z "$(apt-config dump binary::apt::AptCli::Hooks::Upgrade | grep -v "^binary::apt::AptCli::Hooks::Upgrade \"\";")" && systemctl is-enabled esm-cache.service apt-news.service 2>&1 | tr "\n" " " | grep -q "^masked masked" && echo "hook cleared, esm-cache/apt-news masked"'
+check no_pro_motd sh -c '! run-parts --lsbsysinit --test /etc/update-motd.d | grep -qE "10-help-text|91-contract-ua-esm-status" && echo "$(run-parts --lsbsysinit --test /etc/update-motd.d | wc -l) motd scripts"'
 check unattended_upgrades sh -c 'apt-config dump APT::Periodic | grep -q "Unattended-Upgrade \"1\"" && systemctl is-enabled unattended-upgrades'
 wait_for 120 sh -c 'nmcli -t -f STATE general | grep -q "^connected"' && result network PASS "$(nmcli -t -f STATE,CONNECTIVITY general)" || result network FAIL "$(nmcli -t general 2>&1)"
 if as_root apt-get update >/tmp/apt-update.log 2>&1; then

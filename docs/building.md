@@ -12,7 +12,7 @@ non viene modificato, a parte l'installazione degli strumenti elencati sotto.
 | Privilegi | `root` (debootstrap, chroot, mount di proc/sys/dev) |
 | Spazio su disco | ~25 GB liberi (chroot ~9 GB, ISO tree ~4 GB, cache, ISO ~3,5 GB) |
 | RAM | 4 GB minimo, 8 GB consigliati (mksquashfs parallelo) |
-| Rete | HTTP verso archive.ubuntu.com / security.ubuntu.com, HTTPS verso api.snapcraft.io |
+| Rete | HTTP verso archive.ubuntu.com / security.ubuntu.com, HTTPS verso packages.mozilla.org (Firefox) |
 | Tempo | ~45–60 minuti al primo avvio su 4 core (misure sotto) |
 
 Strumenti dell'host:
@@ -58,9 +58,8 @@ Le ISO non vanno aggiunte a Git (`dist/` è ignorata).
 |---|---|---|
 | `bootstrap` | `debootstrap` di noble (con cache in `build/cache/`) | 170 s (primo), pochi s con cache |
 | `packages` | Sorgenti APT ufficiali, pin temporaneo dei pacchetti esclusi, installazione dei manifest (`packages/manifest/*.list`) | 403 s |
-| `trota` | Installa i pacchetti `build/packages/*.deb`; fallisce se un pacchetto escluso risulta installato | ~60 s |
-| `snaps` | Risolve le dipendenze degli snap e li prepara con `snap prepare-image` (seed) | ~3 min |
-| `customize` | casper.conf, locale, schemi GSettings, dconf, `Prompt=never` per i rilasci, APT news disattivate, initramfs con verifica di tema Plymouth e casper, pulizia (machine-id, log, cache) | ~1 min |
+| `trota` | Installa i pacchetti `build/packages/*.deb` (tra cui `trota-software-sources`), poi Firefox e la sua traduzione italiana dal repository di Mozilla; fallisce se un pacchetto escluso risulta installato, se Firefox è la transizione snap di Ubuntu o se manca il remote Flathub | ~2 min |
+| `customize` | casper.conf, locale, schemi GSettings, dconf, `Prompt=never` per i rilasci, APT news disattivate, banner di login senza link Canonical, initramfs con verifica di tema Plymouth e casper, pulizia (machine-id, log, cache) | ~1 min |
 | `iso` | kernel/initrd, manifest, squashfs (xz), `.disk/info`, archivio APT del supporto (`dists/`, `pool/` con i pacchetti Trota, richiesto da ubiquity), `md5sum.txt`, GRUB BIOS ed EFI firmato, `efi.img`, `xorriso` | ~8 min (xz, 4 core) |
 | `checksum` | SHA-256 e `verify-iso.sh` | ~30 s |
 | `clean` | Rimuove chroot e albero ISO (mantiene cache e pacchetti) | — |
@@ -80,7 +79,8 @@ sudo TROTA_SQUASHFS_COMP=zstd ./scripts/build/build-iso.sh iso checksum
 
 Se l'host esce in HTTPS tramite un proxy che ispeziona TLS, passare il
 certificato con `TROTA_BUILD_CA_BUNDLE=/percorso/ca.crt` (usato solo durante
-la build, non entra nell'immagine). Le variabili `HTTP_PROXY`/`HTTPS_PROXY`
+la build da APT, curl e flatpak; non entra nell'immagine). Serve anche per il
+repository HTTPS di Mozilla da cui arriva Firefox. Le variabili `HTTP_PROXY`/`HTTPS_PROXY`
 dell'host sono inoltrate al chroot.
 
 ## Come funziona l'avvio dell'immagine

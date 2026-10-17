@@ -1,0 +1,9 @@
+# Firefox comes from Mozilla's repository. Ubuntu's "firefox" package is only a
+# transitional package that installs the snap, so it is never selected.
+Package: firefox*
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000
+
+Package: firefox*
+Pin: release o=Ubuntu
+Pin-Priority: -1

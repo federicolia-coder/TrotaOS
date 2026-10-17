@@ -13,11 +13,12 @@ APT come il resto del sistema.
 │ ┌─────────────────────────────── sistema Ubuntu 24.04 LTS ─────────────────────────────────┐   │
 │ │ archivio Ubuntu: main/restricted/universe/multiverse + noble-updates + noble-security    │   │
 │ │ GNOME 46 (sessione Ubuntu, GDM, Wayland), NetworkManager, PipeWire, AppArmor, systemd    │   │
-│ │ snap seeded: Firefox, App Center (+ basi e runtime)                                       │   │
+│ │ nessuno snap: Firefox .deb da packages.mozilla.org, GNOME Software + Flatpak (Flathub)    │   │
 │ │ ┌──────────────────────────── pacchetti Trota OS (trota-os) ─────────────────────────┐   │   │
 │ │ │ trota-release          os-release (dpkg-divert), identità del sistema              │   │   │
 │ │ │ trota-artwork          logo, sfondi, icone, tema Plymouth, tema GRUB               │   │   │
 │ │ │ trota-desktop-settings override GSettings, profilo dconf, terminale, GDM           │   │   │
+│ │ │ trota-software-sources repository Mozilla, Flathub, blocco di snapd, niente Pro    │   │   │
 │ │ │ trota-common           libreria Python condivisa (back-end + UI)                   │   │   │
 │ │ │ trota-welcome / trota-system-info / trota-diagnostics / trota-package-helper       │   │   │
 │ │ │ trota-docs             documentazione HTML offline                                  │   │   │
@@ -129,15 +130,52 @@ consentito da os-release(5). Questo non presenta Trota OS come Ubuntu ufficiale:
 il nome mostrato all'utente, il marchio e la documentazione sono quelli di
 Trota OS (vedi [licensing.md](licensing.md)).
 
-### ADR-006 — Snap: Firefox e App Center "seeded"
+### ADR-006 — Nessuno snap: Firefox da Mozilla, applicazioni da Flathub
 
-Su Ubuntu 24.04 Firefox è distribuito da Mozilla come snap; il pacchetto deb
-`firefox` è solo una transizione che esegue `snap install` (impossibile in un
-chroot). Trota OS esegue `snap prepare-image` come l'immagine ufficiale: gli
-snap e le loro dipendenze (basi `core24`, runtime `gnome-46-2404`,
-`mesa-2404`, `gtk-common-themes`) sono risolti leggendo i loro `snap.yaml` e
-installati da `snapd` al primo avvio, senza rete. Snap non è rimosso: è parte
-dell'ecosistema Ubuntu.
+**Contesto.** Su Ubuntu 24.04 Firefox e App Center sono snap; il pacchetto deb
+`firefox` dell'archivio è solo una transizione che esegue `snap install`. Le
+prime build di Trota OS includevano gli snap come l'immagine ufficiale: il seed
+(Firefox, App Center, basi `core22`/`core24`, runtime GNOME e Mesa) occupava
+**1,5 GB** nell'immagine, `snapd` altri 116 MB, e al primo avvio
+`snapd.seeded.service` impiegava molti minuti (ed era fallito una volta nei
+test in emulazione).
+
+**Decisione.** Trota OS non include snap (come Linux Mint):
+- `snapd` è escluso dall'immagine e bloccato da un pin APT
+  (`/etc/apt/preferences.d/trota-no-snap.pref`), così non rientra come
+  dipendenza dei pacchetti di transizione di Ubuntu (es. `chromium-browser`);
+- **Firefox** è il pacchetto `.deb` ufficiale del repository APT di Mozilla
+  (`packages.mozilla.org`, chiave `35BA A0B3 3E9E B396 F59C A838 C0BA 5CE6 DC63
+  15A3` inclusa nel pacchetto), con un pin che preferisce la versione Mozilla e
+  scarta la transizione di Ubuntu; gli aggiornamenti arrivano con APT
+  direttamente da Mozilla, il giorno dell'uscita;
+- **GNOME Software** sostituisce App Center: mostra i pacchetti dell'archivio
+  Ubuntu e le applicazioni **Flatpak** di **Flathub** (configurato come remote
+  di sistema dal pacchetto, anche senza rete).
+
+Tutto è nel pacchetto `trota-software-sources`: rimuoverlo ripristina il
+comportamento di Ubuntu (snap installabili).
+
+**Conseguenze.** Le applicazioni distribuite solo come snap non sono
+installabili senza rimuovere il blocco; quasi tutte esistono su Flathub. I
+pacchetti Mozilla e Flathub sono fonti esterne all'archivio Ubuntu: la fiducia
+è riposta in Mozilla (firma del repository) e in Flathub (firma del remote e
+revisione delle applicazioni), vedi [security.md](security.md).
+
+### ADR-006b — Niente pubblicità di Ubuntu Pro
+
+`ubuntu-pro-client` resta installato (è una dipendenza di `ubuntu-minimal`, di
+*Software e aggiornamenti* e di `update-manager-core`), ma:
+- l'hook di `apt upgrade` che stampa gli annunci ESM/Ubuntu Pro è svuotato
+  (`/etc/apt/apt.conf.d/99trota-no-pro-ads`);
+- i servizi `esm-cache` e `apt-news`, che interrogano Canonical in background a
+  ogni `apt update`, sono mascherati; gli APT news sono anche disattivati
+  (`pro config set apt_news=false`);
+- il banner di login non mostra i link a Landscape/Ubuntu Pro né lo stato ESM
+  (`10-help-text`, `91-contract-ua-esm-status` non eseguibili).
+
+Gli aggiornamenti di sicurezza di `noble-security` non cambiano; chi vuole
+Ubuntu Pro può comunque attivarlo con `sudo pro attach`.
 
 ### ADR-007 — Aggiornamenti
 

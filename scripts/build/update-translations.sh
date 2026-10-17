@@ -11,5 +11,5 @@ xgettext --language=Python --keyword=_ --keyword=ngettext:1,2 --from-code=UTF-8 
     -f po/POTFILES -o po/trota-os.pot
 for po in po/*.po; do
     [ -e "$po" ] || continue
-    msgmerge --quiet --update --backup=none --no-fuzzy-matching "$po" po/trota-os.pot
+    msgmerge --quiet --update --backup=none --no-fuzzy-matching --no-wrap "$po" po/trota-os.pot
 done

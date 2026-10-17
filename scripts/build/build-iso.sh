@@ -5,7 +5,7 @@
 #   sudo ./scripts/build/build-iso.sh iso        # only re-run one stage
 #   sudo ./scripts/build/build-iso.sh clean      # remove build/chroot and build/iso
 #
-# Stages (in order): bootstrap packages trota snaps customize iso checksum
+# Stages (in order): bootstrap packages trota customize iso checksum
 # The method is documented in docs/building.md and docs/architecture.md.
 
 . "$(dirname "$0")/lib.sh"
@@ -17,7 +17,7 @@ PKG_DIR="$BUILD/packages"
 BUILD_DATE="$(date -u +%Y%m%d)"
 ISO_NAME="trota-os-${TROTA_VERSION}-${TROTA_ARCH}.iso"
 ISO_FILE="$DIST/$ISO_NAME"
-STAGES_ALL=(bootstrap packages trota snaps customize iso checksum)
+STAGES_ALL=(bootstrap packages trota customize iso checksum)
 
 cleanup() { [ -d "$CHROOT" ] && chroot_umount "$CHROOT" || true; }
 trap cleanup EXIT
@@ -106,6 +106,18 @@ stage_trota() {
     in_chroot "$CHROOT" sh -c 'apt-get -y install --reinstall /tmp/trota-debs/*.deb'
     rm -rf "$CHROOT/tmp/trota-debs"
 
+    # Firefox: the .deb from Mozilla's APT repository, configured by
+    # trota-software-sources (Ubuntu's "firefox" only installs the snap).
+    log "trota: Firefox from packages.mozilla.org"
+    in_chroot "$CHROOT" apt-get update
+    in_chroot "$CHROOT" apt-get -y install firefox firefox-l10n-it
+    local ffver
+    ffver="$(in_chroot "$CHROOT" dpkg-query -W -f='${Version}' firefox)"
+    case "$ffver" in *snap*) die "firefox $ffver is Ubuntu's snap transitional package" ;; esac
+    [ -x "$CHROOT/usr/lib/firefox/firefox" ] || die "firefox binary missing"
+    log "trota: firefox $ffver"
+    in_chroot "$CHROOT" flatpak remotes --system --columns=name | grep -qx flathub || die "Flathub remote missing"
+
     # Ubiquity crashes at the start of the installation without a slideshow
     # (docs/testing.md): make sure ours is installed.
     [ -f "$CHROOT/usr/share/ubiquity-slideshow/slides/index.html" ] || die "installer slideshow missing"
@@ -117,45 +129,6 @@ stage_trota() {
             | awk '/^ii/{print $2}'
     done)"
     [ -z "$bad" ] || die "excluded packages installed: $bad"
-}
-
-# ---------------------------------------------------------------------------
-# Seed snaps exactly like the official Ubuntu image: snapd installs them on
-# first boot from /var/lib/snapd/seed (no store access needed at that point).
-stage_snaps() {
-    [ -n "$TROTA_SEED_SNAPS" ] || { log "snaps: none requested"; return 0; }
-    chroot_mount "$CHROOT"
-    local work=/tmp/trota-seed
-    in_chroot "$CHROOT" rm -rf "$work"
-    in_chroot "$CHROOT" mkdir -p "$work/dl"
-
-    # Resolve bases and content default-providers by reading each snap.yaml.
-    local -a queue resolved=()
-    read -r -a queue <<< "$TROTA_SEED_SNAPS snapd bare"
-    while [ ${#queue[@]} -gt 0 ]; do
-        local s="${queue[0]}"; queue=("${queue[@]:1}")
-        [[ " ${resolved[*]} " == *" $s "* ]] && continue
-        resolved+=("$s")
-        log "snaps: resolving $s"
-        in_chroot "$CHROOT" sh -c "cd $work/dl && snap download --channel=stable '$s' >/dev/null"
-        local f
-        f="$(ls "$CHROOT$work/dl/${s}"_*.snap | head -1)"
-        local yaml deps
-        yaml="$(unsquashfs -cat "$f" meta/snap.yaml)"
-        deps="$(printf '%s\n' "$yaml" | awk '/^base:/{print $2} /default-provider:/{print $2}' | sed 's/:.*//' | sort -u)"
-        for d in $deps; do [ "$d" = "core" ] || queue+=("$d"); done
-    done
-    log "snaps: seeding ${resolved[*]}"
-
-    in_chroot "$CHROOT" sh -c "snap known --remote model series=16 model=generic-classic brand-id=generic > $work/model.assert"
-    local args=()
-    for s in "${resolved[@]}"; do args+=(--snap "$s"); done
-    in_chroot "$CHROOT" snap prepare-image --classic --arch="$TROTA_ARCH" "${args[@]}" "$work/model.assert" "$work/root"
-    rm -rf "$CHROOT/var/lib/snapd/seed"
-    mkdir -p "$CHROOT/var/lib/snapd"
-    mv "$CHROOT$work/root/var/lib/snapd/seed" "$CHROOT/var/lib/snapd/seed"
-    in_chroot "$CHROOT" rm -rf "$work"
-    in_chroot "$CHROOT" snap debug validate-seed /var/lib/snapd/seed/seed.yaml
 }
 
 # ---------------------------------------------------------------------------
@@ -206,6 +179,10 @@ EOF
     # Privacy: no Canonical "APT news" messages fetched in the background
     # (docs/privacy.md). Security updates are not affected.
     in_chroot "$CHROOT" pro config set apt_news=false
+    # Login banner without Canonical's Landscape/Ubuntu Pro links and ESM
+    # advertising. update-motd runs only executable scripts; dpkg keeps the
+    # mode until Ubuntu changes these files.
+    chmod -x "$CHROOT/etc/update-motd.d/10-help-text" "$CHROOT/etc/update-motd.d/91-contract-ua-esm-status"
 
     log "customize: initramfs with casper and the Trota OS boot splash"
     in_chroot "$CHROOT" update-initramfs -u -k all

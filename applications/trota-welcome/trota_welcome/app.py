@@ -16,7 +16,7 @@ from . import APP_ID, settings  # noqa: E402
 # Curated list of preinstalled applications: (target or desktop id, title, description, icon)
 APPLICATIONS = (
     (_("Internet"), (
-        ("browser", _("Firefox"), _("Web browser"), "firefox_firefox"),
+        ("browser", _("Firefox"), _("Web browser"), "firefox"),
     )),
     (_("Office and study"), (
         ("org.gnome.TextEditor.desktop", _("Text Editor"), _("Notes and plain text files"), "org.gnome.TextEditor"),
@@ -188,7 +188,7 @@ class WelcomeWindow(Adw.ApplicationWindow):
 
         software = Adw.PreferencesGroup(title=_("Software and updates"))
         software.add(ui.launch_row("updates", _("Software Updater"), _("Install updates now"), "software-update-available-symbolic"))
-        software.add(ui.launch_row("app_center", _("App Center"), _("Find and install applications"), "system-software-install-symbolic"))
+        software.add(ui.launch_row("app_center", _("Software"), _("Find and install applications"), "system-software-install-symbolic"))
         software.add(ui.launch_row("software_sources", _("Software & Updates"), _("Repositories and automatic update policy"), "preferences-other-symbolic"))
         software.add(ui.launch_row("drivers", _("Additional Drivers"), _("Proprietary graphics and Wi-Fi drivers (e.g. NVIDIA)"), "application-x-firmware-symbolic"))
         return self._scrolled(look, connect, software)
@@ -217,7 +217,7 @@ class WelcomeWindow(Adw.ApplicationWindow):
                 g.add(ui.launch_row(_target(key), title, subtitle, icon))
             groups.append(g)
         more = Adw.PreferencesGroup(title=_("More software"))
-        more.add(ui.launch_row("app_center", _("App Center"), _("Thousands of applications, including Steam and VS Code"), "system-software-install-symbolic"))
+        more.add(ui.launch_row("app_center", _("Software"), _("Thousands of applications from Flathub, including Steam and VS Code"), "system-software-install-symbolic"))
         more.add(ui.launch_row("trota_package_helper", _("Trota Package Helper"), _("Search the APT catalogue"), "it.testardstudios.TrotaPackageHelper"))
         groups.append(more)
         return self._scrolled(*groups)

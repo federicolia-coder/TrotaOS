@@ -33,5 +33,3 @@ plymouth
 plymouth-label
 plymouth-theme-spinner    # provides the two-step plugin used by the Trota OS splash
 
-# Snap support (Ubuntu ecosystem compatibility)
-snapd

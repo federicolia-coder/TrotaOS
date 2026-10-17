@@ -16,7 +16,10 @@ openssh-server           # no network services listening by default
 postfix                  # mail server, may be pulled by smartmontools Recommends
 exim4-daemon-light       # mail server
 gnome-initial-setup      # Ubuntu-branded onboarding; replaced by Trota Welcome
-firefox                  # transitional deb that runs "snap install"; Firefox is seeded as a snap instead
+snapd                    # Trota OS ships no snaps (blocked also on the installed system, see trota-software-sources)
+gnome-software-plugin-snap # snap support in GNOME Software
+ubuntu-kernel-accessories # bpftrace, bpfcc-tools and two extra LLVM copies (~210 MB), kernel developers only
+linux-tools-common       # perf and kernel tools (~170 MB with LLVM), recommended by the HWE kernel
 
 # Note: ubuntu-wallpapers cannot be excluded because Ubuntu's gnome-shell
 # package depends on it; Trota OS only changes the default wallpaper.

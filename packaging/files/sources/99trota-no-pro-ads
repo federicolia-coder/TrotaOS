@@ -1,0 +1,4 @@
+// Trota OS: no Ubuntu Pro / ESM advertising in "apt upgrade".
+// Ubuntu's ubuntu-pro-client registers this hook only to print those messages
+// (20apt-esm-hook.conf); security updates from noble-security are unaffected.
+#clear binary::apt::AptCli::Hooks::Upgrade;

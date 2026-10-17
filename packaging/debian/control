@@ -31,6 +31,20 @@ Description: Trota OS release identification
  being updated by base-files. Machine-readable identifiers (ID, VERSION_ID,
  VERSION_CODENAME) stay those of the Ubuntu base for compatibility.
 
+Package: trota-software-sources
+Architecture: all
+Depends: ${misc:Depends}, apt (>= 2.0)
+Recommends: flatpak
+Description: Trota OS software sources
+ Configures where Trota OS gets software that is not in the Ubuntu archive:
+  * the official Mozilla APT repository, so that Firefox is a .deb package
+    updated by Mozilla (Ubuntu's transitional snap package is pinned away);
+  * Flathub as the system-wide Flatpak remote;
+  * an APT pin that keeps snapd from being installed.
+ It also turns off the Ubuntu Pro advertising shown by "apt upgrade" and the
+ background ESM/APT-news queries of ubuntu-pro-client. Security updates from
+ the Ubuntu archive are not affected.
+
 Package: trota-desktop-settings
 Architecture: all
 Depends: ${misc:Depends}, trota-artwork (= ${source:Version}), dconf-cli,
@@ -99,6 +113,7 @@ Package: trota-desktop
 Architecture: all
 Section: metapackages
 Depends: ${misc:Depends}, trota-release, trota-artwork, trota-desktop-settings,
+         trota-software-sources,
          trota-welcome, trota-system-info, trota-diagnostics,
          trota-package-helper,
          ubuntu-session, gdm3, gnome-shell, apparmor, unattended-upgrades,

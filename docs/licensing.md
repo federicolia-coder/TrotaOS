@@ -15,7 +15,8 @@
 | Sistema base Ubuntu 24.04 (kernel, GNOME, systemd, APT…) | Canonical e progetti a monte | Licenze dei singoli pacchetti (GPL-2.0, GPL-3.0, LGPL, MIT, BSD, MPL, Apache-2.0…) | Testo in `/usr/share/doc/<pacchetto>/copyright` di ogni pacchetto |
 | Firmware (`linux-firmware`), microcode, driver `restricted` | Produttori hardware | Licenze proprietarie ridistribuibili | Inclusi come in Ubuntu |
 | Pacchetti `multiverse` eventualmente installati | Vari | Non liberi | Nessuno è preinstallato da Trota OS |
-| Snap preinstallati (Firefox, App Center, runtime) | Mozilla, Canonical | MPL-2.0, GPL-3.0 e altre; marchi dei rispettivi titolari | Scaricati dallo Snap Store al momento della build |
+| Firefox (`firefox`, `firefox-l10n-it`) | Mozilla | MPL-2.0; marchio Firefox di Mozilla Foundation | Pacchetti `.deb` ufficiali di packages.mozilla.org, scaricati al momento della build senza modifiche |
+| Remote Flathub (`flathub.flatpakrepo`) | Flathub | File di configurazione pubblico | Nessuna applicazione Flatpak è preinstallata |
 | Font (Inter, DejaVu, Noto, Liberation, Ubuntu) | Vari | SIL OFL 1.1, licenza Bitstream/DejaVu, Ubuntu Font Licence | Dall'archivio Ubuntu |
 | Tema Yaru (GTK, icone, suoni) | Ubuntu community | GPL-3.0 / CC BY-SA 4.0 / LGPL | Usato senza modifiche |
 
@@ -56,8 +57,10 @@ pubblicato accanto all'immagine (`dist/trota-os-<versione>-amd64.manifest`).
   Prima della pubblicazione è opportuno leggere la
   [politica sui marchi di Canonical](https://ubuntu.com/legal/intellectual-property-policy)
   per le distribuzioni derivate e, se necessario, chiedere chiarimenti.
-- Firefox è un marchio di Mozilla Foundation; lo snap ufficiale di Mozilla è
-  distribuito senza modifiche.
+- Firefox è un marchio di Mozilla Foundation; il pacchetto `.deb` ufficiale di
+  Mozilla è distribuito senza modifiche, come previsto dalla
+  [politica sui marchi di Mozilla](https://www.mozilla.org/foundation/trademarks/policy/)
+  per le build ufficiali non modificate.
 
 ## Verifiche da completare prima della pubblicazione
 

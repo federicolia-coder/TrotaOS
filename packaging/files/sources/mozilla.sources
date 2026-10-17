@@ -1,0 +1,7 @@
+# Official Mozilla APT repository: Firefox as a .deb, updated by Mozilla.
+# Installed by the trota-software-sources package (Trota OS ships no snaps).
+Types: deb
+URIs: https://packages.mozilla.org/apt
+Suites: mozilla
+Components: main
+Signed-By: /usr/share/keyrings/packages.mozilla.org.asc

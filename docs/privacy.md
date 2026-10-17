@@ -27,11 +27,12 @@ Sono quelle standard di Ubuntu, necessarie al funzionamento:
 | Servizio | Destinazione | Scopo | Come disattivarlo |
 |---|---|---|---|
 | APT, aggiornamenti automatici | archive.ubuntu.com, security.ubuntu.com | Elenchi dei pacchetti e aggiornamenti di sicurezza | *Software e aggiornamenti → Aggiornamenti* |
-| snapd | api.snapcraft.io | Aggiornamenti degli snap (Firefox, App Center) | `sudo snap refresh --hold` |
+| APT (Firefox) | packages.mozilla.org | Aggiornamenti di Firefox, insieme agli altri pacchetti | Rimuovere `/etc/apt/sources.list.d/mozilla.sources` (Firefox non sarà più aggiornato) |
+| GNOME Software, Flatpak | dl.flathub.org | Catalogo e aggiornamenti delle applicazioni Flatpak, solo se si apre Software o si installano app | *Software → Preferenze* (aggiornamenti automatici) |
 | NetworkManager | connectivity-check.ubuntu.com | Rilevamento di captive portal | *Impostazioni → Privacy → Connettività* |
 | Sincronizzazione ora | ntp.ubuntu.com | Orologio di sistema | *Impostazioni → Sistema → Data e ora* |
 | fwupd (`fwupd-refresh.timer`) | cdn.fwupd.org | Metadati degli aggiornamenti firmware (LVFS); i firmware si installano solo su richiesta | `sudo systemctl disable --now fwupd-refresh.timer` |
-| Ubuntu Pro client (`ua-timer.timer`) | contracts.canonical.com | Solo se l'utente attiva Ubuntu Pro; gli "APT news" sono **disattivati** in Trota OS (`pro config set apt_news=false`) | `sudo pro config set apt_news=true` per riattivarli |
+| Ubuntu Pro client (`ua-timer.timer`) | contracts.canonical.com | Solo se l'utente attiva Ubuntu Pro. In Trota OS gli "APT news" sono **disattivati** e i servizi `apt-news`/`esm-cache`, che Ubuntu avvia a ogni `apt update`, sono **mascherati** | `sudo systemctl unmask apt-news.service esm-cache.service` |
 | Firefox | Mozilla | Funzioni del browser | Impostazioni di Firefox |
 
 Il messaggio del giorno dinamico di Ubuntu (`motd-news`) è inattivo perché il

@@ -1,6 +1,12 @@
 # Trota OS — preinstalled applications (one per role, no duplicates).
-# The web browser (Firefox) and the software manager (App Center) are snaps,
-# seeded like on Ubuntu: see TROTA_SEED_SNAPS in scripts/build/config.env.
+# Trota OS ships no snaps. Firefox is the official .deb from Mozilla's APT
+# repository (configured by trota-software-sources) and is installed by the
+# "trota" stage of scripts/build/build-iso.sh; applications not in the Ubuntu
+# archive come from Flathub through GNOME Software.
+
+gnome-software           # software manager (APT + Flatpak)
+gnome-software-plugin-flatpak
+flatpak
 
 nautilus                 # file manager
 nautilus-sendto

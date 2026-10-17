@@ -24,12 +24,12 @@ from . import APP_ID  # noqa: E402
 
 TIPS = (
     (_("Graphical applications"),
-     _("App Center offers ready-to-use applications (Steam, VS Code, Spotify, Discord…) as Snap packages "
-       "with automatic updates.")),
+     _("Software installs applications from the Ubuntu archive and from Flathub (Steam, VS Code, Spotify, "
+       "Discord…) as Flatpak packages, isolated from the system and updated automatically.")),
     (_("Command line tools and libraries"),
      _("Install them from the Ubuntu archive with APT, for example: sudo apt install htop")),
     (_("Software from other websites"),
-     _("Prefer the Ubuntu archive or App Center. Add third-party repositories (PPA) only from sources you trust: "
+     _("Prefer the Ubuntu archive or Flathub. Add third-party repositories (PPA) only from sources you trust: "
        "they get full access to your system.")),
 )
 
@@ -48,7 +48,7 @@ class PackageHelperWindow(Adw.ApplicationWindow):
     def _search_page(self) -> Adw.NavigationPage:
         view = Adw.ToolbarView()
         header = ui.header_bar()
-        header.pack_start(ui.launch_button("app_center", _("App Center"), self.toasts))
+        header.pack_start(ui.launch_button("app_center", _("Software"), self.toasts))
         view.add_top_bar(header)
 
         self.entry = Gtk.SearchEntry(placeholder_text=_("Search packages, e.g. “python”, “video editor”"),
@@ -195,7 +195,7 @@ class PackageHelperWindow(Adw.ApplicationWindow):
         how.add(cmd_row)
         how.add(ui.launch_row("terminal", _("Open Terminal"), _("Paste the command with Ctrl+Shift+V"),
                               "utilities-terminal-symbolic"))
-        how.add(ui.launch_row("app_center", _("Open App Center"),
+        how.add(ui.launch_row("app_center", _("Open Software"),
                               _("Graphical applications may also be available there"), "system-software-install-symbolic"))
         page.add(how)
         stack.add_named(page, "page")

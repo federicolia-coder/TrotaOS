@@ -14,7 +14,7 @@ Ubuntu 24.04 Desktop e non sono ancora stati verificati su hardware reale.
 | Grafica | 1024×768, qualsiasi scheda supportata da Linux | GPU con driver Vulkan (Intel, AMD, NVIDIA con driver proprietario) | Stima |
 | Firmware | UEFI (anche con Secure Boot) o BIOS legacy | UEFI | UEFI + Secure Boot verificato in VM; BIOS: vedi [testing.md](testing.md) |
 | Supporto di installazione | Chiavetta USB da 8 GB o DVD dual layer | Chiavetta USB 3 | ISO misurata: 3,7 GB |
-| Rete | Facoltativa per l'installazione (prevista) | Necessaria per aggiornamenti e App Center | Installazione verificata in VM **con** rete; senza rete non ancora verificata |
+| Rete | Facoltativa per l'installazione (prevista) | Necessaria per aggiornamenti e per installare applicazioni (GNOME Software, Flathub) | Installazione verificata in VM **con** rete; senza rete non ancora verificata |
 
 Le misure provengono da una VM QEMU (4 vCPU emulate, 4 GB RAM, disco virtio da
 25 GB); dettagli in [testing.md](testing.md). I requisiti di CPU e grafica non
@@ -79,8 +79,10 @@ Secure Boot può restare attivo.
 - Al primo accesso si apre **Benvenuto in Trota OS**: da lì trovi
   impostazioni, aggiornamenti, driver aggiuntivi, gli strumenti Trota e la
   documentazione. Puoi disattivarne l'apertura automatica.
-- Firefox e App Center vengono completati da snapd nei primi minuti dopo
-  l'avvio (non serve la rete, sono inclusi nell'immagine).
+- Firefox è già installato (pacchetto `.deb` di Mozilla, aggiornato con gli
+  altri pacchetti). Per altre applicazioni apri **Software**: trovi i
+  pacchetti Ubuntu e le applicazioni Flatpak di Flathub. Trota OS non usa
+  gli snap.
 - Connettiti a Internet e apri **Aggiornamenti software** per installare gli
   aggiornamenti usciti dopo la data della ISO.
 - **Diagnostica Trota** verifica in un clic spazio su disco, rete, kernel,

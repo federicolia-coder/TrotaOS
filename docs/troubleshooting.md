@@ -32,8 +32,9 @@ controlli in sola lettura e suggerisce cosa fare.
 |---|---|
 | Wi-Fi o scheda video non funzionano bene | Apri *Driver aggiuntivi* (Benvenuto → Primi passi) per i driver proprietari, ad es. NVIDIA |
 | *Aggiornamenti software* segnala errori | `sudo apt update` nel terminale mostra quale repository non risponde; disattiva i PPA non più mantenuti in *Software e aggiornamenti → Altro software* |
-| Spazio su disco esaurito | *Analizzatore di utilizzo del disco*; `sudo apt autoremove` e `sudo apt clean` liberano pacchetti e cache non più necessari; `snap list --all` mostra vecchie revisioni degli snap |
-| Una applicazione snap non si avvia | `snap changes` mostra se l'installazione iniziale è ancora in corso (al primo avvio può richiedere qualche minuto) |
+| Spazio su disco esaurito | *Analizzatore di utilizzo del disco*; `sudo apt autoremove` e `sudo apt clean` liberano pacchetti e cache non più necessari; `flatpak uninstall --unused` rimuove i runtime Flatpak non più usati |
+| Serve un'applicazione disponibile solo come snap | Cercala prima in *Software* (Flathub). Altrimenti: `sudo rm /etc/apt/preferences.d/trota-no-snap.pref && sudo apt install snapd` (snap resta poi a tuo carico) |
+| `apt` dice che `chromium-browser` non è installabile | È la transizione snap di Ubuntu, bloccata: installa Chromium da *Software* (Flathub) |
 | Audio assente | *Impostazioni → Audio*: scegli il dispositivo di uscita corretto; `systemctl --user status pipewire wireplumber` mostra lo stato del server audio |
 | Non compare la finestra di benvenuto | È stata disattivata: riaprila dal menu delle applicazioni (*Benvenuto in Trota OS*) |
 | Errori nel registro di sistema | Molti sono innocui. Apri *Registri* e allega i messaggi rilevanti a una segnalazione |

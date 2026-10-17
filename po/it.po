@@ -6,6 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trota OS 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
+"POT-Creation-Date: 2026-10-17 06:40+0000\n"
 "PO-Revision-Date: 2026-10-16 12:00+0000\n"
 "Last-Translator: TestardStudios\n"
 "Language-Team: Italian\n"
@@ -381,34 +382,34 @@ msgid "Not installed on this system"
 msgstr "Non installato su questo sistema"
 
 #: applications/trota-common/trota_common/ui.py:135
-#: applications/trota-common/trota_common/ui.py:156
+#: applications/trota-common/trota_common/ui.py:163
 #: applications/trota-package-helper/trota_package_helper/app.py:216
 #, python-brace-format
 msgid "Could not start the application: {error}"
 msgstr "Impossibile avviare l'applicazione: {error}"
 
-#: applications/trota-common/trota_common/ui.py:149
+#: applications/trota-common/trota_common/ui.py:156
 msgid "not installed"
 msgstr "non installato"
 
-#: applications/trota-common/trota_common/ui.py:171
+#: applications/trota-common/trota_common/ui.py:178
 #, python-brace-format
 msgid "Could not open the link: {error}"
 msgstr "Impossibile aprire il collegamento: {error}"
 
-#: applications/trota-common/trota_common/ui.py:179
+#: applications/trota-common/trota_common/ui.py:186
 msgid "Copied to the clipboard"
 msgstr "Copiato negli appunti"
 
-#: applications/trota-common/trota_common/ui.py:184
+#: applications/trota-common/trota_common/ui.py:191
 msgid "About"
 msgstr "Informazioni"
 
-#: applications/trota-common/trota_common/ui.py:185
+#: applications/trota-common/trota_common/ui.py:192
 msgid "Quit"
 msgstr "Esci"
 
-#: applications/trota-common/trota_common/ui.py:194
+#: applications/trota-common/trota_common/ui.py:201
 msgid "Main menu"
 msgstr "Menu principale"
 
@@ -491,8 +492,12 @@ msgid "Check the health of your system"
 msgstr "Controlla lo stato del sistema"
 
 #: applications/trota-diagnostics/trota_diagnostics/app.py:57
-msgid "Disk space, network, kernel, security features, services, recent errors and updates.\nAll checks are read-only: nothing is changed, deleted or repaired automatically."
-msgstr "Spazio su disco, rete, kernel, funzioni di sicurezza, servizi, errori recenti e aggiornamenti.\nTutti i controlli sono in sola lettura: nulla viene modificato, eliminato o riparato automaticamente."
+msgid ""
+"Disk space, network, kernel, security features, services, recent errors and updates.\n"
+"All checks are read-only: nothing is changed, deleted or repaired automatically."
+msgstr ""
+"Spazio su disco, rete, kernel, funzioni di sicurezza, servizi, errori recenti e aggiornamenti.\n"
+"Tutti i controlli sono in sola lettura: nulla viene modificato, eliminato o riparato automaticamente."
 
 #: applications/trota-diagnostics/trota_diagnostics/app.py:64
 msgid "Running checks…"
@@ -516,8 +521,8 @@ msgid "Graphical applications"
 msgstr "Applicazioni grafiche"
 
 #: applications/trota-package-helper/trota_package_helper/app.py:27
-msgid "App Center offers ready-to-use applications (Steam, VS Code, Spotify, Discord…) as Snap packages with automatic updates."
-msgstr "App Center offre applicazioni pronte all'uso (Steam, VS Code, Spotify, Discord…) come pacchetti Snap con aggiornamenti automatici."
+msgid "Software installs applications from the Ubuntu archive and from Flathub (Steam, VS Code, Spotify, Discord…) as Flatpak packages, isolated from the system and updated automatically."
+msgstr "Software installa applicazioni dall'archivio Ubuntu e da Flathub (Steam, VS Code, Spotify, Discord…) come pacchetti Flatpak, isolati dal sistema e aggiornati automaticamente."
 
 #: applications/trota-package-helper/trota_package_helper/app.py:29
 msgid "Command line tools and libraries"
@@ -532,8 +537,8 @@ msgid "Software from other websites"
 msgstr "Software da altri siti web"
 
 #: applications/trota-package-helper/trota_package_helper/app.py:32
-msgid "Prefer the Ubuntu archive or App Center. Add third-party repositories (PPA) only from sources you trust: they get full access to your system."
-msgstr "Preferisci l'archivio Ubuntu o App Center. Aggiungi repository di terze parti (PPA) solo da fonti di cui ti fidi: ottengono accesso completo al sistema."
+msgid "Prefer the Ubuntu archive or Flathub. Add third-party repositories (PPA) only from sources you trust: they get full access to your system."
+msgstr "Preferisci l'archivio Ubuntu o Flathub. Aggiungi repository di terze parti (PPA) solo da fonti di cui ti fidi: ottengono accesso completo al sistema."
 
 #: applications/trota-package-helper/trota_package_helper/app.py:39
 #: applications/trota-package-helper/trota_package_helper/app.py:91
@@ -541,10 +546,11 @@ msgid "Package Helper"
 msgstr "Assistente pacchetti"
 
 #: applications/trota-package-helper/trota_package_helper/app.py:51
+#: applications/trota-system-info/trota_system_info/app.py:100
 #: applications/trota-welcome/trota_welcome/app.py:191
 #: applications/trota-welcome/trota_welcome/app.py:220
-msgid "App Center"
-msgstr "App Center"
+msgid "Software"
+msgstr "Software"
 
 #: applications/trota-package-helper/trota_package_helper/app.py:54
 msgid "Search packages, e.g. “python”, “video editor”"
@@ -654,8 +660,8 @@ msgid "Paste the command with Ctrl+Shift+V"
 msgstr "Incolla il comando con Ctrl+Maiusc+V"
 
 #: applications/trota-package-helper/trota_package_helper/app.py:198
-msgid "Open App Center"
-msgstr "Apri App Center"
+msgid "Open Software"
+msgstr "Apri Software"
 
 #: applications/trota-package-helper/trota_package_helper/app.py:199
 msgid "Graphical applications may also be available there"
@@ -702,10 +708,6 @@ msgstr "Salva il rapporto…"
 #: applications/trota-system-info/trota_system_info/app.py:88
 msgid "Information could not be collected"
 msgstr "Impossibile raccogliere le informazioni"
-
-#: applications/trota-system-info/trota_system_info/app.py:100
-msgid "Software"
-msgstr "Software"
 
 #: applications/trota-system-info/trota_system_info/app.py:101
 msgid "Operating system"
@@ -1141,8 +1143,8 @@ msgid "More software"
 msgstr "Altro software"
 
 #: applications/trota-welcome/trota_welcome/app.py:220
-msgid "Thousands of applications, including Steam and VS Code"
-msgstr "Migliaia di applicazioni, tra cui Steam e VS Code"
+msgid "Thousands of applications from Flathub, including Steam and VS Code"
+msgstr "Migliaia di applicazioni da Flathub, tra cui Steam e VS Code"
 
 #: applications/trota-welcome/trota_welcome/app.py:221
 msgid "Search the APT catalogue"

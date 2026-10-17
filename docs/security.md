@@ -17,12 +17,19 @@ propri che possano indebolirli.
 | Telemetria | Assente: pacchetti di telemetria esclusi dalla build, che fallisce se vengono installati | Test VM `no_telemetry`, `test_manifest.py` |
 | Password | Nessuna password nel codice o nell'immagine; l'utente della sessione live non ha password (standard di casper) e non esiste nel sistema installato | Revisione del codice, test VM |
 | Accesso remoto nascosto | Nessuno | Elenco servizi, porte in ascolto |
+| Fonti software esterne a Ubuntu | Solo due, firmate: il repository APT di Mozilla per Firefox (chiave con impronta `35BA A0B3 3E9E B396 F59C A838 C0BA 5CE6 DC63 15A3`, inclusa nel pacchetto `trota-software-sources`) e il remote Flatpak di Flathub (chiave GPG nel file `.flatpakrepo`); il pin APT limita la priorità di Mozilla ai soli pacchetti `firefox*` | `test_software_sources.py`, test VM `firefox_mozilla_deb`, `flathub_remote` |
+| Snap | Assenti; `snapd` bloccato da un pin APT | Build (`excluded.list`), test VM `no_snapd`, `snapd_blocked` |
 
 ## Mitigazioni nel processo di build
 
 - Tutti i pacchetti provengono dall'archivio Ubuntu, verificato con la chiave
-  `ubuntu-archive-keyring`; i pacchetti Trota OS sono compilati da sorgente in
-  un chroot pulito.
+  `ubuntu-archive-keyring`, tranne Firefox, verificato con la chiave di Mozilla
+  inclusa nel repository Git; i pacchetti Trota OS sono compilati da sorgente
+  in un chroot pulito. La build fallisce se al posto del Firefox di Mozilla
+  viene installata la transizione snap di Ubuntu.
+- Le applicazioni Flatpak di Flathub non sono revisionate da TestardStudios:
+  sono isolate (sandbox) e GNOME Software mostra i permessi richiesti, ma la
+  fiducia è riposta in Flathub e nell'autore dell'applicazione.
 - Lo script di build rifiuta di cancellare o montare percorsi esterni a
   `build/` (`assert_in_build`, `safe_rm`), non avvia servizi nel chroot
   (`policy-rc.d`) e rimuove dall'immagine machine-id, chiavi SSH dell'host,

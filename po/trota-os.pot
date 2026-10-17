@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trota OS 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
-"POT-Creation-Date: 2026-10-16 13:35+0000\n"
+"POT-Creation-Date: 2026-10-17 06:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -404,34 +404,34 @@ msgid "Not installed on this system"
 msgstr ""
 
 #: applications/trota-common/trota_common/ui.py:135
-#: applications/trota-common/trota_common/ui.py:156
+#: applications/trota-common/trota_common/ui.py:163
 #: applications/trota-package-helper/trota_package_helper/app.py:216
 #, python-brace-format
 msgid "Could not start the application: {error}"
 msgstr ""
 
-#: applications/trota-common/trota_common/ui.py:149
+#: applications/trota-common/trota_common/ui.py:156
 msgid "not installed"
 msgstr ""
 
-#: applications/trota-common/trota_common/ui.py:171
+#: applications/trota-common/trota_common/ui.py:178
 #, python-brace-format
 msgid "Could not open the link: {error}"
 msgstr ""
 
-#: applications/trota-common/trota_common/ui.py:179
+#: applications/trota-common/trota_common/ui.py:186
 msgid "Copied to the clipboard"
 msgstr ""
 
-#: applications/trota-common/trota_common/ui.py:184
+#: applications/trota-common/trota_common/ui.py:191
 msgid "About"
 msgstr ""
 
-#: applications/trota-common/trota_common/ui.py:185
+#: applications/trota-common/trota_common/ui.py:192
 msgid "Quit"
 msgstr ""
 
-#: applications/trota-common/trota_common/ui.py:194
+#: applications/trota-common/trota_common/ui.py:201
 msgid "Main menu"
 msgstr ""
 
@@ -544,8 +544,9 @@ msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:27
 msgid ""
-"App Center offers ready-to-use applications (Steam, VS Code, Spotify, "
-"Discord…) as Snap packages with automatic updates."
+"Software installs applications from the Ubuntu archive and from Flathub "
+"(Steam, VS Code, Spotify, Discord…) as Flatpak packages, isolated from the "
+"system and updated automatically."
 msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:29
@@ -564,7 +565,7 @@ msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:32
 msgid ""
-"Prefer the Ubuntu archive or App Center. Add third-party repositories (PPA) "
+"Prefer the Ubuntu archive or Flathub. Add third-party repositories (PPA) "
 "only from sources you trust: they get full access to your system."
 msgstr ""
 
@@ -574,9 +575,10 @@ msgid "Package Helper"
 msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:51
+#: applications/trota-system-info/trota_system_info/app.py:100
 #: applications/trota-welcome/trota_welcome/app.py:191
 #: applications/trota-welcome/trota_welcome/app.py:220
-msgid "App Center"
+msgid "Software"
 msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:54
@@ -691,7 +693,7 @@ msgid "Paste the command with Ctrl+Shift+V"
 msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:198
-msgid "Open App Center"
+msgid "Open Software"
 msgstr ""
 
 #: applications/trota-package-helper/trota_package_helper/app.py:199
@@ -738,10 +740,6 @@ msgstr ""
 
 #: applications/trota-system-info/trota_system_info/app.py:88
 msgid "Information could not be collected"
-msgstr ""
-
-#: applications/trota-system-info/trota_system_info/app.py:100
-msgid "Software"
 msgstr ""
 
 #: applications/trota-system-info/trota_system_info/app.py:101
@@ -1186,7 +1184,7 @@ msgid "More software"
 msgstr ""
 
 #: applications/trota-welcome/trota_welcome/app.py:220
-msgid "Thousands of applications, including Steam and VS Code"
+msgid "Thousands of applications from Flathub, including Steam and VS Code"
 msgstr ""
 
 #: applications/trota-welcome/trota_welcome/app.py:221

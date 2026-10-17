@@ -51,9 +51,21 @@ def test_excluded_entries_have_a_reason():
 
 def test_essential_components_present():
     allp = {p for n in INSTALL_LISTS for p in read_list(MANIFEST / n)}
-    required = {"apparmor", "unattended-upgrades", "network-manager", "gdm3", "gnome-shell", "snapd",
+    required = {"apparmor", "unattended-upgrades", "network-manager", "gdm3", "gnome-shell",
+                "gnome-software", "gnome-software-plugin-flatpak", "flatpak",
                 "shim-signed", "grub-efi-amd64-signed", "grub-pc", "casper", "ubiquity", "update-manager"}
     assert required <= allp, required - allp
+
+
+def test_no_snaps():
+    excluded = set(read_list(MANIFEST / "excluded.list"))
+    assert {"snapd", "gnome-software-plugin-snap"} <= excluded
+    build = (ROOT / "scripts/build/build-iso.sh").read_text()
+    assert "snap prepare-image" not in build and "TROTA_SEED_SNAPS" not in build
+    # Ubuntu's firefox deb is a snap installer: it must never be in a list
+    for name in INSTALL_LISTS:
+        assert "firefox" not in read_list(MANIFEST / name), name
+    assert "install firefox firefox-l10n-it" in build
 
 
 def test_telemetry_is_excluded():

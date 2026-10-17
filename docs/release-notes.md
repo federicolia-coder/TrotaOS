@@ -16,7 +16,11 @@ Base: Ubuntu 24.04 LTS (noble), kernel HWE `linux-generic-hwe-24.04`
   schermata di accesso, profilo del terminale "Trota".
 - Applicazioni originali (GTK 4/libadwaita, inglese e italiano):
   Trota Welcome, Trota System Info, Trota Diagnostics, Trota Package Helper.
-- Software: Firefox e App Center (snap inclusi nell'immagine), LibreOffice
+- **Nessuno snap**: Firefox `.deb` ufficiale dal repository APT di Mozilla
+  (aggiornato con APT), GNOME Software con Flatpak e Flathub al posto di App
+  Center, `snapd` bloccato da un pin APT; niente pubblicità di Ubuntu Pro in
+  `apt` e nel banner di login.
+- Software: LibreOffice
   (Writer, Calc, Impress), strumenti GNOME, strumenti per sviluppatori
   (git, build-essential, gdb, cmake, Python), di rete e di sistema, Vulkan e
   GameMode.
@@ -84,10 +88,10 @@ Non eseguito: test su hardware reale e installazione completamente senza rete.
    funzionamento invariati).
 7. **Icona "Mostra applicazioni" del dock**: è quella del tema Yaru di Ubuntu
    (il dock non permette un'icona personalizzata).
-8. **Primo avvio degli snap**: `snapd.seeded.service` può fallire al primo
-   tentativo su macchine molto lente (osservato in emulazione) e riuscire al
-   successivo; lo stato di systemd risulta *degraded* finché non viene
-   riavviato il servizio o il sistema.
+8. **Applicazioni solo snap**: non sono installabili finché non si rimuove il
+   blocco (`/etc/apt/preferences.d/trota-no-snap.pref`); i pacchetti di
+   transizione di Ubuntu che installano uno snap (es. `chromium-browser`)
+   risultano non installabili. Le alternative sono su Flathub.
 9. **Sessione live su macchine molto lente**: in emulazione gnome-shell può
    superare il timeout di avvio di systemd (90 s) e GNOME mostra "Oh no!
    Something has gone wrong"; da verificare su hardware reale/KVM.

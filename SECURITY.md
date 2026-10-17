@@ -18,6 +18,10 @@
 - **Pacchetti Ubuntu** (kernel, GNOME, OpenSSL, …): segnala al progetto Ubuntu
   secondo https://ubuntu.com/security/disclosure-policy; la correzione arriverà
   a Trota OS con i normali aggiornamenti di `noble-security`.
-- **Snap** (Firefox, App Center): segnala al rispettivo autore (Mozilla, Canonical).
+- **Firefox** (pacchetto `.deb` del repository APT di Mozilla): segnala a Mozilla
+  secondo https://www.mozilla.org/security/; la correzione arriva da
+  `packages.mozilla.org` con i normali aggiornamenti.
+- **Applicazioni Flatpak** installate da Flathub: segnala all'autore
+  dell'applicazione indicato nella sua pagina su flathub.org.
 
 Il modello di sicurezza è descritto in `docs/security.md`.

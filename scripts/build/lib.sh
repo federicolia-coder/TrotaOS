@@ -68,6 +68,9 @@ chroot_mount() {
     # Optional extra CA bundle (e.g. a TLS-inspecting build proxy), also on /run.
     if [ -n "${TROTA_BUILD_CA_BUNDLE:-}" ]; then
         cp "$TROTA_BUILD_CA_BUNDLE" "$root/run/trota-build-ca.crt"
+        # APT ignores SSL_CERT_FILE: it reads the bundle from this file, named
+        # by APT_CONFIG in in_chroot (HTTPS sources such as packages.mozilla.org).
+        printf 'Acquire::https::CAInfo "/run/trota-build-ca.crt";\n' > "$root/run/trota-build-apt.conf"
     fi
 }
 
@@ -90,7 +93,7 @@ in_chroot() {
         ${HTTP_PROXY:+HTTP_PROXY="$HTTP_PROXY" http_proxy="$HTTP_PROXY"} \
         ${HTTPS_PROXY:+HTTPS_PROXY="$HTTPS_PROXY" https_proxy="$HTTPS_PROXY"} \
         ${NO_PROXY:+NO_PROXY="$NO_PROXY" no_proxy="$NO_PROXY"} \
-        ${TROTA_BUILD_CA_BUNDLE:+SSL_CERT_FILE=/run/trota-build-ca.crt} \
+        ${TROTA_BUILD_CA_BUNDLE:+SSL_CERT_FILE=/run/trota-build-ca.crt APT_CONFIG=/run/trota-build-apt.conf} \
         "$@"
 }
 

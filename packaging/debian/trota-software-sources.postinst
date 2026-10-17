@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+# Flathub as the system-wide Flatpak remote, from the bundled .flatpakrepo
+# (works offline: no network access is needed to add the remote).
+if [ "$1" = "configure" ] && command -v flatpak >/dev/null 2>&1; then
+    flatpak remote-add --system --if-not-exists flathub \
+        /usr/share/trota-os/flathub.flatpakrepo || true
+fi
+
+#DEBHELPER#
+exit 0
