@@ -239,19 +239,22 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .tl-labels div:nth-child(3) { text-align: right; }
 
 /* Pricing */
-.plans { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
-.plan { border-top: 3px solid var(--ink); padding-top: 18px; display: grid; gap: 14px; align-content: start; }
+.plans { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.plan { border-top: 3px solid var(--ink); padding-top: 18px; display: grid; gap: 12px; grid-template-rows: auto auto auto 1fr auto; justify-items: start; }
+.plan .for { font-size: 15px; color: var(--ink-2); }
+.plan ul { width: 100%; }
 .plan.biz { border-top-color: var(--orange); }
-.plan .price { font: 300 44px/1 var(--sans); }
+.plan .price { font: 300 34px/1.1 var(--sans); }
 .plan .price small { font-size: 16px; color: var(--ink-2); font-weight: 400; margin-left: 6px; }
 .plan ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; }
-.plan li { border-top: 1px solid var(--rule); padding-block: 9px; font-size: 16px; display: flex; gap: 10px; }
+.plan li { border-top: 1px solid var(--rule); padding-block: 9px; font-size: 15px; display: flex; gap: 10px; }
 .plan li::before { content: "—"; color: var(--ink-2); font-family: var(--mono); }
 .plan.biz li::before { content: "+"; color: var(--orange); }
 .mail { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .mail output { font: 400 15px/1.2 var(--mono); padding: 10px 12px; border: 1px solid var(--rule); background: var(--paper-2); user-select: all; }
 .mail .copied { font-size: 14px; color: var(--ink-2); min-width: 6em; }
-@media (max-width: 760px) { .plans { grid-template-columns: 1fr; } }
+@media (max-width: 1100px) { .plans { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; } }
+@media (max-width: 600px) { .plans { grid-template-columns: 1fr; } }
 
 /* Tables */
 .table-wrap { overflow-x: auto; }
@@ -506,37 +509,64 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
     <div class="wrap"><div class="row">
       <header><p class="eyebrow">Prezzi</p><h2 id="price-title">Gratis a casa, su misura in azienda</h2></header>
       <div class="content">
+        <p>Il sistema è lo stesso per tutti. Le aziende pagano il servizio: chi risponde quando serve, chi tiene in ordine gli schermi e i gateway, chi prepara le immagini su misura.</p>
         <div class="plans">
           <div class="plan">
-            <h3>Uso personale</h3>
+            <h3>Personale</h3>
             <p class="price">Gratis</p>
+            <p class="for">Per casa, studio e progetti personali</p>
             <ul>
               <li>Tutte e quattro le edizioni</li>
               <li>Aggiornamenti di sicurezza fino ad aprile 2029</li>
               <li>Su tutti i computer che vuoi</li>
               <li>Documentazione e segnalazioni sul repository</li>
             </ul>
-            <div class="actions"><a class="btn" href="#download">Scarica</a></div>
+            <a class="btn" href="#download">Scarica</a>
           </div>
           <div class="plan biz">
-            <h3>Aziende ed enti</h3>
-            <p class="price">Su misura</p>
+            <h3>Business</h3>
+            <p class="price">Su richiesta</p>
+            <p class="for">Abbonamento annuale per postazione o server</p>
             <ul>
-              <li>Supporto diretto da TestardStudios</li>
-              <li>Immagini personalizzate con le tue app e il tuo logo</li>
-              <li>Configurazioni cloud-init per flotte di gateway e schermi</li>
+              <li>Supporto diretto da TestardStudios via mail</li>
+              <li>Aiuto su installazione, aggiornamenti e problemi</li>
+              <li>Configurazione di server e container</li>
+              <li>Fattura per l'azienda</li>
+            </ul>
+            <a class="btn" href="mailto:sales@testardstudios.it?subject=Trota%20OS%20Business">Chiedi un'offerta</a>
+          </div>
+          <div class="plan biz">
+            <h3>Kiosk e IoT gestiti</h3>
+            <p class="price">Su richiesta</p>
+            <p class="for">Canone mensile per schermo o gateway</p>
+            <ul>
+              <li>Dispositivi preparati e configurati da noi</li>
+              <li>Aggiornamenti e controllo da remoto</li>
+              <li>Cambio di pagine e contenuti su richiesta</li>
+              <li>Menu digitali, totem, dashboard, raccolta dati</li>
+            </ul>
+            <a class="btn" href="mailto:sales@testardstudios.it?subject=Trota%20OS%20Kiosk%20e%20IoT%20gestiti">Chiedi un'offerta</a>
+          </div>
+          <div class="plan biz">
+            <h3>Enterprise</h3>
+            <p class="price">Su misura</p>
+            <p class="for">Per aziende, scuole, enti e produttori</p>
+            <ul>
+              <li>Immagini con le tue app e il tuo logo</li>
+              <li>Configurazioni cloud-init per intere flotte</li>
               <li>Uso del marchio Trota OS nei tuoi prodotti</li>
               <li>Formazione per chi gestisce i sistemi</li>
             </ul>
-            <div class="mail">
-              <a class="btn primary" href="mailto:sales@testardstudios.it?subject=Trota%20OS%20per%20la%20mia%20azienda">Scrivi a sales</a>
-              <output id="sales">sales@testardstudios.it</output>
-              <button class="btn small" type="button" id="copy">Copia</button>
-              <span class="copied" id="copied" role="status"></span>
-            </div>
+            <a class="btn" href="mailto:sales@testardstudios.it?subject=Trota%20OS%20Enterprise">Chiedi un'offerta</a>
           </div>
         </div>
-        <p class="notice">Per l'uso in azienda, a scuola o in un ente pubblico scrivi a <b>sales@testardstudios.it</b> con il numero di postazioni o dispositivi: ti rispondiamo con un'offerta. Trota OS contiene software libero di terze parti, distribuito secondo le rispettive licenze open source.</p>
+        <div class="mail">
+          <a class="btn primary" href="mailto:sales@testardstudios.it?subject=Trota%20OS%20per%20la%20mia%20azienda">Scrivi a sales</a>
+          <output id="sales">sales@testardstudios.it</output>
+          <button class="btn small" type="button" id="copy">Copia</button>
+          <span class="copied" id="copied" role="status"></span>
+        </div>
+        <p class="notice">Scrivi quante postazioni, server, schermi o gateway vuoi gestire e per cosa li usi: ti rispondiamo con un'offerta. Trota OS contiene software libero di terze parti, distribuito secondo le rispettive licenze open source.</p>
       </div>
     </div></div>
   </section>
