@@ -30,9 +30,15 @@ Base: Ubuntu 24.04 LTS (noble), kernel HWE `linux-generic-hwe-24.04`
 
 ## Artefatti
 
-Build di rilascio (senza snap): SHA-256
-`e299274241c4bd96ef24f8ac38d9ec474ca27836e578c304e9dcf9f58eb6824c`, 2,37 GB
-(la build precedente con gli snap era di 3,7 GB).
+Release [v1.0.0](https://github.com/federicolia-coder/TrotaOS/releases/tag/v1.0.0)
+(pre-release, costruita da GitHub Actions dal commit `e067ebc`): SHA-256
+`001da64d80308e5d3a142c1c2bfdb02df3381c813f8f6fc08bc62ace268aa94b`, 2,37 GB
+(la build precedente con gli snap era di 3,7 GB). Gli allegati scaricati dalla
+release sono stati riverificati: checksum delle parti, della ISO ricomposta e
+`verify-iso.sh` superati.
+
+Ogni build ha un proprio SHA-256 (data di build e versioni dei pacchetti
+cambiano): fa fede il file `.sha256` pubblicato accanto alla ISO.
 
 | File | Descrizione |
 |---|---|
