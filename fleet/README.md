@@ -4,6 +4,12 @@ Pannello web per gestire da un'unica pagina i dispositivi Trota OS Server,
 Cloud e Kiosk dei clienti. Software proprietario di TestardStudios (vedi
 [LICENSE](LICENSE)): non fa parte di Trota OS e non entra nei suoi pacchetti.
 
+**Strumento solo interno.** Lo usano soltanto il personale e i collaboratori di
+TestardStudios per erogare i servizi gestiti (per esempio "Kiosk e IoT
+gestiti"). I clienti non hanno accesso al pannello: chiedono le modifiche a
+TestardStudios, che le esegue da qui. Gli account si creano solo da terminale
+o dalle variabili d'ambiente, non esiste registrazione pubblica.
+
 ## Cosa fa
 
 - **Dispositivi**: elenco con stato (in linea / non in linea), cliente,
@@ -201,7 +207,6 @@ escaping dei dati inviati dai dispositivi, CSRF, limiti.
 
 ## Prossimi passi possibili
 
-- accesso per i clienti, ciascuno solo ai propri dispositivi;
 - avvisi via email quando un dispositivo va fuori linea;
 - pianificazione degli aggiornamenti in una fascia oraria;
 - grafici di memoria, disco e temperatura nel tempo.
