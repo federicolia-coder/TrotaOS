@@ -36,7 +36,7 @@ def svg(name: str) -> str:
 def company() -> dict:
     c = json.loads((ROOT / "legal" / "company.json").read_text())
     # Fields left null are not shown: the site never displays a placeholder.
-    ident = [c["legal_name"] or c["name"], c["address"], f"P.IVA {c['vat']}" if c["vat"] else None]
+    ident = [c["legal_name"] or c["name"], c["address"], f"P.IVA {c['vat']}" if c["vat"] else c.get("status")]
     c["ident"] = html.escape(" · ".join(x for x in ident if x))
     return c
 

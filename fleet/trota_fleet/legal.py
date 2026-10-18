@@ -16,6 +16,7 @@ DEFAULT = {
     "legal_name": None,
     "address": None,
     "vat": None,
+    "status": None,
     "email": "info@testardstudios.it",
     "sales_email": "sales@testardstudios.it",
     "website": "https://trotaos.onrender.com",
@@ -30,6 +31,7 @@ def company() -> dict:
         data.update({k: v for k, v in json.loads(path.read_text()).items() if not k.startswith("_")})
     except (OSError, ValueError):
         pass
-    parts = [data["legal_name"] or data["name"], data["address"], f"P.IVA {data['vat']}" if data["vat"] else None]
+    parts = [data["legal_name"] or data["name"], data["address"],
+             f"P.IVA {data['vat']}" if data["vat"] else data.get("status")]
     data["ident"] = " · ".join(p for p in parts if p)
     return data
