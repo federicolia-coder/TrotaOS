@@ -143,7 +143,8 @@ class App:
         self.public_url = public_url.rstrip("/")
         self.throttle = Throttle()
         self.routes = [
-            ("GET", r"/static/(fleet\.css|fleet\.js)", self.static),
+            ("GET", r"/static/(fleet\.css|fleet\.js|favicon\.svg)", self.static),
+            ("GET", r"/favicon\.ico", lambda r: self.static(r, "favicon.svg")),
             ("GET", r"/healthz", lambda r: Response("ok\n", content_type="text/plain")),
             ("POST", r"/api/v1/enroll", self.api_enroll),
             ("POST", r"/api/v1/checkin", self.api_checkin),
@@ -198,12 +199,18 @@ class App:
                 allowed = True
                 if method == req.method:
                     return handler(req, *m.groups())
+                if method == "GET" and req.method == "HEAD":
+                    # Same headers as GET (health checks), no body.
+                    resp = handler(req, *m.groups())
+                    resp.body = b""
+                    return resp
         raise HttpError(HTTPStatus.METHOD_NOT_ALLOWED if allowed else HTTPStatus.NOT_FOUND)
 
     def static(self, req: Request, name: str) -> Response:
         data = resources.files("trota_fleet").joinpath("static", name).read_bytes()
-        kind = "text/css" if name.endswith(".css") else "text/javascript"
-        return Response(data, content_type=f"{kind}; charset=utf-8")
+        kind = {"css": "text/css; charset=utf-8", "js": "text/javascript; charset=utf-8",
+                "svg": "image/svg+xml"}[name.rsplit(".", 1)[1]]
+        return Response(data, content_type=kind)
 
     # --- device API -----------------------------------------------------
     def api_enroll(self, req: Request) -> Response:

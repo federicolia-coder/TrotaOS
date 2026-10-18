@@ -84,6 +84,7 @@ def page(title: str, body: str, session=None, active: str = "", msg: str = "") -
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>{esc(title)} · Trota Fleet</title>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/static/fleet.css">
 <script src="/static/fleet.js" defer></script>
 </head>

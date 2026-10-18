@@ -97,6 +97,10 @@ def test_login_required(panel):
     assert status == 303 and headers["Location"] == "/login?next=/"
     status, headers, html = b.get("/login")
     assert status == 200 and "default-src 'none'" in headers["Content-Security-Policy"]
+    assert b.request("/favicon.ico")[0] == 200
+    head = urllib.request.Request(base + "/healthz", method="HEAD")
+    with urllib.request.urlopen(head) as r:
+        assert r.status == 200 and r.read() == b""
     assert b.post("/login", name="federico", password="sbagliata")[0] == 401
     assert b.post("/login", name="nessuno", password="x")[0] == 401
     # an open redirect after login is not possible
