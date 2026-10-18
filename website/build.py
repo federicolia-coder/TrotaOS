@@ -7,6 +7,7 @@ Output:
   build/site/privacy.html, cookie.html, note-legali.html   legal pages
   build/site/menu-digitali.html   landing page for bars and restaurants
   build/site/fonts/         IBM Plex, served by the site itself
+  build/site/<file>         website/root/* copied as-is (search-engine verification)
   build/site-fragment.html  page without the document skeleton (claude.ai artifact)
 
 Business details (name, address, VAT number) come from legal/company.json.
@@ -102,6 +103,9 @@ def main() -> None:
         + head + "</style>\n</head>\n<body>\n" + body.strip() + "\n</body>\n</html>\n")
     (OUT.parent / "favicon.svg").write_text(svg("trota-symbol.svg"))
     shutil.copytree(ROOT / "website" / "fonts", OUT.parent / "fonts", dirs_exist_ok=True)
+    # Files served as-is at the site root (e.g. Google Search Console verification).
+    for f in (ROOT / "website" / "root").iterdir():
+        shutil.copy2(f, OUT.parent / f.name)
     logos = {"{{LOGO_LIGHT}}": svg("trota-logo-light.svg"), "{{LOGO_DARK}}": svg("trota-logo-dark.svg")}
     legal_pages(company(), logos)
     menu_page(company(), logos)
