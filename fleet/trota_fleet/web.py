@@ -15,6 +15,7 @@ from importlib import resources
 from urllib.parse import parse_qs, quote, urlsplit
 
 from trota_fleet import views as v
+from trota_fleet.backends import D1Error
 from trota_fleet.db import Store
 
 MAX_BODY = 512 * 1024
@@ -35,7 +36,7 @@ CSP = ("default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self' 
 
 
 class Request:
-    def __init__(self, environ: dict, behind_proxy: bool):
+    def __init__(self, environ: dict, behind_proxy: bool, ip_header: str = ""):
         self.environ = environ
         self.method = environ.get("REQUEST_METHOD", "GET")
         self.path = environ.get("PATH_INFO", "/") or "/"
@@ -43,8 +44,12 @@ class Request:
         cookies = SimpleCookie(environ.get("HTTP_COOKIE", ""))
         self.cookie = cookies[COOKIE].value if COOKIE in cookies else ""
         forwarded = environ.get("HTTP_X_FORWARDED_FOR", "")
-        self.ip = (forwarded.split(",")[-1].strip() if behind_proxy and forwarded
-                   else environ.get("REMOTE_ADDR", ""))
+        if ip_header and environ.get(ip_header):
+            # Set by the proxy in front (e.g. CF-Connecting-IP behind Cloudflare).
+            self.ip = environ[ip_header].strip()
+        else:
+            self.ip = (forwarded.split(",")[-1].strip() if behind_proxy and forwarded
+                       else environ.get("REMOTE_ADDR", ""))
         proto = environ.get("HTTP_X_FORWARDED_PROTO", "") if behind_proxy else ""
         self.https = (proto or environ.get("wsgi.url_scheme", "http")) == "https"
         host = (environ.get("HTTP_X_FORWARDED_HOST", "") if behind_proxy else "") or environ.get("HTTP_HOST", "")
@@ -128,8 +133,11 @@ class Throttle:
 
 
 class App:
-    def __init__(self, store: Store, interval: int = 60, behind_proxy: bool = False, public_url: str = ""):
+    def __init__(self, store: Store, interval: int = 60, behind_proxy: bool = False, public_url: str = "",
+                 ip_header: str = ""):
         self.store = store
+        # "CF-Connecting-IP" -> "HTTP_CF_CONNECTING_IP", as WSGI names it.
+        self.ip_header = "HTTP_" + ip_header.upper().replace("-", "_") if ip_header else ""
         self.interval = interval
         self.behind_proxy = behind_proxy
         self.public_url = public_url.rstrip("/")
@@ -156,11 +164,15 @@ class App:
 
     # --- WSGI -----------------------------------------------------------
     def __call__(self, environ, start_response):
-        req = Request(environ, self.behind_proxy)
+        req = Request(environ, self.behind_proxy, self.ip_header)
         try:
             resp = self.dispatch(req)
         except Redirect as r:
             resp = redirect(r.location)
+        except D1Error:
+            exc = HttpError(HTTPStatus.SERVICE_UNAVAILABLE, "archivio dati non raggiungibile, riprovare tra poco")
+            resp = (json_response({"error": exc.message}, exc.status) if req.path.startswith("/api/")
+                    else Response(v.error_page(exc.status.value, exc.message), exc.status))
         except HttpError as exc:
             if req.path.startswith("/api/"):
                 resp = json_response({"error": exc.message}, exc.status)
@@ -210,13 +222,14 @@ class App:
 
     def api_checkin(self, req: Request) -> Response:
         auth = req.environ.get("HTTP_AUTHORIZATION", "")
-        device = self.store.authenticate(auth[7:]) if auth.startswith("Bearer ") else None
-        if not device:
+        if not auth.startswith("Bearer "):
             raise HttpError(HTTPStatus.UNAUTHORIZED, "dispositivo non riconosciuto")
         data = req.json()
         status = data.get("status") if isinstance(data.get("status"), dict) else {}
         results = data.get("results") if isinstance(data.get("results"), list) else []
-        commands = self.store.checkin(device, status, results, req.ip)
+        commands = self.store.checkin(auth[7:], status, results[:100], req.ip)
+        if commands is None:
+            raise HttpError(HTTPStatus.UNAUTHORIZED, "dispositivo non riconosciuto")
         return json_response({"commands": commands, "interval": self.interval})
 
     # --- sessions -------------------------------------------------------

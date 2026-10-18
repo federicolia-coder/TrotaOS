@@ -45,6 +45,40 @@ dipendenza da installare.
 
 ## Installazione
 
+### Su Render con Cloudflare D1 (consigliata)
+
+Il pannello gira su Render come servizio web e tiene i dati in un database
+**Cloudflare D1**: niente computer da tenere acceso, niente disco su Render
+(che nel piano gratuito si cancella a ogni riavvio).
+
+1. **Cloudflare → Storage & Databases → D1 → Create database**, nome
+   `trota-fleet`. Annotare il *Database ID*.
+2. **Cloudflare → My Profile → API Tokens → Create Token → Custom token**:
+   permesso *Account → D1 → Edit*, solo per l'account di TestardStudios.
+3. Su Render, nel servizio `trota-fleet` → *Environment*:
+
+   | Variabile | Valore |
+   |---|---|
+   | `TROTA_FLEET_D1_ACCOUNT` | Account ID di Cloudflare |
+   | `TROTA_FLEET_D1_DATABASE` | Database ID del passo 1 |
+   | `TROTA_FLEET_D1_TOKEN` | token del passo 2 (segreto) |
+   | `TROTA_FLEET_ADMIN` | nome del primo amministratore |
+   | `TROTA_FLEET_ADMIN_PASSWORD` | sua password, almeno 12 caratteri (segreto) |
+
+   Avvio: `cd fleet && python3 -m trota_fleet serve` (la porta la dà Render
+   in `$PORT`). Le tabelle si creano da sole al primo avvio; il primo
+   amministratore viene creato una sola volta, poi le due variabili
+   `TROTA_FLEET_ADMIN*` si possono togliere.
+
+Ogni contatto di un dispositivo è **una sola richiesta** a D1 e una
+scrittura. Il piano gratuito di D1 (100.000 righe scritte al giorno) basta
+per circa 60 dispositivi con un contatto al minuto; oltre serve il piano
+Workers Paid (5 $ al mese) oppure un intervallo più lungo
+(`TROTA_FLEET_INTERVAL=120` raddoppia i dispositivi). Le copie di sicurezza
+le fa Cloudflare (*Time Travel*: ripristino a un momento qualsiasi degli
+ultimi giorni).
+
+
 ### Su un computer con Trota OS (anche un portatile)
 
 ```sh
@@ -116,6 +150,9 @@ sudo ufw allow 80,443/tcp
 | `TROTA_FLEET_PUBLIC_URL` | indirizzo della richiesta | mostrato nei comandi di registrazione |
 | `TROTA_FLEET_BEHIND_PROXY` | `0` | `1` = usa le intestazioni `X-Forwarded-*` del proxy |
 | `TROTA_FLEET_INTERVAL` | `60` | secondi tra un contatto e l'altro dei dispositivi |
+| `TROTA_FLEET_D1_ACCOUNT`, `_DATABASE`, `_TOKEN` | — | dati su Cloudflare D1 invece che nel file SQLite |
+| `TROTA_FLEET_IP_HEADER` | — | intestazione con l'IP del visitatore messa dal proxy (es. `CF-Connecting-IP`) |
+| `PORT` | — | porta data dall'hosting (Render): ascolta su `0.0.0.0:$PORT` |
 
 Altri amministratori o cambio password: `python3 -m trota_fleet adduser NOME`.
 Backup: una copia del file del database (`sqlite3 fleet.db ".backup copia.db"`).

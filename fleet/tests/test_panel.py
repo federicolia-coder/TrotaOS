@@ -17,9 +17,11 @@ from wsgiref.simple_server import make_server
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(ROOT / "fleet"), str(ROOT / "applications/trota-fleet-agent")]
+sys.path[:0] = [str(ROOT / "fleet"), str(ROOT / "applications/trota-fleet-agent"), str(Path(__file__).parent)]
 
+from fake_d1 import TOKEN, FakeD1  # noqa: E402
 from trota_fleet import db  # noqa: E402
+from trota_fleet.backends import D1Backend  # noqa: E402
 from trota_fleet.__main__ import QuietHandler, ThreadingServer  # noqa: E402
 from trota_fleet.db import Store  # noqa: E402
 from trota_fleet.web import App  # noqa: E402
@@ -58,9 +60,14 @@ class Browser:
         return re.search(r'name="csrf" value="([^"]+)"', self.get(path)[2]).group(1)
 
 
-@pytest.fixture
-def panel(tmp_path):
-    store = Store(tmp_path / "fleet.db")
+@pytest.fixture(params=["sqlite", "d1"])
+def panel(request, tmp_path):
+    if request.param == "d1":
+        d1 = FakeD1(tmp_path / "d1.db")
+        request.addfinalizer(d1.close)
+        store = Store(backend=D1Backend("acc", "db", TOKEN, host=f"127.0.0.1:{d1.port}", https=False))
+    else:
+        store = Store(tmp_path / "fleet.db")
     store.set_user("federico", "una password lunga")
     app = App(store, interval=60)
     httpd = make_server("127.0.0.1", 0, app, ThreadingServer, QuietHandler)
@@ -217,7 +224,45 @@ def test_api_rejects_bad_requests(panel):
     with pytest.raises(urllib.error.HTTPError) as e:
         urllib.request.urlopen(req)
     assert e.value.code == 400
-    req = urllib.request.Request(base + "/api/v1/enroll", data=b"x" * (600 * 1024), method="POST")
-    with pytest.raises(urllib.error.HTTPError) as e:
-        urllib.request.urlopen(req)
-    assert e.value.code == 413
+    # A body announced as too large is refused before it is read.
+    import http.client
+    conn = http.client.HTTPConnection(base.split("//")[1])
+    conn.putrequest("POST", "/api/v1/enroll")
+    conn.putheader("Content-Length", str(600 * 1024))
+    conn.endheaders()
+    assert conn.getresponse().status == 413
+    conn.close()
+
+
+def test_d1_one_request_per_checkin(tmp_path):
+    d1 = FakeD1(tmp_path / "d1.db")
+    try:
+        store = Store(backend=D1Backend("acc", "db", TOKEN, host=f"127.0.0.1:{d1.port}", https=False))
+        code = store.create_code("", "", 1, 1, "t")
+        device, secret = store.enroll(code, "h", "a" * 32, "1.2.3.4")
+        store.queue(device, "update", {}, "t")
+        before = d1.requests
+        cmds = store.checkin(f"{device}.{secret}", {"hostname": "h"}, [], "1.2.3.4")
+        assert d1.requests - before == 1 and [c["type"] for c in cmds] == ["update"]
+        assert store.checkin(f"{device}.wrong", {}, [], "x") is None
+        assert store.device(device)["last_seen"] > 0 and isinstance(store.device(device)["last_seen"], int)
+    finally:
+        d1.close()
+
+
+def test_d1_errors_are_reported(tmp_path):
+    d1 = FakeD1(tmp_path / "d1.db")
+    try:
+        from trota_fleet.backends import D1Error
+        with pytest.raises(D1Error, match="Authentication error"):
+            Store(backend=D1Backend("acc", "db", "wrong", host=f"127.0.0.1:{d1.port}", https=False))
+        store = Store(backend=D1Backend("acc", "db", TOKEN, host=f"127.0.0.1:{d1.port}", https=False))
+        store.set_user("federico", "una password lunga")
+        app = App(store)
+        store.db.token = "revoked"
+        status = []
+        body = app({"REQUEST_METHOD": "GET", "PATH_INFO": "/", "HTTP_COOKIE": "trota_fleet=x",
+                    "wsgi.input": None}, lambda s, h: status.append(s))
+        assert status[0].startswith("503") and "archivio dati" in b"".join(body).decode()
+    finally:
+        d1.close()

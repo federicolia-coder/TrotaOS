@@ -48,11 +48,15 @@ def main(argv=None) -> int:
     ap.add_argument("--db", default=env("TROTA_FLEET_DB", "/var/lib/trota-fleet-panel/fleet.db"))
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("serve", help="avvia il pannello")
-    s.add_argument("--listen", default=env("TROTA_FLEET_LISTEN", "127.0.0.1:8080"), help="indirizzo:porta")
+    # Render (and similar hosts) give the port in $PORT.
+    listen = env("TROTA_FLEET_LISTEN") or (f"0.0.0.0:{env('PORT')}" if env("PORT") else "127.0.0.1:8080")
+    s.add_argument("--listen", default=listen, help="indirizzo:porta")
     s.add_argument("--public-url", default=env("TROTA_FLEET_PUBLIC_URL", ""),
                    help="indirizzo pubblico del pannello, mostrato nei comandi di registrazione")
     s.add_argument("--behind-proxy", action="store_true", default=env("TROTA_FLEET_BEHIND_PROXY", "") == "1",
                    help="fidarsi delle intestazioni X-Forwarded-* del proxy davanti al pannello")
+    s.add_argument("--ip-header", default=env("TROTA_FLEET_IP_HEADER", ""),
+                   help="intestazione con l'indirizzo del visitatore messa dal proxy, es. CF-Connecting-IP")
     s.add_argument("--interval", type=int, default=int(env("TROTA_FLEET_INTERVAL", "60")),
                    help="secondi tra un contatto e l'altro dei dispositivi")
     u = sub.add_parser("adduser", help="crea un amministratore o ne cambia la password")
@@ -62,8 +66,20 @@ def main(argv=None) -> int:
     b.add_argument("dir")
     args = ap.parse_args(argv)
 
-    os.makedirs(os.path.dirname(os.path.abspath(args.db)), exist_ok=True)
-    store = Store(args.db)
+    d1 = [env("TROTA_FLEET_D1_ACCOUNT", ""), env("TROTA_FLEET_D1_DATABASE", ""), env("TROTA_FLEET_D1_TOKEN", "")]
+    if any(d1):
+        if not all(d1):
+            print("Per Cloudflare D1 servono TROTA_FLEET_D1_ACCOUNT, TROTA_FLEET_D1_DATABASE e TROTA_FLEET_D1_TOKEN.",
+                  file=sys.stderr)
+            return 1
+        if args.cmd == "backup":
+            print("Con D1 le copie le fa Cloudflare (Time Travel): dashboard → D1 → database → Time Travel.",
+                  file=sys.stderr)
+            return 1
+        store = Store.d1(*[x.strip() for x in d1])
+    else:
+        os.makedirs(os.path.dirname(os.path.abspath(args.db)), exist_ok=True)
+        store = Store(args.db)
     if args.cmd == "adduser":
         password = env("TROTA_FLEET_PASSWORD") or getpass.getpass("Password: ")
         if len(password) < 12:
@@ -83,10 +99,17 @@ def main(argv=None) -> int:
         return 0
 
     if not store.users():
-        print("Nessun amministratore: crearne uno con  python3 -m trota_fleet adduser NOME", file=sys.stderr)
-        return 1
+        # Hosts without a shell (Render free): the first administrator comes
+        # from the environment, once; the variables can be removed afterwards.
+        name, password = env("TROTA_FLEET_ADMIN", ""), env("TROTA_FLEET_ADMIN_PASSWORD", "")
+        if not (name and len(password) >= 12):
+            print("Nessun amministratore: crearne uno con  python3 -m trota_fleet adduser NOME  oppure con "
+                  "TROTA_FLEET_ADMIN e TROTA_FLEET_ADMIN_PASSWORD (almeno 12 caratteri).", file=sys.stderr)
+            return 1
+        store.set_user(name, password)
+        print(f"Primo amministratore creato: {name}", flush=True)
     host, _, port = args.listen.rpartition(":")
-    app = App(store, max(15, args.interval), args.behind_proxy, args.public_url)
+    app = App(store, max(15, args.interval), args.behind_proxy, args.public_url, args.ip_header)
     with make_server(host.strip("[]") or "127.0.0.1", int(port), app, ThreadingServer, QuietHandler) as httpd:
         print(f"Trota Fleet {__version__} su http://{args.listen}", flush=True)
         try:
