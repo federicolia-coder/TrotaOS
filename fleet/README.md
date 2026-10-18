@@ -45,8 +45,34 @@ dipendenza da installare.
 
 ## Installazione
 
-Serve un server raggiungibile dai dispositivi, con un nome di dominio (es.
-`fleet.testardstudios.it`). Il certificato HTTPS lo gestisce Caddy.
+### Su un computer con Trota OS (anche un portatile)
+
+```sh
+sudo fleet/install.sh
+```
+
+Lo script fa cinque cose e si può rilanciare per aggiornare il pannello
+senza perdere i dati:
+
+1. copia il pannello in `/opt/trota-fleet` e lo avvia come servizio
+   (`trota-fleet-panel`, utente di sistema `trota-fleet`) su
+   http://localhost:8080, con una copia del database ogni giorno in
+   `/var/lib/trota-fleet-panel/backups` (ultime 14);
+2. chiede l'indirizzo pubblico del pannello, es. `https://fleet.testardstudios.it`;
+3. crea il primo amministratore;
+4. chiede il token di un **Cloudflare Tunnel** e installa `cloudflared`: il
+   pannello diventa raggiungibile da Internet in HTTPS senza aprire porte
+   sul router. Il token si crea nella dashboard di Cloudflare: Zero Trust →
+   Networks → Tunnels → *Create a tunnel* (Cloudflared); nella scheda
+   *Public Hostname* si indica il nome (es. `fleet.testardstudios.it`) e il
+   servizio `HTTP` → `localhost:8080`. Serve che il dominio sia gestito da
+   Cloudflare;
+5. su un portatile, con l'alimentatore collegato, toglie la sospensione
+   (anche a coperchio chiuso). A batteria il comportamento resta quello
+   normale.
+
+Se il computer è spento o in sospensione il pannello non risponde; i
+dispositivi continuano a funzionare e si ricollegano da soli.
 
 ### Con Podman su Trota OS Server
 

@@ -1,11 +1,14 @@
-"""python3 -m trota_fleet serve | adduser NAME | users"""
+"""python3 -m trota_fleet serve | adduser NAME | users | backup DIR"""
 
 from __future__ import annotations
 
 import argparse
 import getpass
 import os
+import sqlite3
 import sys
+import time
+from pathlib import Path
 from socketserver import ThreadingMixIn
 from wsgiref.simple_server import WSGIRequestHandler, WSGIServer, make_server
 
@@ -25,6 +28,19 @@ class QuietHandler(WSGIRequestHandler):
             super().log_request(code, size)
 
 
+def backup(db: str, folder: Path, keep: int = 14) -> int:
+    """A consistent copy of the database while the panel is running."""
+    folder.mkdir(mode=0o700, parents=True, exist_ok=True)
+    target = folder / time.strftime("fleet-%Y%m%d-%H%M%S.db")
+    with sqlite3.connect(db) as src, sqlite3.connect(target) as dst:
+        src.backup(dst)
+    target.chmod(0o600)
+    for old in sorted(folder.glob("fleet-*.db"))[:-keep]:
+        old.unlink()
+    print(f"Copia salvata in {target}")
+    return 0
+
+
 def main(argv=None) -> int:
     env = os.environ.get
     ap = argparse.ArgumentParser(prog="trota-fleet", description="Pannello Trota Fleet.")
@@ -42,6 +58,8 @@ def main(argv=None) -> int:
     u = sub.add_parser("adduser", help="crea un amministratore o ne cambia la password")
     u.add_argument("name")
     sub.add_parser("users", help="elenca gli amministratori")
+    b = sub.add_parser("backup", help="copia del database in una cartella (tiene le ultime 14)")
+    b.add_argument("dir")
     args = ap.parse_args(argv)
 
     os.makedirs(os.path.dirname(os.path.abspath(args.db)), exist_ok=True)
@@ -57,6 +75,8 @@ def main(argv=None) -> int:
         store.set_user(args.name, password)
         print(f"Amministratore {args.name} salvato.")
         return 0
+    if args.cmd == "backup":
+        return backup(args.db, Path(args.dir))
     if args.cmd == "users":
         for user in store.users():
             print(user["name"])
