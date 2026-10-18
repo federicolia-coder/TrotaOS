@@ -224,6 +224,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .axis div span:first-child { transform: none; }
 .axis div span:last-child { transform: translateX(-100%); }
 @media (max-width: 560px) { .bars li, .axis { grid-template-columns: 64px minmax(0, 1fr) 40px; gap: 8px; } }
+/* The longest bar's tooltip opens leftwards so it never pushes the page sideways. */
+.bars li:first-child .bar::after { left: auto; right: 0; transform: none; }
+.chart { overflow-x: clip; }
 
 /* Divided list */
 .divided { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
@@ -262,7 +265,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 @media (max-width: 600px) { .plans { grid-template-columns: 1fr; } }
 
 /* Tables */
-.table-wrap { overflow-x: auto; }
+.table-wrap { overflow-x: auto; min-width: 0; max-width: 100%; }
+.content > * { min-width: 0; }
 table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 16px; }
 th, td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
 th { font-weight: 500; font-size: 14px; color: var(--ink-2); }
@@ -294,12 +298,27 @@ footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 footer svg { height: 26px; width: auto; }
 footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rule); display: grid; gap: 6px; }
 @media (max-width: 760px) { footer .cols-f { grid-template-columns: 1fr; } }
+/* Trailer: a local poster until the visitor presses play; only then the
+   YouTube player (privacy-enhanced domain) is loaded. No third-party request
+   or cookie before that click. */
+.yt { position: relative; aspect-ratio: 16 / 9; background: var(--band); overflow: hidden; }
+.yt-play { all: unset; position: absolute; inset: 0; cursor: pointer; display: block; }
+.yt-play img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.yt-play:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+.yt-btn { position: absolute; left: 50%; top: 50%; width: 84px; height: 84px; margin: -42px 0 0 -42px; border-radius: 50%;
+  background: var(--orange); display: grid; place-items: center; transition: transform .2s ease; }
+.yt-btn svg { width: 30px; height: 30px; margin-left: 5px; fill: var(--on-orange); }
+.yt-play:hover .yt-btn { transform: scale(1.06); }
+.yt iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.yt-note { font-size: 14px; color: var(--ink-2); max-width: 46em; }
+@media (prefers-reduced-motion: reduce) { .yt-btn { transition: none; } }
 </style>
 
 <header class="top">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Trota OS, inizio pagina"><span class="logo-light">{{LOGO_LIGHT}}</span><span class="logo-dark">{{LOGO_DARK}}</span></a>
     <nav aria-label="Sezioni">
+      <a href="#trailer">Trailer</a>
       <a href="#desktop">Desktop</a>
       <a href="#edizioni">Edizioni</a>
       <a href="#iot">IoT ed edge</a>
@@ -337,6 +356,21 @@ footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(-
       </dl>
     </div>
   </div>
+
+  <section class="section" id="trailer" aria-labelledby="trailer-title">
+    <div class="wrap"><div class="row">
+      <header><p class="eyebrow">Trailer</p><h2 id="trailer-title">Trota OS in 30 secondi</h2></header>
+      <div class="content">
+        <div class="yt" data-video="r86nhiBqG5Y">
+          <button class="yt-play" type="button" aria-label="Guarda il trailer di Trota OS 1.0 (si apre il lettore di YouTube)">
+            <img src="trailer-poster.webp" width="1280" height="720" loading="lazy" alt="Il logo di Trota OS dal trailer di lancio">
+            <span class="yt-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z"/></svg></span>
+          </button>
+        </div>
+        <p class="yt-note">Il video è su YouTube e si carica solo quando premi play: da quel momento YouTube può usare cookie e tecnologie simili (<a href="cookie.html">dettagli</a>). Puoi anche <a href="https://www.youtube.com/watch?v=r86nhiBqG5Y" target="_blank" rel="noopener">guardarlo direttamente su YouTube</a>.</p>
+      </div>
+    </div></div>
+  </section>
 
   <section class="section" id="desktop" aria-labelledby="desktop-title">
     <div class="wrap"><div class="row">
@@ -668,6 +702,19 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
 </footer>
 
 <script>
+// Trailer: replace the poster with the YouTube player only on the visitor's click.
+for (const box of document.querySelectorAll(".yt[data-video]")) {
+  box.querySelector(".yt-play").addEventListener("click", () => {
+    const f = document.createElement("iframe");
+    f.src = "https://www.youtube-nocookie.com/embed/" + box.dataset.video + "?autoplay=1&rel=0";
+    f.title = "Introducing Trota OS 1.0";
+    f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    f.allowFullscreen = true;
+    f.referrerPolicy = "strict-origin-when-cross-origin";
+    box.replaceChildren(f);
+    f.focus();
+  });
+}
 // Hero graphic: the trout of the logo, built from the same straight segments,
 // broken into flat facets in the carbon/steel range; the orange lateral band
 // is the only colour. Drawn once, deterministic (seeded), no animation loop.
