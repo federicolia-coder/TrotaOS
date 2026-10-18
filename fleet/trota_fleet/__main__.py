@@ -13,6 +13,7 @@ from socketserver import ThreadingMixIn
 from wsgiref.simple_server import WSGIRequestHandler, WSGIServer, make_server
 
 from trota_fleet import __version__
+from trota_fleet.backends import D1Error
 from trota_fleet.db import Store
 from trota_fleet.web import App
 
@@ -76,7 +77,13 @@ def main(argv=None) -> int:
             print("Con D1 le copie le fa Cloudflare (Time Travel): dashboard → D1 → database → Time Travel.",
                   file=sys.stderr)
             return 1
-        store = Store.d1(*[x.strip() for x in d1])
+        try:
+            store = Store.d1(*[x.strip() for x in d1])
+        except D1Error as exc:
+            print(f"{exc}\nControllare che il token abbia il permesso \"Account → D1 → Edit\" sull'account "
+                  "TROTA_FLEET_D1_ACCOUNT e che il database TROTA_FLEET_D1_DATABASE sia in quello stesso account.",
+                  file=sys.stderr)
+            return 1
     else:
         os.makedirs(os.path.dirname(os.path.abspath(args.db)), exist_ok=True)
         store = Store(args.db)
