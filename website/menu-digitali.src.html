@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Menu digitali per bar e ristoranti · Trota OS</title>
+<meta name="description" content="Il menu sulla TV del locale, aggiornato a distanza. Mini PC, schermata con il tuo logo e cambi di menu: ci pensa {{COMPANY_NAME}}.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<style>
+/* Same system as the main site: paper, ink, hairlines, one orange for the
+   actions. The TV is the only picture: an example of what the customer gets. */
+@font-face { font-family: "IBM Plex Sans"; font-weight: 300 600; font-display: swap;
+  src: url("fonts/ibm-plex-sans-latin.woff2") format("woff2"); }
+:root {
+  --paper: #FFFFFF; --paper-2: #F5F6F7; --ink: #111316; --ink-2: #4F565D; --rule: #D9DCDF;
+  --orange: #E2541B; --orange-hover: #C8460F; --on-orange: #FFFFFF;
+  --band: #101214; --band-ink: #E8ECEF; --band-ink-2: #9AA2AA; --band-rule: #2E343A;
+  --sans: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #141619; --paper-2: #1B1E22; --ink: #E8ECEF; --ink-2: #A3AAB1; --rule: #2C3238;
+    --orange: #FF6A2A; --orange-hover: #FF7F47; --on-orange: #101214; --band: #0B0C0E; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+h1, h2, h3 { margin: 0; font-weight: 300; text-wrap: balance; }
+h1 { font-size: clamp(38px, 5.2vw, 60px); line-height: 1.06; letter-spacing: -0.01em; }
+h2 { font-size: clamp(28px, 3vw, 36px); line-height: 1.15; }
+h3 { font-size: 20px; line-height: 1.3; font-weight: 400; }
+p { margin: 0; }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.muted { color: var(--ink-2); }
+.btn { display: inline-block; font: 500 16px/1 var(--sans); padding: 14px 22px; background: var(--orange); color: var(--on-orange);
+  text-decoration: none; border-radius: 2px; }
+.btn:hover { background: var(--orange-hover); }
+.btn.ghost { background: transparent; color: inherit; box-shadow: inset 0 0 0 1px currentColor; }
+.btn.ghost:hover { background: rgba(127,127,127,.12); }
+
+/* Header */
+.top { border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; align-items: center; gap: 24px; min-height: 56px; }
+.top a.home { line-height: 0; }
+.top svg { height: 36px; width: auto; }
+.top .spacer { flex: 1; }
+.top .link { font-size: 15px; color: var(--ink-2); text-decoration: none; }
+.top .link:hover { color: var(--ink); }
+.logo-dark { display: none; }
+@media (prefers-color-scheme: dark) { .logo-dark { display: inline; } .logo-light { display: none; } }
+@media (max-width: 560px) { .top .link { display: none; } }
+
+/* Hero: text left, the TV right */
+.hero { padding: 64px 0 72px; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 56px; align-items: center; }
+.hero .lead { font-size: 20px; color: var(--ink-2); margin: 20px 0 32px; max-width: 34em; }
+.hero .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+@media (max-width: 960px) { .hero .wrap { grid-template-columns: 1fr; gap: 40px; } }
+
+/* The TV: a 16:9 screen in a thin bezel, with the example menu */
+.tv { margin: 0; }
+.tv .bezel { background: #050607; padding: 10px; border-radius: 6px; }
+.tv .screen { aspect-ratio: 16 / 9; background: #14110F; color: #F3EEE7; border-radius: 2px; overflow: hidden;
+  display: grid; grid-template-rows: auto 1fr auto; padding: 4% 5%; container-type: inline-size; }
+.tv .stand { width: 22%; height: 14px; margin: 0 auto; background: #050607; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); }
+.tv figcaption { font-size: 14px; color: var(--ink-2); margin-top: 12px; text-align: center; }
+.menu-head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #FF6A2A; padding-bottom: 1.6cqi; }
+.menu-head b { font-size: 4.4cqi; font-weight: 600; letter-spacing: 0.02em; }
+.menu-head span { font-size: 2.2cqi; color: #C9BFB3; }
+.menu-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6cqi; padding-top: 2.4cqi; align-content: start; }
+.menu-cols h4 { margin: 1.4cqi 0 .8cqi; font-size: 2.3cqi; font-weight: 500; color: #FF8A57; text-transform: uppercase; letter-spacing: .08em; }
+.menu-cols p { display: flex; justify-content: space-between; gap: 2cqi; font-size: 2.5cqi; line-height: 1.55; }
+.menu-cols p span:last-child { font-variant-numeric: tabular-nums; }
+.menu-foot { font-size: 2cqi; color: #C9BFB3; border-top: 1px solid #3A332D; padding-top: 1.4cqi; display: flex; justify-content: space-between; }
+.menu-foot b { color: #FF8A57; font-weight: 500; }
+
+/* Sections */
+.section { border-top: 1px solid var(--rule); padding: 64px 0; }
+.section.alt { background: var(--paper-2); }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: 48px; }
+@media (max-width: 860px) { .row { grid-template-columns: 1fr; gap: 24px; } }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; counter-reset: s; }
+.steps li { border-top: 3px solid var(--ink); padding-top: 16px; counter-increment: s; }
+.steps li::before { content: "Passo " counter(s); display: block; font-size: 14px; color: var(--ink-2); margin-bottom: 6px; }
+.steps p { color: var(--ink-2); margin-top: 8px; }
+@media (max-width: 860px) { .steps { grid-template-columns: 1fr; } }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr; gap: 32px; } }
+.list { list-style: none; margin: 12px 0 0; padding: 0; border-top: 1px solid var(--rule); }
+.list li { padding: 12px 0; border-bottom: 1px solid var(--rule); }
+.list li b { font-weight: 500; }
+.list li span { display: block; color: var(--ink-2); font-size: 15px; }
+.shows { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-top: 16px; padding: 0; list-style: none; }
+.shows li { border: 1px solid var(--rule); padding: 6px 12px; font-size: 15px; background: var(--paper); }
+.faq { margin: 0; border-top: 1px solid var(--rule); }
+.faq details { border-bottom: 1px solid var(--rule); }
+.faq summary { cursor: pointer; padding: 16px 0; font-size: 18px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--ink-2); font-size: 22px; line-height: 1; }
+.faq details[open] summary::after { content: "−"; }
+.faq details p { padding: 0 0 18px; color: var(--ink-2); max-width: 46em; }
+
+/* Closing band */
+.band { background: var(--band); color: var(--band-ink); padding: 64px 0; }
+.band .wrap { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 40px; align-items: center; }
+.band p { color: var(--band-ink-2); margin-top: 12px; }
+.band .actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+@media (max-width: 860px) { .band .wrap { grid-template-columns: 1fr; } .band .actions { justify-content: flex-start; } }
+
+footer { background: var(--paper-2); border-top: 1px solid var(--rule); padding: 28px 0; font-size: 14px; color: var(--ink-2); }
+footer p { margin: 0 0 6px; }
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="home" href="index.html" aria-label="Trota OS, pagina principale"><span class="logo-light">{{LOGO_LIGHT}}</span><span class="logo-dark">{{LOGO_DARK}}</span></a>
+  <span class="spacer"></span>
+  <a class="link" href="#come-funziona">Come funziona</a>
+  <a class="link" href="#domande">Domande</a>
+  <a class="btn" href="{{MAILTO}}">Chiedi un preventivo</a>
+</div></header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Il menu sulla TV del locale. Lo cambi con un messaggio.</h1>
+        <p class="lead">Colleghiamo un piccolo computer alla TV che hai già. Mostra il menu, i prezzi e le offerte del giorno. Quando cambia qualcosa ci scrivi e lo aggiorniamo noi a distanza: non devi toccare né la TV né il computer.</p>
+        <div class="actions">
+          <a class="btn" href="{{MAILTO}}">Chiedi un preventivo</a>
+          <a class="btn ghost" href="#come-funziona">Come funziona</a>
+        </div>
+      </div>
+      <figure class="tv">
+        <div class="bezel">
+          <div class="screen" role="img" aria-label="Esempio di menu sullo schermo: colazione, pranzo, aperitivo, con prezzi e piatto del giorno">
+            <div class="menu-head"><b>BAR CENTRALE</b><span>aperto dalle 7 alle 21</span></div>
+            <div class="menu-cols">
+              <div>
+                <h4>Colazione</h4>
+                <p><span>Caffè</span><span>1,20</span></p>
+                <p><span>Cappuccino</span><span>1,60</span></p>
+                <p><span>Cornetto vuoto o crema</span><span>1,40</span></p>
+                <h4>Pranzo</h4>
+                <p><span>Lasagne della casa</span><span>9,00</span></p>
+                <p><span>Insalatona con tonno</span><span>8,50</span></p>
+              </div>
+              <div>
+                <h4>Aperitivo</h4>
+                <p><span>Spritz</span><span>5,50</span></p>
+                <p><span>Calice di vino</span><span>4,50</span></p>
+                <p><span>Analcolico della casa</span><span>4,00</span></p>
+                <h4>Oggi</h4>
+                <p><span>Pasta al ragù bianco</span><span>8,00</span></p>
+                <p><span>Torta di mele</span><span>3,50</span></p>
+              </div>
+            </div>
+            <div class="menu-foot"><span>Chiedi al banco per allergeni e intolleranze</span><b>Happy hour 18–20</b></div>
+          </div>
+        </div>
+        <div class="stand" aria-hidden="true"></div>
+        <figcaption>Un esempio: la schermata la facciamo con il tuo logo, i tuoi colori e i tuoi prezzi.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="come-funziona" aria-labelledby="cf-title">
+    <div class="wrap"><div class="row">
+      <h2 id="cf-title">Come funziona</h2>
+      <ol class="steps">
+        <li><h3>Ci mandi il menu</h3><p>Una foto della lavagna, il file del menu o anche solo l'elenco dei piatti con i prezzi. Prepariamo la schermata con il tuo logo e la mandiamo a te da approvare.</p></li>
+        <li><h3>Lo installiamo</h3><p>Un mini PC grande come un libro, dietro la TV, collegato con un cavo HDMI e al Wi-Fi del locale. Si accende da solo e parte sempre con il menu, senza telecomandi da usare.</p></li>
+        <li><h3>Lo teniamo aggiornato</h3><p>Cambi un piatto o un prezzo? Ci scrivi e lo aggiorniamo a distanza. Controlliamo anche che lo schermo sia acceso e installiamo gli aggiornamenti di sicurezza.</p></li>
+      </ol>
+    </div></div>
+  </section>
+
+  <section class="section alt" aria-labelledby="cosa-title">
+    <div class="wrap"><div class="row">
+      <h2 id="cosa-title">Cosa ricevi e cosa ti serve</h2>
+      <div>
+        <div class="two">
+          <div>
+            <h3>Compreso nel servizio</h3>
+            <ul class="list">
+              <li><b>La schermata del menu</b><span>Con logo, colori e caratteri leggibili da lontano.</span></li>
+              <li><b>Il mini PC già pronto</b><span>Configurato da noi con Trota OS Kiosk, collegato e provato sul posto.</span></li>
+              <li><b>I cambi di menu</b><span>Piatti del giorno, prezzi, orari e offerte, aggiornati a distanza.</span></li>
+              <li><b>Controllo e aggiornamenti</b><span>Se il mini PC o il menu si fermano, lo vediamo prima che ce lo dica tu.</span></li>
+              <li><b>Assistenza diretta</b><span>Ci scrivi e rispondiamo noi, in italiano.</span></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Ti serve solo</h3>
+            <ul class="list">
+              <li><b>Una TV o un monitor con presa HDMI</b><span>Va bene anche una TV normale, non serve che sia smart.</span></li>
+              <li><b>Una presa di corrente vicino alla TV</b><span>Il mini PC consuma come una lampadina.</span></li>
+              <li><b>La connessione Internet del locale</b><span>Wi-Fi o cavo, la stessa che usi per il POS o il telefono.</span></li>
+            </ul>
+          </div>
+        </div>
+        <h3 style="margin-top:40px">Cosa puoi mostrare</h3>
+        <ul class="shows">
+          <li>Menu e listino prezzi</li><li>Piatto del giorno</li><li>Carta dei vini e dei cocktail</li>
+          <li>Happy hour e offerte</li><li>Orari e giorni di chiusura</li><li>Eventi e partite</li>
+          <li>Foto dei piatti</li><li>Menu in più lingue</li>
+        </ul>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section" id="domande" aria-labelledby="faq-title">
+    <div class="wrap"><div class="row">
+      <h2 id="faq-title">Domande</h2>
+      <div class="faq">
+        <details><summary>Quanto costa?</summary><p>Un canone mensile per ogni schermo, più l'installazione. Il prezzo dipende da quanti schermi hai e da quanto spesso cambi il menu: scrivici e ti mandiamo un preventivo, senza impegno.</p></details>
+        <details><summary>Serve una smart TV?</summary><p>No. Basta una qualsiasi TV o monitor con una presa HDMI. Il mini PC fa tutto il resto.</p></details>
+        <details><summary>Se cade Internet cosa succede?</summary><p>Lo schermo continua a mostrare il menu già caricato. Quando la connessione torna, riceve gli aggiornamenti che nel frattempo abbiamo preparato.</p></details>
+        <details><summary>Posso cambiare il menu da solo?</summary><p>Sì, se preferisci: possiamo collegare lo schermo a una pagina che modifichi tu, per esempio il menu del tuo sito. Altrimenti ci scrivi e lo facciamo noi.</p></details>
+        <details><summary>Ho più schermi o più locali.</summary><p>Nessun problema: ogni schermo può mostrare una cosa diversa (per esempio menu al banco e offerte in sala) e li gestiamo tutti insieme.</p></details>
+        <details><summary>Il computer raccoglie dati dei miei clienti?</summary><p>No. Mostra solo il menu: niente telecamere, niente microfono, niente dati di chi entra nel locale. Per assisterti riceviamo solo informazioni tecniche sullo schermo, come se è acceso e se ha bisogno di aggiornamenti. I dettagli sono nell'<a href="privacy.html">informativa privacy</a>.</p></details>
+        <details><summary>Cosa c'è dentro il mini PC?</summary><p>Trota OS Kiosk, il sistema operativo di {{COMPANY_NAME}} pensato per gli schermi: mostra una sola pagina a tutto schermo, riparte da solo se qualcosa si blocca e riceve aggiornamenti di sicurezza fino ad aprile 2029. <a href="index.html">Scopri Trota OS</a>.</p></details>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="band" aria-labelledby="cta-title">
+    <div class="wrap">
+      <div>
+        <h2 id="cta-title">Raccontaci il tuo locale</h2>
+        <p>Scrivi quanti schermi hai (o vuoi), cosa vuoi mostrare e in che zona sei. Ti rispondiamo con un preventivo.</p>
+      </div>
+      <div class="actions">
+        <a class="btn" href="{{MAILTO}}">Scrivi a {{SALES_EMAIL}}</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <p>{{COMPANY_LINE}}</p>
+  <p><a href="index.html">Trota OS</a> · <a href="privacy.html">Privacy</a> · <a href="cookie.html">Cookie</a> · <a href="note-legali.html">Note legali</a></p>
+</div></footer>
+</body>
+</html>
