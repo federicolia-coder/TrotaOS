@@ -270,3 +270,31 @@ def test_d1_errors_are_reported(tmp_path):
         assert status[0].startswith("503") and "archivio dati" in b"".join(body).decode()
     finally:
         d1.close()
+
+
+def test_legal_pages_and_footer(panel):
+    base, _, _ = panel
+    b = Browser(base)
+    status, _, html = b.get("/privacy")
+    assert status == 200 and "responsabile del trattamento" in html and "90 giorni" in html
+    status, _, html = b.get("/cookie")
+    assert status == 200 and "trota_fleet" in html
+    html = b.get("/login")[2]
+    assert 'href="/privacy"' in html and 'href="/cookie"' in html and "note-legali.html" in html
+
+
+def test_cleanup_removes_old_data(panel, tmp_path):
+    base, store, _ = panel
+    code = store.create_code("", "", 1, 1, "t")
+    device, secret = store.enroll(code, "h", "b" * 32, "1.2.3.4")
+    old = store.queue(device, "update", {}, "t")
+    new = store.queue(device, "reboot", {}, "t")
+    used = store.create_code("", "", 1, 1, "t")
+    store.enroll(used, "h2", "c" * 32, "1.2.3.4")
+    long_ago = int(__import__("time").time()) - 100 * 86400
+    store.run(("UPDATE commands SET created = ? WHERE id = ?", (long_ago, old)),
+              ("UPDATE enrol_codes SET created = ?", (long_ago,)))
+    done = store.cleanup(90)
+    assert done["commands"] == 1 and done["codes"] == 2
+    assert [c["id"] for c in store.commands(device)] == [new]
+    assert store.device(device)             # devices stay until removed

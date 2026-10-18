@@ -75,6 +75,9 @@ CREATE INDEX IF NOT EXISTS commands_device ON commands(device_id, id);
 
 PBKDF2_ITERATIONS = 600_000
 SESSION_DAYS = 7
+# Command history and spent enrolment codes are deleted after this many days
+# (data minimisation, GDPR art. 5.1.e). Devices stay until they are removed.
+RETENTION_DAYS = 90
 
 
 def sha256(value: str) -> str:
@@ -250,3 +253,16 @@ class Store:
 
     def commands(self, device: str, limit: int = 50) -> list:
         return self.query(f"SELECT * FROM commands WHERE device_id = ? ORDER BY id DESC LIMIT {int(limit)}", device)
+
+    # --- retention --------------------------------------------------------
+    def cleanup(self, days: int = RETENTION_DAYS) -> dict:
+        """Deletes what is no longer needed: expired sessions, commands older
+        than *days* (finished or never delivered), enrolment codes expired,
+        revoked or used up more than *days* ago."""
+        now = int(time.time())
+        limit = now - days * 86400
+        out = self.run(("DELETE FROM sessions WHERE expires < ?", (now,)),
+                       ("DELETE FROM commands WHERE created < ?", (limit,)),
+                       ("DELETE FROM enrol_codes WHERE (expires < ? OR revoked = 1 OR uses_left <= 0) AND created < ?",
+                        (now, limit)))
+        return dict(zip(("sessions", "commands", "codes"), (r.changes for r in out)))

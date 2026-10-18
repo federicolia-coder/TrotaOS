@@ -110,3 +110,10 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0 0; }
   .top nav { order: 3; width: 100%; flex: none; }
 }
 main { padding-bottom: 64px; }
+.foot { border-top: 1px solid var(--rule); background: var(--paper-2); color: var(--ink-2); font-size: 14px; padding: 20px 0; }
+.foot p { margin: 0 0 4px; }
+.legal { max-width: 760px; }
+.legal h2 { margin-top: 32px; }
+.legal ul { padding-left: 20px; }
+.legal li { margin-bottom: 4px; }
+.legal table { margin-bottom: 12px; }

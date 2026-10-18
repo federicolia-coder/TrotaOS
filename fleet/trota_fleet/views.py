@@ -8,6 +8,10 @@ import time
 from html import escape
 from urllib.parse import urlencode
 
+from trota_fleet.legal import company
+
+COMPANY = company()
+
 SYMBOL = (
     '<svg viewBox="0 0 256 256" aria-hidden="true"><g fill="currentColor">'
     '<path d="M52 128 L16 98 L28 128 L16 158 Z"/><path d="M60 128 L102 94 L198 94 L238 128 L198 162 L102 162 Z"/>'
@@ -97,6 +101,10 @@ def page(title: str, body: str, session=None, active: str = "", msg: str = "") -
 {note}
 {body}
 </main>
+<footer class="foot"><div class="wrap">
+<p>Trota Fleet · {esc(COMPANY["ident"])}</p>
+<p><a href="/privacy">Privacy</a> · <a href="/cookie">Cookie</a> · <a href="{esc(COMPANY["website"])}/note-legali.html">Note legali</a></p>
+</div></footer>
 </body>
 </html>
 """
@@ -336,3 +344,107 @@ Cloud o Kiosk. I dispositivi entrano già assegnati al cliente indicato.</p>
 </form>
 <section><h2>Codici</h2>{table}</section>"""
     return page("Aggiungi dispositivi", body, session, "enroll")
+
+
+def _legal(title: str, body: str, session) -> str:
+    return page(title, f'<article class="legal"><h1>{esc(title)}</h1>'
+                       f'<p class="muted">Aggiornata il {esc(COMPANY["updated"])}</p>{body}</article>', session)
+
+
+def privacy_page(session, interval: int, retention_days: int) -> str:
+    c = {k: esc(v) for k, v in COMPANY.items() if isinstance(v, str)}
+    body = f"""
+<p>Trota Fleet è il pannello con cui {c["name"]} gestisce a distanza i dispositivi Trota OS Server, Cloud e
+Kiosk dei propri clienti. Questa pagina spiega quali dati personali passano dal pannello, come chiede il
+Regolamento (UE) 2016/679 (GDPR).</p>
+
+<h2>Chi è responsabile dei dati</h2>
+<p>{c["ident"]} · <a href="mailto:{c["email"]}">{c["email"]}</a></p>
+<ul>
+<li><strong>Dati delle persone che usano il pannello</strong> (amministratori e tecnici):
+{c["name"]} è <strong>titolare del trattamento</strong>.</li>
+<li><strong>Dati dei dispositivi dei clienti</strong>: il titolare è il cliente proprietario del dispositivo;
+{c["name"]} li tratta per suo conto come <strong>responsabile del trattamento</strong> (articolo 28 GDPR),
+secondo il contratto e l'accordo sul trattamento dei dati firmati con il cliente.</li>
+</ul>
+
+<h2>Quali dati</h2>
+<h3>Persone che usano il pannello</h3>
+<ul>
+<li>nome utente e password (salvata solo in forma cifrata non reversibile, PBKDF2);</li>
+<li>una sessione di accesso (cookie tecnico, vedi la <a href="/cookie">pagina sui cookie</a>), che dura al massimo 7 giorni;</li>
+<li>il nome di chi ha inviato ogni comando, nello storico del dispositivo;</li>
+<li>l'indirizzo IP, tenuto solo in memoria e per al massimo 15 minuti, per bloccare chi tenta di indovinare le password.</li>
+</ul>
+<p>Base giuridica: il contratto di lavoro o di collaborazione e il legittimo interesse alla sicurezza del
+servizio (articolo 6.1.b e 6.1.f).</p>
+
+<h3>Dispositivi collegati</h3>
+<p>Ogni dispositivo si collega solo dopo che un amministratore lo ha registrato con un codice. Ogni
+{interval} secondi invia: nome del dispositivo, sistema ed edizione, versione del kernel, da quanto è acceso,
+carico, memoria e disco usati, indirizzi IP di rete, numero di aggiornamenti da installare, se serve un
+riavvio e, sui chioschi, l'indirizzo della pagina mostrata. Il pannello registra anche l'indirizzo IP da cui
+arriva il collegamento.</p>
+<p><strong>Non vengono raccolti</strong> file, contenuto dello schermo, tasti premuti, programmi in uso, siti
+visitati, nomi o attività delle persone che usano il dispositivo. Il pannello può inviare solo quattro
+comandi di manutenzione (cambiare la pagina del chiosco, riavviare il chiosco, installare gli aggiornamenti,
+riavviare) e non può eseguire altri programmi.</p>
+<p>Gli indirizzi IP sono dati personali; gli altri dati descrivono la macchina. Scopo: assistenza,
+manutenzione e sicurezza dei dispositivi, come previsto dal contratto con il cliente.</p>
+
+<h2>Per quanto tempo</h2>
+<ul>
+<li>stato del dispositivo e ultimo indirizzo IP: solo l'ultimo valore, finché il dispositivo resta nel pannello;
+rimuovendolo si cancellano subito anche tutti i suoi comandi;</li>
+<li>storico dei comandi e loro risultati: {retention_days} giorni, poi vengono cancellati automaticamente;</li>
+<li>codici di registrazione scaduti, revocati o esauriti: {retention_days} giorni;</li>
+<li>sessioni di accesso: al massimo 7 giorni; tentativi di accesso falliti: 15 minuti, solo in memoria;</li>
+<li>alla fine del contratto, i dati del cliente vengono cancellati o restituiti come previsto dall'accordo
+sul trattamento dei dati.</li>
+</ul>
+
+<h2>Dove sono i dati e chi li tratta</h2>
+<table>
+<tr><th>Fornitore</th><th>Cosa fa</th><th>Dove</th></tr>
+<tr><td>Render Services, Inc.</td><td>esegue il pannello</td><td>server a Francoforte (Germania)</td></tr>
+<tr><td>Cloudflare, Inc.</td><td>database (D1) e rete che protegge il collegamento</td><td>database nella regione scelta alla creazione (Europa occidentale), rete mondiale</td></tr>
+</table>
+<p>Sono responsabili (o sub-responsabili) del trattamento vincolati da contratto. Entrambe le società hanno
+sede negli Stati Uniti: gli eventuali trasferimenti si basano sul EU-U.S. Data Privacy Framework e sulle
+Clausole contrattuali standard della Commissione europea.</p>
+
+<h2>Sicurezza</h2>
+<ul>
+<li>collegamenti solo cifrati (HTTPS), anche tra dispositivi e pannello;</li>
+<li>password, segreti dei dispositivi, sessioni e codici salvati solo come impronta non reversibile;</li>
+<li>ogni dispositivo ha un segreto suo; rimuoverlo dal pannello lo scollega subito;</li>
+<li>protezione contro tentativi ripetuti di accesso, moduli protetti da CSRF, pagine senza script esterni.</li>
+</ul>
+
+<h2>Diritti</h2>
+<p>Chi usa il pannello può chiedere a {c["name"]} di accedere ai propri dati, correggerli, cancellarli,
+limitarne il trattamento, riceverli o opporsi (articoli 15–22): <a href="mailto:{c["email"]}">{c["email"]}</a>.
+Per i dati dei dispositivi la richiesta va fatta al cliente titolare, che {c["name"]} aiuta a rispondere.
+Resta il diritto di reclamo al Garante per la protezione dei dati personali
+(<a href="https://www.garanteprivacy.it" rel="noopener">www.garanteprivacy.it</a>).</p>
+"""
+    return _legal("Informativa privacy del pannello", body, session)
+
+
+def cookie_page(session) -> str:
+    body = """
+<p>Il pannello usa <strong>un solo cookie</strong>, tecnico, necessario per restare collegati dopo
+l'accesso. Non ci sono cookie di statistica, profilazione o di terze parti, quindi non serve il consenso
+(articolo 122 del Codice privacy e linee guida del Garante del 10 giugno 2021).</p>
+<table>
+<tr><th>Nome</th><th>A cosa serve</th><th>Durata</th></tr>
+<tr><td><code>trota_fleet</code></td><td>tiene aperta la sessione dopo l'accesso. Contiene solo un codice casuale;
+è inviato solo in HTTPS, non è leggibile da script e non viene inviato ad altri siti.</td>
+<td>7 giorni, o fino a quando si esce</td></tr>
+</table>
+<p>Il pannello non usa altre tecnologie di memorizzazione nel browser (localStorage o simili) e non carica
+risorse da altri siti.</p>
+<p>Si può cancellare il cookie in qualsiasi momento dalle impostazioni del browser: si viene scollegati.</p>
+<p>Vedi anche l'<a href="/privacy">informativa privacy</a>.</p>
+"""
+    return _legal("Cookie", body, session)

@@ -1,0 +1,11 @@
+{
+  "_comment": "Business details shown on the website and in the Trota Fleet panel. Fields left null are not shown. Fill in legal_name, address and vat (Partita IVA, required on Italian business websites).",
+  "name": "TestardStudios",
+  "legal_name": null,
+  "address": null,
+  "vat": null,
+  "email": "info@testardstudios.it",
+  "sales_email": "sales@testardstudios.it",
+  "website": "https://trotaos.onrender.com",
+  "updated": "18 ottobre 2026"
+}

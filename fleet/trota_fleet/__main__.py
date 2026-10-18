@@ -7,6 +7,7 @@ import getpass
 import os
 import sqlite3
 import sys
+import threading
 import time
 from pathlib import Path
 from socketserver import ThreadingMixIn
@@ -14,7 +15,7 @@ from wsgiref.simple_server import WSGIRequestHandler, WSGIServer, make_server
 
 from trota_fleet import __version__
 from trota_fleet.backends import D1Error
-from trota_fleet.db import Store
+from trota_fleet.db import RETENTION_DAYS, Store
 from trota_fleet.web import App
 
 
@@ -42,6 +43,18 @@ def backup(db: str, folder: Path, keep: int = 14) -> int:
     return 0
 
 
+def cleanup_loop(store: Store, days: int, every: int = 6 * 3600) -> None:
+    """Deletes old data at start and then every few hours (see Store.cleanup)."""
+    while True:
+        try:
+            done = store.cleanup(days)
+            if any(done.values()):
+                print(f"Pulizia dati vecchi: {done}", flush=True)
+        except Exception as exc:  # never stop the panel for this; retry later
+            print(f"Pulizia dati vecchi non riuscita: {exc}", file=sys.stderr, flush=True)
+        time.sleep(every)
+
+
 def main(argv=None) -> int:
     env = os.environ.get
     ap = argparse.ArgumentParser(prog="trota-fleet", description="Pannello Trota Fleet.")
@@ -58,6 +71,8 @@ def main(argv=None) -> int:
                    help="fidarsi delle intestazioni X-Forwarded-* del proxy davanti al pannello")
     s.add_argument("--ip-header", default=env("TROTA_FLEET_IP_HEADER", ""),
                    help="intestazione con l'indirizzo del visitatore messa dal proxy, es. CF-Connecting-IP")
+    s.add_argument("--retention-days", type=int, default=int(env("TROTA_FLEET_RETENTION_DAYS", RETENTION_DAYS)),
+                   help="giorni dopo cui si cancellano storico dei comandi e codici scaduti")
     s.add_argument("--interval", type=int, default=int(env("TROTA_FLEET_INTERVAL", "60")),
                    help="secondi tra un contatto e l'altro dei dispositivi")
     u = sub.add_parser("adduser", help="crea un amministratore o ne cambia la password")
@@ -116,7 +131,9 @@ def main(argv=None) -> int:
         store.set_user(name, password)
         print(f"Primo amministratore creato: {name}", flush=True)
     host, _, port = args.listen.rpartition(":")
-    app = App(store, max(15, args.interval), args.behind_proxy, args.public_url, args.ip_header)
+    days = max(1, args.retention_days)
+    app = App(store, max(15, args.interval), args.behind_proxy, args.public_url, args.ip_header, days)
+    threading.Thread(target=cleanup_loop, args=(store, days), daemon=True).start()
     with make_server(host.strip("[]") or "127.0.0.1", int(port), app, ThreadingServer, QuietHandler) as httpd:
         print(f"Trota Fleet {__version__} su http://{args.listen}", flush=True)
         try:

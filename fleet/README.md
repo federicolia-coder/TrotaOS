@@ -152,10 +152,27 @@ sudo ufw allow 80,443/tcp
 | `TROTA_FLEET_INTERVAL` | `60` | secondi tra un contatto e l'altro dei dispositivi |
 | `TROTA_FLEET_D1_ACCOUNT`, `_DATABASE`, `_TOKEN` | — | dati su Cloudflare D1 invece che nel file SQLite |
 | `TROTA_FLEET_IP_HEADER` | — | intestazione con l'IP del visitatore messa dal proxy (es. `CF-Connecting-IP`) |
+| `TROTA_FLEET_RETENTION_DAYS` | `90` | giorni dopo cui si cancellano da soli storico dei comandi e codici scaduti |
+| `TROTA_FLEET_COMPANY` | `legal/company.json` | dati dell'azienda mostrati in fondo alle pagine e nell'informativa |
 | `PORT` | — | porta data dall'hosting (Render): ascolta su `0.0.0.0:$PORT` |
 
 Altri amministratori o cambio password: `python3 -m trota_fleet adduser NOME`.
 Backup: una copia del file del database (`sqlite3 fleet.db ".backup copia.db"`).
+
+## Privacy e documenti
+
+- Il pannello ha la sua **informativa privacy** (`/privacy`) e la **pagina
+  sui cookie** (`/cookie`: un solo cookie tecnico di sessione, nessun
+  consenso necessario). I dati dell'azienda vengono da `legal/company.json`,
+  lo stesso file del sito.
+- **Cancellazione automatica**: ogni 6 ore il pannello toglie sessioni
+  scadute, comandi più vecchi di 90 giorni e codici di registrazione
+  scaduti, revocati o esauriti da più di 90 giorni. I dispositivi restano
+  finché non vengono rimossi (e con loro si cancella tutto lo storico).
+- Per i contratti con i clienti: bozza di **accordo sul trattamento dei
+  dati** (art. 28 GDPR) in [legal/accordo-trattamento-dati.md](legal/accordo-trattamento-dati.md)
+  e bozza del **registro dei trattamenti** in [legal/registro-trattamenti.md](legal/registro-trattamenti.md).
+  Da far rivedere a un consulente prima dell'uso.
 
 ## Collegare un dispositivo
 

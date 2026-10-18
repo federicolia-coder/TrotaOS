@@ -16,7 +16,7 @@ from urllib.parse import parse_qs, quote, urlsplit
 
 from trota_fleet import views as v
 from trota_fleet.backends import D1Error
-from trota_fleet.db import Store
+from trota_fleet.db import RETENTION_DAYS, Store
 
 MAX_BODY = 512 * 1024
 COOKIE = "trota_fleet"
@@ -134,8 +134,9 @@ class Throttle:
 
 class App:
     def __init__(self, store: Store, interval: int = 60, behind_proxy: bool = False, public_url: str = "",
-                 ip_header: str = ""):
+                 ip_header: str = "", retention_days: int = RETENTION_DAYS):
         self.store = store
+        self.retention_days = retention_days
         # "CF-Connecting-IP" -> "HTTP_CF_CONNECTING_IP", as WSGI names it.
         self.ip_header = "HTTP_" + ip_header.upper().replace("-", "_") if ip_header else ""
         self.interval = interval
@@ -148,6 +149,9 @@ class App:
             ("GET", r"/healthz", lambda r: Response("ok\n", content_type="text/plain")),
             ("POST", r"/api/v1/enroll", self.api_enroll),
             ("POST", r"/api/v1/checkin", self.api_checkin),
+            ("GET", r"/privacy", lambda r: Response(v.privacy_page(self.store.session(r.cookie), self.interval,
+                                                                    self.retention_days))),
+            ("GET", r"/cookie", lambda r: Response(v.cookie_page(self.store.session(r.cookie)))),
             ("GET", r"/login", self.login_page),
             ("POST", r"/login", self.login),
             ("POST", r"/logout", self.logout),
