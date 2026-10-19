@@ -312,6 +312,38 @@ footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(-
 .yt iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .yt-note { font-size: 14px; color: var(--ink-2); max-width: 46em; }
 @media (prefers-reduced-motion: reduce) { .yt-btn { transition: none; } }
+
+/* 3D scenes (trota-3d.js): shown only when WebGL works, otherwise the static
+   pictures stay. The IoT labels follow the devices; the HTML diagram below
+   carries the same information for screen readers. */
+.hero-art { position: relative; }
+.iot3d { position: relative; aspect-ratio: 16 / 7; margin: 0; }
+.iot3d canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.iot3d-lbl { position: absolute; left: 0; top: 0; opacity: 0; white-space: nowrap; pointer-events: none;
+  font: 500 11.5px/1.3 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; color: var(--band-ink-2); padding-bottom: 6px; }
+.iot3d-lbl b { color: var(--band-ink); font-weight: 500; }
+.iot3d-lbl i { font-style: normal; }
+@media (max-width: 760px) { .iot3d { aspect-ratio: 4 / 3; } .iot3d-lbl { font-size: 10px; } .iot3d-lbl i { display: none; } }
+[hidden] { display: none !important; }
+
+/* Scroll reveals, only when motion is allowed (the class comes from trota-3d.js). */
+.motion .stack[data-reveal] { perspective: 900px; }
+.motion .stack[data-reveal] .stack-ed { opacity: 0; transform: translateY(-36px) rotateX(28deg); transform-origin: 50% 100%;
+  transition: transform .9s cubic-bezier(.2,.7,.2,1), opacity .6s ease; }
+.motion .stack[data-reveal] .stack-ed:nth-child(2) { --d: .1s; }
+.motion .stack[data-reveal] .stack-ed:nth-child(3) { --d: .2s; }
+.motion .stack[data-reveal] .stack-ed:nth-child(4) { --d: .3s; }
+.motion .stack[data-reveal] .stack-top .stack-ed { transition-delay: calc(.35s + var(--d, 0s)); }
+.motion .stack[data-reveal] .stack-base { clip-path: inset(0 100% 0 0); transition: clip-path .8s cubic-bezier(.2,.7,.2,1); }
+.motion .stack[data-reveal].in .stack-ed { opacity: 1; transform: none; }
+.motion .stack[data-reveal].in .stack-base { clip-path: inset(0 0 0 0); }
+.motion .chart[data-reveal] .bar { width: 0; transition: width 1.1s cubic-bezier(.2,.7,.2,1); }
+.motion .chart[data-reveal] li:nth-child(2) .bar { transition-delay: .12s; }
+.motion .chart[data-reveal] li:nth-child(3) .bar { transition-delay: .24s; }
+.motion .chart[data-reveal] li:nth-child(4) .bar { transition-delay: .36s; }
+.motion .chart[data-reveal].in .bar { width: var(--w); }
+.motion .timeline[data-reveal] .tl-fill { width: 0; transition: width 1.6s cubic-bezier(.2,.7,.2,1) .2s; }
+.motion .timeline[data-reveal].in .tl-fill { width: var(--w); }
 </style>
 
 <header class="top">
@@ -342,7 +374,10 @@ footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(-
         </div>
         <p class="meta">1.0 “Fario” · amd64 · BIOS e UEFI con Secure Boot · gratis per uso personale</p>
       </div>
-      <canvas id="facets" width="900" height="900" role="img" aria-label="La trota del logo di Trota OS scomposta in sfaccettature geometriche, con la banda arancione lungo il fianco"></canvas>
+      <div class="hero-art">
+        <canvas id="facets" width="900" height="900" role="img" aria-label="La trota del logo di Trota OS scomposta in sfaccettature geometriche, con la banda arancione lungo il fianco"></canvas>
+        <canvas id="trout3d" data-3d hidden role="img" aria-label="La trota del logo di Trota OS in 3D, con la banda arancione lungo il fianco, circondata da un anello di dispositivi"></canvas>
+      </div>
     </div>
   </section>
 
@@ -404,7 +439,7 @@ footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(-
       <header><p class="eyebrow">Edizioni</p><h2 id="ed-title">Una base, quattro edizioni</h2></header>
       <div class="content">
         <p>Le quattro edizioni nascono dallo stesso repository e ricevono gli stessi aggiornamenti. Cambia solo quello che c'è sopra la base: chi gestisce un ufficio usa lo stesso sistema sui PC, sul server e sugli schermi della reception.</p>
-        <figure class="stack" aria-label="Schema: le quattro edizioni poggiano sulla stessa base">
+        <figure class="stack" data-reveal aria-label="Schema: le quattro edizioni poggiano sulla stessa base">
           <div class="stack-top">
             <div class="stack-ed"><b>Desktop</b><span>GNOME, app, installer</span><span class="ram">0,9 GB <i>RAM</i></span></div>
             <div class="stack-ed"><b>Server ed edge</b><span>SSH, firewall, Podman</span><span class="ram">271 MB <i>RAM</i></span></div>
@@ -447,6 +482,13 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
       <header><p class="eyebrow">IoT ed edge</p><h2 id="iot-title">Dal sensore allo schermo</h2></header>
       <div class="content">
         <p>Un mini PC con <b>Trota OS Server</b> fa da gateway: riceve i dati dei sensori, li elabora sul posto anche senza internet e li manda al server centrale. Gli schermi con <b>Trota OS Kiosk</b> mostrano la dashboard. Tutto con lo stesso sistema, gli stessi aggiornamenti e la stessa configurazione cloud-init.</p>
+        <div class="iot3d" data-3d hidden aria-hidden="true">
+          <canvas id="iot3d"></canvas>
+          <span class="iot3d-lbl" data-at="s0" data-h="0.75">Sensori</span>
+          <span class="iot3d-lbl" data-at="g" data-h="0.62"><b>Gateway</b><i> · Server</i></span>
+          <span class="iot3d-lbl" data-at="c" data-h="1.05"><b>Server centrale</b><i> · Cloud</i></span>
+          <span class="iot3d-lbl" data-at="k0" data-h="1.4"><b>Schermi</b><i> · Kiosk</i></span>
+        </div>
         <figure class="flow" aria-label="Schema del flusso dei dati: sensori, gateway Trota OS Server, server centrale Trota OS Cloud, schermi Trota OS Kiosk">
           <div class="node"><span class="eyebrow">Campo</span><b>Sensori e macchine</b><ul><li>temperatura, energia</li><li>PLC, contatori</li><li>Modbus, seriale, MQTT</li></ul></div>
           <div class="link" aria-hidden="true"><span>MQTT</span></div>
@@ -500,7 +542,7 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
     <div class="wrap"><div class="row">
       <header><p class="eyebrow">Prestazioni</p><h2 id="light-title">Leggero davvero</h2></header>
       <div class="content">
-        <figure class="chart">
+        <figure class="chart" data-reveal>
           <figcaption><b>Memoria in uso dopo l'avvio, in MB</b><span>Misurata nei test automatici in macchina virtuale, un minuto dopo l'accesso.</span></figcaption>
           <ul class="bars">
             <li><span class="lbl">Desktop</span><span class="track"><span class="bar" style="--w:93.5%" tabindex="0" data-tip="Desktop: 935 MB con GNOME avviato"></span></span><span class="val">935</span></li>
@@ -524,7 +566,7 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
     <div class="wrap"><div class="row">
       <header><p class="eyebrow">Sicurezza</p><h2 id="sec-title">Sicurezza e ciclo di vita</h2></header>
       <div class="content">
-        <div class="timeline" role="img" aria-label="Ciclo di vita: Trota OS 1.0 esce a ottobre 2026 e riceve aggiornamenti di sicurezza fino ad aprile 2029">
+        <div class="timeline" data-reveal role="img" aria-label="Ciclo di vita: Trota OS 1.0 esce a ottobre 2026 e riceve aggiornamenti di sicurezza fino ad aprile 2029">
           <div class="tl-bar"><span class="tl-fill" style="--w:100%"></span><span class="tl-now" style="--x:0%"></span></div>
           <div class="tl-labels">
             <div><b>Ottobre 2026</b>uscita di Trota OS 1.0</div>
@@ -784,3 +826,4 @@ for (const box of document.querySelectorAll(".yt[data-video]")) {
   });
 })();
 </script>
+<script src="trota-3d.js" defer></script>
