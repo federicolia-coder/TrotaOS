@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!-- Trota OS installer slideshow (ubiquity). (C) 2026 TestardStudios, CC BY-SA 4.0.
+     Loaded by ubiquity as index.html#locale=<ll>[&rtl]; no external resources. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Trota OS</title>
+<style>
+  :root { --carbon:#101214; --graphite:#191D21; --steel:#737B84; --frost:#E8ECEF; --orange:#FF6A2A; }
+  html, body { margin:0; overflow:hidden; background:var(--carbon);
+               color:var(--frost); font-family:Inter, "Ubuntu Sans", Ubuntu, "DejaVu Sans", sans-serif; }
+  #stage { position:relative; width:752px; height:442px; overflow:hidden; background-image:
+           linear-gradient(rgba(232,236,239,.035) 2px, transparent 2px),
+           linear-gradient(90deg, rgba(232,236,239,.035) 2px, transparent 2px);
+         background-size: 40px 40px; }
+  .slide { position:absolute; inset:0; padding:38px 44px; box-sizing:border-box; opacity:0;
+           transition:opacity .6s ease; display:flex; flex-direction:column; }
+  .slide.active { opacity:1; }
+  .logo { height:34px; align-self:flex-start; }
+  h1 { font-size:26px; font-weight:800; margin:26px 0 6px; letter-spacing:.01em; }
+  .rule { width:72px; height:3px; background:var(--orange); margin-bottom:18px; }
+  p { font-size:15px; line-height:1.55; margin:0 0 10px; max-width:560px; color:rgba(232,236,239,.86); }
+  ul { margin:4px 0 0; padding:0; list-style:none; font-size:15px; line-height:1.9; }
+  li::before { content:""; display:inline-block; width:8px; height:8px; background:var(--orange);
+               margin-right:12px; vertical-align:middle; }
+  .foot { margin-top:auto; font-size:12px; color:var(--steel); }
+  .fish { position:absolute; right:-40px; bottom:-30px; width:330px; opacity:.16; }
+  .dots { position:absolute; left:44px; bottom:22px; display:flex; gap:8px; }
+  .dots span { width:18px; height:3px; background:#343A41; }
+  .dots span.on { background:var(--orange); }
+  [dir=rtl] .slide { text-align:right; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="fish">
+      <path d="M52 128 L16 98 L28 128 L16 158 Z M60 128 L102 94 L198 94 L238 128 L198 162 L102 162 Z M124 94 L142 76 L174 76 L164 94 Z"
+            fill="none" stroke="#737B84" stroke-width="2"/>
+      <path d="M88 123 L214 123 L219 128 L214 133 L88 133 L83 128 Z" fill="#FF6A2A"/>
+    </g>
+  </defs>
+</svg>
+<div id="stage"><div id="slides"></div><div class="dots" id="dots"></div></div>
+<script>
+"use strict";
+var TEXT = {
+  en: [
+    { t: "Welcome to Trota OS",
+      p: ["Trota OS is a light desktop system for development, system administration, gaming, study and everyday use.",
+          "The installation takes a few minutes. You can keep reading while the files are copied."] },
+    { t: "Ready to work",
+      l: ["Firefox, LibreOffice, Text Editor, Files, Terminal", "Git, compilers, Python, network and system tools",
+          "Vulkan drivers and GameMode for gaming", "Software, with thousands of applications from Flathub"] },
+    { t: "Trota OS tools",
+      l: ["Welcome: your starting point after installation", "System Info: hardware and software at a glance",
+          "Diagnostics: safe, read-only health checks", "Package Helper: search the package catalogue"] },
+    { t: "Secure and private",
+      p: ["Security updates are installed automatically, AppArmor and Secure Boot stay active, and no network service listens by default.",
+          "No mandatory account. No telemetry: nothing about you or your computer is collected."] },
+    { t: "Help when you need it",
+      p: ["The documentation is installed on your computer and opens from the Welcome window. Trota Diagnostics suggests what to do when something does not work.",
+          "Trota OS is developed and published by TestardStudios."] }
+  ],
+  it: [
+    { t: "Benvenuto in Trota OS",
+      p: ["Trota OS è un sistema desktop leggero per sviluppo, amministrazione di sistemi, gaming, studio e uso quotidiano.",
+          "L'installazione richiede qualche minuto. Puoi continuare a leggere mentre i file vengono copiati."] },
+    { t: "Pronto per lavorare",
+      l: ["Firefox, LibreOffice, Editor di testo, File, Terminale", "Git, compilatori, Python, strumenti di rete e di sistema",
+          "Driver Vulkan e GameMode per il gaming", "Software, con migliaia di applicazioni da Flathub"] },
+    { t: "Gli strumenti di Trota OS",
+      l: ["Benvenuto: il punto di partenza dopo l'installazione", "Informazioni di sistema: hardware e software a colpo d'occhio",
+          "Diagnostica: controlli sicuri, in sola lettura", "Assistente pacchetti: cerca nel catalogo dei pacchetti"] },
+    { t: "Sicuro e riservato",
+      p: ["Gli aggiornamenti di sicurezza si installano automaticamente, AppArmor e Secure Boot restano attivi e nessun servizio di rete è in ascolto.",
+          "Nessun account obbligatorio. Nessuna telemetria: non viene raccolto nulla su di te o sul tuo computer."] },
+    { t: "Aiuto quando serve",
+      p: ["La documentazione è installata sul computer e si apre dalla finestra di benvenuto. Diagnostica Trota suggerisce cosa fare quando qualcosa non funziona.",
+          "Trota OS è sviluppato e pubblicato da TestardStudios."] }
+  ]
+};
+var FOOT = { en: "Trota OS 1.0 “Fario” · TestardStudios", it: "Trota OS 1.0 “Fario” · TestardStudios" };
+
+function params() {
+  var out = {};
+  location.hash.replace(/^#/, "").split("&").forEach(function (kv) {
+    var i = kv.indexOf("="); if (kv) out[i < 0 ? kv : kv.slice(0, i)] = i < 0 ? true : decodeURIComponent(kv.slice(i + 1));
+  });
+  return out;
+}
+function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; }
+
+var opts = params();
+var lang = String(opts.locale || "en").split(/[_.]/)[0];
+if (!TEXT[lang]) lang = "en";
+document.documentElement.lang = lang;
+if (opts.rtl) document.documentElement.dir = "rtl";
+
+var root = document.getElementById("slides"), dots = document.getElementById("dots"), slides = [];
+TEXT[lang].forEach(function (s) {
+  var d = el("div", "slide");
+  var logo = document.createElement("img"); logo.className = "logo"; logo.src = "trota-logo-dark.svg"; logo.alt = "Trota OS";
+  d.appendChild(logo);
+  d.appendChild(el("h1", "", s.t)); d.appendChild(el("div", "rule"));
+  (s.p || []).forEach(function (t) { d.appendChild(el("p", "", t)); });
+  if (s.l) { var ul = el("ul"); s.l.forEach(function (t) { ul.appendChild(el("li", "", t)); }); d.appendChild(ul); }
+  d.appendChild(el("div", "foot", FOOT[lang]));
+  var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("class", "fish"); svg.setAttribute("viewBox", "0 60 256 120");
+  var use = document.createElementNS(ns, "use"); use.setAttribute("href", "#fish"); svg.appendChild(use); d.appendChild(svg);
+  root.appendChild(d); slides.push(d); dots.appendChild(el("span"));
+});
+
+var current = 0;
+function show(i) {
+  slides.forEach(function (s, n) { s.classList.toggle("active", n === i); dots.children[n].classList.toggle("on", n === i); });
+}
+show(Number(opts.slide || 0) % slides.length);
+setInterval(function () { current = (current + 1) % slides.length; show(current); }, 25000);
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "_comment": "Business details shown on the website and in the Trota Fleet panel. Fields left null are not shown. \"status\" is shown in place of the VAT number (e.g. while the organisation is not registered); set it to null once \"vat\" is filled in.",
+  "name": "TestardStudios",
+  "legal_name": null,
+  "address": null,
+  "vat": null,
+  "status": "organizzazione non registrata",
+  "email": "info@testardstudios.it",
+  "sales_email": "sales@testardstudios.it",
+  "website": "https://trotaos.onrender.com",
+  "updated": "18 ottobre 2026"
+}

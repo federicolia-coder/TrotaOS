@@ -1,0 +1,48 @@
+/* Trota OS application style. Palette: docs/brand.md
+ * carbon #101214 · graphite #191D21 · steel #737B84 · frost #E8ECEF · orange #FF6A2A
+ * Only accents are customised: everything else follows the system theme, so
+ * light mode, high contrast and large text keep working. */
+
+@define-color trota_carbon #101214;
+@define-color trota_graphite #191D21;
+@define-color trota_steel #737B84;
+@define-color trota_frost #E8ECEF;
+@define-color trota_orange #FF6A2A;
+
+/* Header area with the logo, always dark to match the brand artwork. */
+.trota-hero {
+  background-image: linear-gradient(135deg, #1D2227, @trota_carbon);
+  color: @trota_frost;
+  border-radius: 12px;
+  padding: 24px;
+}
+.trota-hero .dim-label { color: alpha(@trota_frost, 0.7); opacity: 1; }
+.trota-hero-title { font-size: 1.8em; font-weight: 800; letter-spacing: 0.04em; }
+.trota-hero-rule {
+  min-height: 3px;
+  min-width: 96px;
+  background-color: @trota_orange;
+}
+
+.trota-accent { color: @trota_orange; }
+.trota-mono { font-family: monospace; }
+
+button.trota-orange {
+  background-color: @trota_orange;
+  color: @trota_carbon;
+  font-weight: bold;
+}
+button.trota-orange:hover { background-color: shade(@trota_orange, 1.08); }
+button.trota-orange:active { background-color: shade(@trota_orange, 0.92); }
+
+/* Status colours used by Trota Diagnostics. */
+.status-ok { color: @success_color; }
+.status-info { color: @accent_color; }
+.status-warning { color: @warning_color; }
+.status-error { color: @error_color; }
+.status-skipped { color: alpha(currentColor, 0.55); }
+
+.trota-meter trough { min-height: 8px; }
+.trota-meter block.filled { background-color: @trota_orange; }
+.trota-meter block.high { background-color: @warning_color; }
+.trota-meter block.full { background-color: @error_color; }

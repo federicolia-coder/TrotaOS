@@ -1,0 +1,55 @@
+[Plymouth Theme]
+Name=Trota OS
+Description=Trota OS boot splash: logo, orange spinner and progress line
+ModuleName=two-step
+
+[two-step]
+Font=Sans 12
+TitleFont=Sans 14
+ImageDir=/usr/share/plymouth/themes/trota
+DialogHorizontalAlignment=.5
+DialogVerticalAlignment=.62
+TitleHorizontalAlignment=.5
+TitleVerticalAlignment=.38
+HorizontalAlignment=.5
+VerticalAlignment=.72
+WatermarkHorizontalAlignment=.5
+WatermarkVerticalAlignment=.42
+Transition=none
+TransitionDuration=0.0
+BackgroundStartColor=0x101214
+BackgroundEndColor=0x101214
+ProgressBarBackgroundColor=0x191d21
+ProgressBarForegroundColor=0xff6a2a
+MessageBelowAnimation=true
+UseFirmwareBackground=false
+
+[boot-up]
+UseEndAnimation=false
+
+[shutdown]
+UseEndAnimation=false
+
+[reboot]
+UseEndAnimation=false
+
+[updates]
+SuppressMessages=true
+ProgressBarShowPercentComplete=true
+UseProgressBar=true
+Title=Installing updates...
+SubTitle=Do not turn off your computer
+
+[system-upgrade]
+SuppressMessages=true
+ProgressBarShowPercentComplete=true
+UseProgressBar=true
+Title=Upgrading Trota OS...
+SubTitle=Do not turn off your computer
+
+[firmware-upgrade]
+SuppressMessages=true
+ProgressBarShowPercentComplete=true
+UseProgressBar=true
+Title=Upgrading firmware...
+SubTitle=Do not turn off your computer
