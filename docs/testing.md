@@ -53,7 +53,27 @@ Gli script di controllo vengono passati alla VM tramite una cartella condivisa
 virtio-9p; ogni controllo stampa `RESULT <nome> PASS|FAIL|SKIP <nota>`.
 Il preseed di test abilita la console seriale sul solo sistema di test.
 
-## 4. Risultati della versione 1.0
+## 4. Misure su PC reali
+
+`scripts/verify/measure-pc.py` misura un PC con Trota OS installato, con lo
+stesso criterio delle macchine virtuali (memoria «usata» di `free`), e
+rifiuta la misura se le condizioni non sono rispettate:
+
+1. sistema installato sul disco interno e aggiornato, non la sessione live;
+2. alimentatore collegato;
+3. accensione a freddo, accesso, nessuna applicazione aperta, misura dopo
+   almeno 60 secondi (`--wait` aspetta da solo);
+4. tre accensioni: lo script salva ogni misura in `~/trota-misure.jsonl` e
+   dopo la terza stampa la mediana.
+
+L'avvio pubblicato è *kernel + userspace fino a `graphical.target`* di
+`systemd-analyze`; il tempo del firmware dipende dal produttore del PC ed è
+riportato a parte. La mediana va aggiunta a `website/benchmarks.json`: il
+sito mostra la tabella dei PC reali al posto della descrizione del metodo.
+Lo script legge solo `/proc`, `/sys` e l'output di `systemd-analyze`,
+`lsblk`, `lspci` e `free`, e non invia nulla.
+
+## 5. Risultati della versione 1.0
 
 Ambiente: host Ubuntu 24.04 senza KVM, QEMU 8.2 in emulazione TCG
 multi-thread, 4 vCPU, 4–6 GB RAM, disco virtio 25 GB, OVMF 2024.02
