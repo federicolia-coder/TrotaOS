@@ -77,42 +77,6 @@ def menu_page(c: dict, logos: dict) -> None:
     (OUT.parent / "menu-digitali.html").write_text(page)
 
 
-def real_pc() -> str:
-    """Measurements on real PCs (website/benchmarks.json, written from the
-    output of scripts/verify/measure-pc.py), or the method while none exists."""
-    rows = json.loads((ROOT / "website" / "benchmarks.json").read_text())
-    method = (
-        "<ol>"
-        "<li>Trota OS installato sul disco interno e aggiornato, non la sessione live.</li>"
-        "<li>Alimentatore collegato.</li>"
-        "<li>Accensione a freddo, accesso, nessuna applicazione aperta, misura dopo 60 secondi.</li>"
-        "<li>Tre accensioni: pubblichiamo la mediana.</li>"
-        "<li>Avvio: dal kernel alla schermata di accesso. Il firmware del PC dipende dal produttore ed è indicato a parte.</li>"
-        "<li>Memoria: la memoria «usata» del comando <code>free</code>, come nelle macchine virtuali.</li>"
-        "</ol>"
-        f'<p>Lo script <a href="{REPO}/blob/claude/trota-os-linux-distro-410sep/scripts/verify/measure-pc.py" '
-        'target="_blank" rel="noopener"><code>measure-pc.py</code></a> controlla queste condizioni e fa la misura. '
-        'Se hai un PC con Trota OS, puoi mandarci il risultato a '
-        '<a href="mailto:sales@testardstudios.it?subject=Misure%20di%20Trota%20OS%20su%20un%20PC">sales@testardstudios.it</a>.</p>'
-    )
-    if not rows:
-        return ("<p>Le misure qui sopra vengono dalle macchine virtuali dei test automatici. Stiamo misurando "
-                "Trota OS su computer reali, sempre con le stesse regole, e pubblicheremo qui ogni risultato con "
-                "modello, processore, memoria e disco.</p>" + method)
-    e = html.escape
-    num = lambda v, d=1: f"{v:.{d}f}".replace(".", ",")
-    body = "".join(
-        f"<tr><td>{e(r['model'])}</td><td>{e(r['cpu'])}</td><td class=\"num\">{num(r['ram_total_mb'] / 1024)} GB</td>"
-        f"<td>{e(r['disk'])}</td><td class=\"num\">{num(r['system_boot_s'])} s</td>"
-        f"<td class=\"num\">{num(r['firmware_s']) + ' s' if r.get('firmware_s') is not None else '—'}</td>"
-        f"<td class=\"num\">{r['ram_used_mb']:.0f} MB</td><td>{e(r.get('edition', 'Desktop'))}, {e(r['date'])}</td></tr>"
-        for r in rows)
-    return ('<div class="table-wrap"><table><thead><tr><th>Computer</th><th>Processore</th><th class="num">RAM</th>'
-            '<th>Disco</th><th class="num">Avvio del sistema</th><th class="num">Firmware del PC</th>'
-            '<th class="num">Memoria usata</th><th>Edizione, data</th></tr></thead><tbody>' + body +
-            "</tbody></table></div>" + method)
-
-
 def main() -> None:
     shot = base64.b64encode((ROOT / "website" / "desktop.webp").read_bytes()).decode()
     page = SRC.read_text()
@@ -124,7 +88,6 @@ def main() -> None:
         "{{DOCS_URL}}": REPO + "/blob/claude/trota-os-linux-distro-410sep/docs/installation.md",
         "{{REPO_URL}}": REPO,
         "{{COMPANY_LINE}}": company()["ident"],
-        "{{REAL_PC}}": real_pc(),
     }.items():
         page = page.replace(key, value)
     left = re.findall(r"\{\{[A-Z_]+\}\}", page)

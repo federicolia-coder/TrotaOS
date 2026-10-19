@@ -228,17 +228,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bars li:first-child .bar::after { left: auto; right: 0; transform: none; }
 .chart { overflow-x: clip; }
 
-/* Real-PC measurements and the first purchasable service */
-.real-pc { display: grid; gap: 12px; }
-.real-pc p { color: var(--ink-2); font-size: 16px; max-width: 46em; }
-.real-pc ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 15px; color: var(--ink-2); max-width: 46em; }
-.offer { border-top: 3px solid var(--orange); padding-top: 18px; display: grid; gap: 28px; }
-.offer-head { display: grid; gap: 12px; justify-items: start; max-width: 46em; }
-.offer-head p:not(.eyebrow) { color: var(--ink-2); font-size: 17px; }
-.offer h4 { margin: 0; font-size: 17px; font-weight: 500; }
-.offer .facts li { padding-left: 14px; position: relative; }
-.offer .facts li::before { content: "—"; position: absolute; left: -2px; font-family: var(--mono); font-size: 11px; top: 3px; color: var(--ink-2); }
-
 /* Divided list */
 .divided { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
 .divided li { border-top: 1px solid var(--rule); padding-block: 14px; display: grid; gap: 4px; }
@@ -361,7 +350,6 @@ footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(-
   <div class="wrap">
     <a class="brand" href="#top" aria-label="Trota OS, inizio pagina"><span class="logo-light">{{LOGO_LIGHT}}</span><span class="logo-dark">{{LOGO_DARK}}</span></a>
     <nav aria-label="Sezioni">
-      <a href="#leggero">Prestazioni</a>
       <a href="#trailer">Trailer</a>
       <a href="#desktop">Desktop</a>
       <a href="#edizioni">Edizioni</a>
@@ -379,12 +367,12 @@ footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(-
     <div class="wrap">
       <div>
         <h1 id="hero-title">Trota OS 1.0</h1>
-        <p>Il sistema operativo leggero di TestardStudios. Dopo l'accesso il desktop usa 0,9 GB di memoria e il server 271 MB. Lo stesso sistema per il portatile, il server, il cloud, lo schermo di un chiosco e il mini PC che raccoglie i dati dei sensori in fabbrica.</p>
+        <p>Il sistema operativo leggero di TestardStudios. Lo stesso sistema per il portatile, il server, il cloud, lo schermo di un chiosco e il mini PC che raccoglie i dati dei sensori in fabbrica.</p>
         <div class="actions">
           <a class="btn primary" href="#download">Scarica Trota OS</a>
-          <a class="btn" href="#leggero">Guarda le misure</a>
+          <a class="btn" href="#edizioni">Scegli l'edizione</a>
         </div>
-        <p class="meta">1.0 “Fario” · amd64 · BIOS e UEFI con Secure Boot · gratis per uso personale · memoria misurata in macchina virtuale</p>
+        <p class="meta">1.0 “Fario” · amd64 · BIOS e UEFI con Secure Boot · gratis per uso personale</p>
       </div>
       <div class="hero-art">
         <canvas id="facets" width="900" height="900" role="img" aria-label="La trota del logo di Trota OS scomposta in sfaccettature geometriche, con la banda arancione lungo il fianco"></canvas>
@@ -396,7 +384,7 @@ footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(-
   <div class="facts-strip">
     <div class="wrap">
       <dl>
-        <div><dt>0,9 GB</dt><dd>di RAM in uso, edizione Desktop</dd></div>
+        <div><dt>4</dt><dd>edizioni da una sola base</dd></div>
         <div><dt>271 MB</dt><dd>di RAM in uso, edizione Server</dd></div>
         <div><dt>apr 2029</dt><dd>aggiornamenti di sicurezza fino a</dd></div>
         <div><dt>0</dt><dd>dati di utilizzo raccolti</dd></div>
@@ -404,35 +392,7 @@ footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(-
     </div>
   </div>
 
-  <section class="section" id="leggero" aria-labelledby="light-title">
-    <div class="wrap"><div class="row">
-      <header><p class="eyebrow">Prestazioni</p><h2 id="light-title">Leggero davvero</h2></header>
-      <div class="content">
-        <figure class="chart" data-reveal>
-          <figcaption><b>Memoria in uso dopo l'avvio, in MB</b><span>Misurata nei test automatici in macchina virtuale (QEMU, 4 processori virtuali, 2 GB di RAM per Server, Cloud e Kiosk, 4–6 GB per Desktop), un minuto dopo l'accesso, senza applicazioni aperte. È la memoria «usata» indicata dal comando <code>free</code>.</span></figcaption>
-          <ul class="bars">
-            <li><span class="lbl">Desktop</span><span class="track"><span class="bar" style="--w:93.5%" tabindex="0" data-tip="Desktop: 935 MB con GNOME avviato"></span></span><span class="val">935</span></li>
-            <li><span class="lbl">Kiosk</span><span class="track"><span class="bar" style="--w:30.9%" tabindex="0" data-tip="Kiosk: 309 MB con Firefox a tutto schermo"></span></span><span class="val">309</span></li>
-            <li><span class="lbl">Cloud</span><span class="track"><span class="bar" style="--w:29.4%" tabindex="0" data-tip="Cloud: 294 MB dopo cloud-init"></span></span><span class="val">294</span></li>
-            <li><span class="lbl">Server</span><span class="track"><span class="bar" style="--w:27.1%" tabindex="0" data-tip="Server: 271 MB senza servizi aggiunti"></span></span><span class="val">271</span></li>
-          </ul>
-          <div class="axis" aria-hidden="true"><span></span><div><span style="--x:0%">0</span><span style="--x:20%">200</span><span style="--x:40%">400</span><span style="--x:60%">600</span><span style="--x:80%">800</span><span style="--x:100%">1000</span></div><span></span></div>
-        </figure>
-        <div class="real-pc">
-          <h3>Su PC reali</h3>
-          {{REAL_PC}}
-        </div>
-        <ul class="divided">
-          <li><b>Niente snap</b><span>Firefox arriva come pacchetto normale da Mozilla, le altre app da Flathub. Avvii più rapidi e nessun servizio in più.</span></li>
-          <li><b>Niente indicizzatore</b><span>La ricerca dei file in background è spenta: il disco resta libero mentre lavori.</span></li>
-          <li><b>Niente pubblicità</b><span>Nessuna offerta di servizi a pagamento nel terminale, nelle notifiche o all'avvio.</span></li>
-          <li><b>Solo i firmware utili</b><span>Fuori i firmware per le schede da data center: immagine più piccola, aggiornamenti più leggeri.</span></li>
-        </ul>
-      </div>
-    </div></div>
-  </section>
-
-  <section class="section alt" id="trailer" aria-labelledby="trailer-title">
+  <section class="section" id="trailer" aria-labelledby="trailer-title">
     <div class="wrap"><div class="row">
       <header><p class="eyebrow">Trailer</p><h2 id="trailer-title">Trota OS in 30 secondi</h2></header>
       <div class="content">
@@ -561,7 +521,7 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
     </div></div>
   </section>
 
-  <section class="section alt" id="usi" aria-labelledby="usi-title">
+  <section class="section" id="usi" aria-labelledby="usi-title">
     <div class="wrap"><div class="row">
       <header><p class="eyebrow">Usi</p><h2 id="usi-title">Per cosa si usa</h2></header>
       <ul class="uses">
@@ -575,6 +535,30 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
         <li><h3>Macchine virtuali</h3><p>Immagini qcow2 per Proxmox, OpenStack e KVM, configurate al primo avvio.</p><div class="tags"><span class="tag">Cloud</span></div></li>
         <li><h3>PC da rimettere in uso</h3><p>Un computer di qualche anno con 4 GB di RAM torna utile come desktop o come piccolo server.</p><div class="tags"><span class="tag">Desktop</span><span class="tag">Server</span></div></li>
       </ul>
+    </div></div>
+  </section>
+
+  <section class="section alt" id="leggero" aria-labelledby="light-title">
+    <div class="wrap"><div class="row">
+      <header><p class="eyebrow">Prestazioni</p><h2 id="light-title">Leggero davvero</h2></header>
+      <div class="content">
+        <figure class="chart" data-reveal>
+          <figcaption><b>Memoria in uso dopo l'avvio, in MB</b><span>Misurata nei test automatici in macchina virtuale, un minuto dopo l'accesso.</span></figcaption>
+          <ul class="bars">
+            <li><span class="lbl">Desktop</span><span class="track"><span class="bar" style="--w:93.5%" tabindex="0" data-tip="Desktop: 935 MB con GNOME avviato"></span></span><span class="val">935</span></li>
+            <li><span class="lbl">Kiosk</span><span class="track"><span class="bar" style="--w:30.9%" tabindex="0" data-tip="Kiosk: 309 MB con Firefox a tutto schermo"></span></span><span class="val">309</span></li>
+            <li><span class="lbl">Cloud</span><span class="track"><span class="bar" style="--w:29.4%" tabindex="0" data-tip="Cloud: 294 MB dopo cloud-init"></span></span><span class="val">294</span></li>
+            <li><span class="lbl">Server</span><span class="track"><span class="bar" style="--w:27.1%" tabindex="0" data-tip="Server: 271 MB senza servizi aggiunti"></span></span><span class="val">271</span></li>
+          </ul>
+          <div class="axis" aria-hidden="true"><span></span><div><span style="--x:0%">0</span><span style="--x:20%">200</span><span style="--x:40%">400</span><span style="--x:60%">600</span><span style="--x:80%">800</span><span style="--x:100%">1000</span></div><span></span></div>
+        </figure>
+        <ul class="divided">
+          <li><b>Niente snap</b><span>Firefox arriva come pacchetto normale da Mozilla, le altre app da Flathub. Avvii più rapidi e nessun servizio in più.</span></li>
+          <li><b>Niente indicizzatore</b><span>La ricerca dei file in background è spenta: il disco resta libero mentre lavori.</span></li>
+          <li><b>Niente pubblicità</b><span>Nessuna offerta di servizi a pagamento nel terminale, nelle notifiche o all'avvio.</span></li>
+          <li><b>Solo i firmware utili</b><span>Fuori i firmware per le schede da data center: immagine più piccola, aggiornamenti più leggeri.</span></li>
+        </ul>
+      </div>
     </div></div>
   </section>
 
@@ -607,45 +591,6 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
       <header><p class="eyebrow">Prezzi</p><h2 id="price-title">Gratis a casa, su misura in azienda</h2></header>
       <div class="content">
         <p>Il sistema è lo stesso per tutti. Le aziende pagano il servizio: chi risponde quando serve, chi tiene in ordine gli schermi e i gateway, chi prepara le immagini su misura.</p>
-        <div class="offer" id="prova">
-          <div class="offer-head">
-            <p class="eyebrow">Per iniziare · prezzo fisso per PC</p>
-            <h3>Prova di compatibilità su un PC</h3>
-            <p>Controlliamo se il tuo computer funziona bene con Linux, installiamo Trota OS solo se ci autorizzi per iscritto e ti consegniamo un rapporto tecnico. Il prezzo è fisso per ogni PC e te lo comunichiamo prima di iniziare.</p>
-            <a class="btn primary" href="mailto:sales@testardstudios.it?subject=Prova%20di%20compatibilit%C3%A0%20su%20un%20PC&amp;body=Modello%20del%20PC%3A%0AAnno%20di%20acquisto%3A%0APer%20cosa%20lo%20usi%3A%0AProgrammi%20che%20ti%20servono%3A%0AInstallazione%20accanto%20a%20Windows%20o%20al%20suo%20posto%3A%0ACitt%C3%A0%3A%0A">Prenota la prova</a>
-          </div>
-          <div class="cols">
-            <div>
-              <h4>Cosa comprende</h4>
-              <ul class="facts">
-                <li>Prova in modalità live, senza toccare il disco: grafica e schermi esterni, Wi-Fi, Bluetooth, audio, webcam, tastiera e touchpad, porte USB, sospensione e batteria.</li>
-                <li>Misure di avvio e memoria con lo stesso metodo pubblicato su questa pagina.</li>
-                <li>Installazione di Trota OS, accanto a Windows o al suo posto, solo dopo la tua autorizzazione scritta.</li>
-                <li>Configurazione di base: utente, rete, aggiornamenti automatici e i programmi che ti servono, se esistono per Linux.</li>
-                <li>Rapporto tecnico in PDF: componenti del PC, cosa funziona e cosa no, misure, alternative ai programmi che usi oggi.</li>
-              </ul>
-            </div>
-            <div>
-              <h4>Tempi</h4>
-              <ul class="facts">
-                <li>Risposta alla richiesta e prezzo entro 2 giorni lavorativi.</li>
-                <li>Prova e installazione in mezza giornata lavorativa per PC, su appuntamento.</li>
-                <li>Rapporto tecnico entro 3 giorni lavorativi dalla prova.</li>
-                <li>Se la prova mostra che il PC non è adatto, non installiamo nulla e ricevi comunque il rapporto.</li>
-              </ul>
-            </div>
-            <div>
-              <h4>Cosa non comprende</h4>
-              <ul class="facts">
-                <li>La copia di sicurezza dei tuoi dati: la fai tu prima della prova. Senza una copia confermata non installiamo.</li>
-                <li>Recupero di dati, riparazioni e componenti da sostituire.</li>
-                <li>Licenze di programmi di terzi e programmi che esistono solo per Windows o macOS.</li>
-                <li>Assistenza dopo la consegna: è nel piano Business.</li>
-                <li>Mac con processore Apple e schede ARM come Raspberry Pi.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
         <div class="plans">
           <div class="plan">
             <h3>Personale</h3>
