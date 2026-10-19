@@ -19,6 +19,7 @@
 | Remote Flathub (`flathub.flatpakrepo`) | Flathub | File di configurazione pubblico | Nessuna applicazione Flatpak è preinstallata |
 | Font (Inter, DejaVu, Noto, Liberation, Ubuntu) | Vari | SIL OFL 1.1, licenza Bitstream/DejaVu, Ubuntu Font Licence | Dall'archivio Ubuntu |
 | Tema Yaru (GTK, icone, suoni) | Ubuntu community | GPL-3.0 / CC BY-SA 4.0 / LGPL | Usato senza modifiche |
+| three.js (nel file `trota-3d.js` del sito web, generato da `website/3d/`) | Three.js Authors | MIT | Solo sito web; la nota di licenza resta in fondo al file |
 
 L'elenco completo e preciso dei pacchetti di ogni ISO è nel *manifest*
 pubblicato accanto all'immagine (`dist/trota-os-<versione>-amd64.manifest`).

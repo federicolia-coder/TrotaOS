@@ -1,0 +1,13 @@
+{
+  "name": "trota-website-3d",
+  "private": true,
+  "description": "3D scenes of the Trota OS website, bundled into website/root/trota-3d.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --minify --format=esm --target=es2020 --legal-comments=eof --outfile=../root/trota-3d.js"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10",
+    "three": "0.186.1"
+  }
+}
