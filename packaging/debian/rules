@@ -5,7 +5,7 @@
 export DH_VERBOSE = 1
 export PYTHONDONTWRITEBYTECODE = 1
 
-APPS := trota-common trota-welcome trota-system-info trota-diagnostics trota-package-helper trota-fleet-agent
+APPS := trota-common trota-welcome trota-system-info trota-diagnostics trota-package-helper trota-vr trota-fleet-agent
 ICON_SIZES := 16 24 32 48 64 128 256 512
 ART := debian/trota-artwork
 SET := debian/trota-desktop-settings
@@ -115,11 +115,12 @@ override_dh_auto_install:
 			debian/trota-common/usr/share/locale/$$lang/LC_MESSAGES/trota-os.mo; \
 	done
 	set -e; for pair in welcome:TrotaWelcome system-info:TrotaSystemInfo diagnostics:TrotaDiagnostics \
-			package-helper:TrotaPackageHelper; do \
+			package-helper:TrotaPackageHelper vr:TrotaVR; do \
 		name=$${pair%%:*}; id=it.testardstudios.$${pair##*:}; \
 		install -D -m 755 packaging/files/bin/trota-$$name debian/trota-$$name/usr/bin/trota-$$name; \
 		install -D -m 644 packaging/files/desktop/$$id.desktop debian/trota-$$name/usr/share/applications/$$id.desktop; \
 	done
+	install -D -m 644 packaging/files/vr/trota-vr.ufw debian/trota-vr/etc/ufw/applications.d/trota-vr
 	install -D -m 644 packaging/files/desktop/trota-welcome-autostart.desktop \
 		debian/trota-welcome/etc/xdg/autostart/trota-welcome.desktop
 	# --- ubiquity-slideshow-trota -----------------------------------------

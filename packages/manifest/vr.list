@@ -1,0 +1,11 @@
+# Trota OS VR — added to the desktop packages when the ISO is built with
+# TROTA_FLAVOR=vr (scripts/build/build-iso.sh, docs/editions.md).
+# Only packages from the Ubuntu archive: WiVRn and Steam are installed
+# on request from Flathub by the Trota VR application (trota-vr package).
+# Vulkan drivers, vulkan-tools and gamemode are already in applications.list.
+monado-service           # open source OpenXR runtime (PC VR headsets)
+monado-cli
+libopenxr-loader1        # OpenXR loader used by VR applications
+libopenxr1-monado        # Monado runtime library, registered as the default OpenXR runtime
+xr-hardware              # udev rules: headsets usable without root
+steam-devices            # udev rules: Valve Index, Vive and controllers (multiverse, rules only)

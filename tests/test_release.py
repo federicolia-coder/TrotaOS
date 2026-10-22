@@ -82,4 +82,4 @@ def test_build_checks_the_identity():
     assert "lsb_release -is)\" = Trota" in build and "check_identity" in build
     assert "DISTRIB_ID=Trota" in build
     # ubiquity splits the medium name on spaces: "Trota-OS 1.0 ..."
-    assert '"${TROTA_NAME// /-}"' in build
+    assert '"${FLAVOR_NAME// /-}"' in build and 'FLAVOR_NAME="$TROTA_NAME"' in build

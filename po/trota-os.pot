@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trota OS 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
-"POT-Creation-Date: 2026-10-17 11:11+0000\n"
+"POT-Creation-Date: 2026-10-20 11:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -454,6 +454,7 @@ msgid "Read the suggestions below. Nothing was changed on your system."
 msgstr ""
 
 #: applications/trota-diagnostics/trota_diagnostics/app.py:22
+#: applications/trota-vr/trota_vr/app.py:22
 msgid "Some items need attention"
 msgstr ""
 
@@ -462,6 +463,7 @@ msgid "Problems found"
 msgstr ""
 
 #: applications/trota-diagnostics/trota_diagnostics/app.py:24
+#: applications/trota-vr/trota_vr/app.py:24
 msgid "Checks completed"
 msgstr ""
 
@@ -506,6 +508,7 @@ msgstr ""
 
 #: applications/trota-diagnostics/trota_diagnostics/app.py:48
 #: applications/trota-system-info/trota_system_info/app.py:52
+#: applications/trota-vr/trota_vr/app.py:41
 msgid "Copy report"
 msgstr ""
 
@@ -526,6 +529,7 @@ msgid "Running checks…"
 msgstr ""
 
 #: applications/trota-diagnostics/trota_diagnostics/app.py:112
+#: applications/trota-vr/trota_vr/app.py:116
 msgid "Suggestion"
 msgstr ""
 
@@ -866,6 +870,227 @@ msgstr ""
 msgid "Information about this computer, collected locally"
 msgstr ""
 
+#: applications/trota-vr/trota_vr/app.py:20
+msgid "Install the VR software below and connect your headset."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:20
+#: applications/trota-vr/trota_vr/app.py:21
+msgid "This PC is ready for VR"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:21
+msgid "Read the notes below."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:22
+msgid "VR may not work well until you follow the suggestions below."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:23
+msgid "Follow the suggestions below, then check again."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:23
+msgid "VR cannot work yet"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:27
+#: applications/trota-welcome/trota_welcome/app.py:190
+msgid "Additional Drivers"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:38
+msgid "Check again"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:46
+msgid "Checking this PC for VR…"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:87
+#: applications/trota-vr/trota_vr/checks.py:199
+msgid "VR software"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:88
+msgid ""
+"Free to install from Flathub. Steam and SteamVR are Valve's proprietary "
+"software."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:94
+msgid "Open"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:98
+msgid "Install"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:104
+msgid "This PC"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:130
+msgid "Installing…"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:131
+#, python-brace-format
+msgid "Installing {name}: this can take a few minutes."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:142
+#, python-brace-format
+msgid "{name} is installed."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:144
+#, python-brace-format
+msgid "Could not install {name}: {error}"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:145
+msgid "unknown error"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:153
+msgid "Check this PC for virtual reality and install the VR software"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:43
+msgid ""
+"Play PC VR on Meta Quest, Pico and other standalone headsets, over Wi-Fi"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:45
+msgid "SteamVR and VR games, for PC headsets such as Valve Index and HTC Vive"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:86
+msgid "Graphics card"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:89
+msgid "Could not read the graphics cards (lspci)."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:92
+msgid "No graphics card found."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:96
+msgid "NVIDIA card without the NVIDIA driver."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:97
+msgid ""
+"Install the recommended NVIDIA driver from Additional Drivers and restart: "
+"VR needs it for good performance."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:100
+msgid "Dedicated graphics card ready for VR."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:101
+msgid "Only integrated graphics."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:102
+msgid ""
+"Enough to try WiVRn with simple apps, too slow for most VR games. A recent "
+"AMD or NVIDIA card is recommended."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:115
+msgid "Vulkan"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:118
+msgid "vulkaninfo is not installed."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:119
+msgid "Install the vulkan-tools package."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:124
+msgid "No graphics card supports Vulkan."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:125
+msgid "VR runtimes need Vulkan: install the graphics driver, then check again."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:126
+#, python-brace-format
+msgid "Vulkan works on {device}."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:131
+msgid "PC VR headset"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:139
+msgid "Headset devices connected."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:140
+msgid "No PC VR headset connected by USB."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:141
+msgid "Standalone headsets (Meta Quest, Pico) connect over Wi-Fi with WiVRn."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:162
+msgid "OpenXR runtime"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:168
+#, python-brace-format
+msgid "Active runtime: {name}."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:170
+msgid "No OpenXR runtime is active."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:171
+msgid "Start WiVRn or SteamVR once, or install the monado-service package."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:176
+msgid "Headset permissions"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:187
+msgid "Headsets and controllers can be used without root."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:188
+msgid "Some device rules are missing."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:189
+msgid ""
+"Install the xr-hardware and steam-devices packages, then reconnect the "
+"headset."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:203
+msgid "VR software installed."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:204
+msgid "No VR software installed yet."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:205
+msgid "Install WiVRn for standalone headsets or Steam for PC headsets."
+msgstr ""
+
 #: applications/trota-welcome/trota_welcome/app.py:18
 msgid "Internet"
 msgstr ""
@@ -1142,10 +1367,6 @@ msgstr ""
 
 #: applications/trota-welcome/trota_welcome/app.py:189
 msgid "Repositories and automatic update policy"
-msgstr ""
-
-#: applications/trota-welcome/trota_welcome/app.py:190
-msgid "Additional Drivers"
 msgstr ""
 
 #: applications/trota-welcome/trota_welcome/app.py:190

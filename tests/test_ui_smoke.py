@@ -16,7 +16,7 @@ if not shutil.which("xvfb-run"):
 
 @pytest.mark.parametrize("app,action,seconds", [
     ("welcome", None, 3), ("welcome", "page:3", 3), ("welcome", "page:4", 3),
-    ("system-info", None, 4), ("diagnostics", "run-checks", 15), ("package-helper", "search:bash", 6),
+    ("system-info", None, 4), ("diagnostics", "run-checks", 15), ("package-helper", "search:bash", 6), ("vr", None, 8),
 ])
 def test_app_renders(tmp_path, app, action, seconds):
     out = tmp_path / f"{app}.png"

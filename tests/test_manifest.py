@@ -57,6 +57,15 @@ def test_essential_components_present():
     assert required <= allp, required - allp
 
 
+def test_vr_list_adds_only_new_free_packages():
+    vr = read_list(MANIFEST / "vr.list")
+    assert {"monado-service", "xr-hardware", "steam-devices"} <= set(vr)
+    desktop = {p for n in INSTALL_LISTS for p in read_list(MANIFEST / n)}
+    assert not set(vr) & desktop, "vr.list repeats desktop packages"
+    assert not set(vr) & set(read_list(MANIFEST / "excluded.list"))
+    assert not {"steam", "steam-installer", "steam-libs-i386"} & set(vr), "Steam comes from Flathub on request"
+
+
 def test_no_snaps():
     excluded = set(read_list(MANIFEST / "excluded.list"))
     assert {"snapd", "gnome-software-plugin-snap"} <= excluded
@@ -145,4 +154,4 @@ def test_kiosk_package():
     assert policies["DisableTelemetry"] and policies["DisableAppUpdate"] and not policies["PasswordManagerEnabled"]
     # kiosk and server packages never reach the desktop ISO
     build = (ROOT / "scripts/build/build-iso.sh").read_text()
-    assert "! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*' ! -name 'trota-fleet-agent_*'" in build
+    assert "! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*'" in build and "! -name 'trota-fleet-agent_*'" in build

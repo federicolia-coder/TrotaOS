@@ -163,6 +163,16 @@ def icon_package_helper() -> str:
     return tile("pkg", glyph)
 
 
+def icon_vr() -> str:
+    glyph = (
+        f'<g fill="none" stroke="{FROST}" stroke-width="10" stroke-linejoin="miter">'
+        '<path d="M64 92 H192 L210 110 V158 L192 176 H156 L142 156 H114 L100 176 H64 L46 158 V110 Z"/>'
+        '<path d="M46 128 H24 M210 128 H232"/></g>'
+        f'<path d="M72 118 H112 L120 130 L112 142 H72 Z M184 118 H144 L136 130 L144 142 H184 Z" fill="{ORANGE}"/>'
+    )
+    return tile("vr", glyph)
+
+
 # --- Wallpapers --------------------------------------------------------------
 def grid(uid: str, color: str, minor: float, major: float) -> str:
     return (
@@ -332,6 +342,7 @@ def committed_assets() -> dict[str, str]:
         "icons/it.testardstudios.TrotaSystemInfo.svg": icon_system_info(),
         "icons/it.testardstudios.TrotaDiagnostics.svg": icon_diagnostics(),
         "icons/it.testardstudios.TrotaPackageHelper.svg": icon_package_helper(),
+        "icons/it.testardstudios.TrotaVR.svg": icon_vr(),
         "wallpapers/trota-forge.svg": wallpaper("forge", light=False),
         "wallpapers/trota-steel.svg": wallpaper("steel", light=True),
         "wallpapers/trota-ingot.svg": wallpaper_ingot(),

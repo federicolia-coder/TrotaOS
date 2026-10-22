@@ -63,10 +63,18 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 xorriso -osirrox on -indev "$ISO" -extract /.disk/info "$tmp/info" -extract /casper/filesystem.manifest "$tmp/manifest" \
     -extract /casper/filesystem.size "$tmp/size" -extract /EFI/boot/bootx64.efi "$tmp/bootx64.efi" >/dev/null 2>&1
-grep -q '^Trota-OS [0-9]' "$tmp/info" 2>/dev/null && pass "medium name: $(cat "$tmp/info")" || bad ".disk/info is not 'Trota-OS <version>' (ubiquity format)"
+grep -Eq '^Trota-OS(-VR)? [0-9]' "$tmp/info" 2>/dev/null && pass "medium name: $(cat "$tmp/info")" || bad ".disk/info is not 'Trota-OS <version>' (ubiquity format)"
 for p in trota-desktop trota-release trota-welcome trota-system-info casper ubiquity linux-generic-hwe-24.04; do
     grep -q "^${p}[[:space:]]" "$tmp/manifest" 2>/dev/null && pass "manifest lists $p" || bad "manifest lacks $p"
 done
+# Trota OS VR: the VR stack and the Trota VR app (packages/manifest/vr.list).
+if grep -q '^Trota-OS-VR ' "$tmp/info" 2>/dev/null; then
+    for p in trota-vr monado-service libopenxr1-monado xr-hardware steam-devices; do
+        grep -q "^${p}[[:space:]]" "$tmp/manifest" 2>/dev/null && pass "VR manifest lists $p" || bad "VR manifest lacks $p"
+    done
+else
+    grep -q "^trota-vr[[:space:]]" "$tmp/manifest" 2>/dev/null && bad "desktop ISO contains trota-vr" || pass "trota-vr only in the VR flavour"
+fi
 for p in ubuntu-report whoopsie popularity-contest openssh-server; do
     grep -q "^${p}[[:space:]]" "$tmp/manifest" 2>/dev/null && bad "manifest contains excluded $p" || pass "excluded package $p absent"
 done

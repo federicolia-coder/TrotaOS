@@ -3,7 +3,7 @@
 
 Used by tests/test_ui_smoke.py (under Xvfb) and to produce the screenshots in
 docs/.  Usage: render_window.py APP OUTPUT.png [--seconds N] [--action NAME]
-APP is one of: welcome, system-info, diagnostics, package-helper.
+APP is one of: welcome, system-info, diagnostics, package-helper, vr.
 """
 
 import argparse
@@ -20,6 +20,7 @@ APPS = {
     "system-info": ("trota_system_info.app", "SystemInfoApp"),
     "diagnostics": ("trota_diagnostics.app", "DiagnosticsApp"),
     "package-helper": ("trota_package_helper.app", "PackageHelperApp"),
+    "vr": ("trota_vr.app", "VRApp"),
 }
 
 

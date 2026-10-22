@@ -4,25 +4,38 @@
 #   sudo ./scripts/build/build-iso.sh            # all stages
 #   sudo ./scripts/build/build-iso.sh iso        # only re-run one stage
 #   sudo ./scripts/build/build-iso.sh clean      # remove build/chroot and build/iso
+#   sudo TROTA_FLAVOR=vr ./scripts/build/build-iso.sh   # Trota OS VR (docs/editions.md)
 #
 # Stages (in order): bootstrap packages trota customize iso checksum
 # The method is documented in docs/building.md and docs/architecture.md.
 
 . "$(dirname "$0")/lib.sh"
 
-CHROOT="$BUILD/chroot"
-ISO_DIR="$BUILD/iso"
+case "$TROTA_FLAVOR" in
+    desktop) FLAVOR_SUFFIX="" ; FLAVOR_NAME="$TROTA_NAME" ;;
+    vr)      FLAVOR_SUFFIX="-vr"; FLAVOR_NAME="$TROTA_NAME VR"
+             TROTA_ISO_VOLID="${TROTA_ISO_VOLID/TROTA_OS_/TROTA_OS_VR_}" ;;
+    *) die "TROTA_FLAVOR must be desktop or vr, not '$TROTA_FLAVOR'" ;;
+esac
+CHROOT="$BUILD/chroot$FLAVOR_SUFFIX"
+ISO_DIR="$BUILD/iso$FLAVOR_SUFFIX"
 CACHE="$BUILD/cache"
 PKG_DIR="$BUILD/packages"
 BUILD_DATE="$(date -u +%Y%m%d)"
-ISO_NAME="trota-os-${TROTA_VERSION}-${TROTA_ARCH}.iso"
+ISO_NAME="trota-os${FLAVOR_SUFFIX}-${TROTA_VERSION}-${TROTA_ARCH}.iso"
 ISO_FILE="$DIST/$ISO_NAME"
 STAGES_ALL=(bootstrap packages trota customize iso checksum)
 
 cleanup() { [ -d "$CHROOT" ] && chroot_umount "$CHROOT" || true; }
 
 # Trota OS packages of the desktop image (the server ones go to build-image.sh).
-desktop_debs() { find "$PKG_DIR" -maxdepth 1 -name '*.deb' ! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*' ! -name 'trota-fleet-agent_*' | sort; }
+# trota-vr goes only into the VR flavour.
+desktop_debs() {
+    local not_vr=(! -name 'trota-vr_*')
+    [ "$TROTA_FLAVOR" = vr ] && not_vr=()
+    find "$PKG_DIR" -maxdepth 1 -name '*.deb' ! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*' \
+        ! -name 'trota-fleet-agent_*' "${not_vr[@]}" | sort
+}
 trap cleanup EXIT
 
 # ---------------------------------------------------------------------------
@@ -69,6 +82,12 @@ stage_packages() {
     # shellcheck disable=SC2046
     in_chroot "$CHROOT" apt-get -y install $(read_list "$m/desktop.list" "$m/applications.list" "$m/tools.list" "$m/live.list" | awk '{print $1}')
 
+    if [ "$TROTA_FLAVOR" = vr ]; then
+        log "packages: VR stack (vr.list)"
+        # shellcheck disable=SC2046
+        in_chroot "$CHROOT" apt-get -y install $(read_list "$m/vr.list" | awk '{print $1}')
+    fi
+
     # Privacy: no Canonical "APT news" fetched in the background (docs/privacy.md).
     # Here, before trota-release changes the system ID: pro acts only on Ubuntu.
     in_chroot "$CHROOT" pro config set apt_news=false
@@ -101,6 +120,12 @@ stage_trota() {
     # Ubiquity crashes at the start of the installation without a slideshow
     # (docs/testing.md): make sure ours is installed.
     [ -f "$CHROOT/usr/share/ubiquity-slideshow/slides/index.html" ] || die "installer slideshow missing"
+    if [ "$TROTA_FLAVOR" = vr ]; then
+        [ -x "$CHROOT/usr/bin/trota-vr" ] || die "Trota VR app missing"
+        [ -f "$CHROOT/etc/xdg/openxr/1/active_runtime.json" ] || [ -f "$CHROOT/usr/share/openxr/1/active_runtime.json" ] \
+            || die "no default OpenXR runtime (monado-service)"
+        echo vr > "$CHROOT/etc/trota-edition"
+    fi
 
     # Fail the build if an excluded package slipped in anyway.
     local bad
@@ -152,7 +177,7 @@ export USERNAME="trota"
 export USERFULLNAME="Trota OS live session user"
 export HOST="trota"
 export BUILD_SYSTEM="Ubuntu"
-export FLAVOUR="Trota OS"
+export FLAVOUR="$FLAVOR_NAME"
 EOF
 
     printf 'LANG=en_US.UTF-8\n' > "$CHROOT/etc/default/locale"
@@ -280,7 +305,7 @@ stage_iso() {
 
     # Medium identity, read by casper and ubiquity (RELEASE name in the UI).
     # Ubiquity reads "<name> <version> ...", with "-" for the spaces of the name.
-    printf '%s %s "%s" - Release %s (%s)\n' "${TROTA_NAME// /-}" "$TROTA_VERSION" "$TROTA_CODENAME" "$TROTA_ARCH" "$BUILD_DATE" > "$ISO_DIR/.disk/info"
+    printf '%s %s "%s" - Release %s (%s)\n' "${FLAVOR_NAME// /-}" "$TROTA_VERSION" "$TROTA_CODENAME" "$TROTA_ARCH" "$BUILD_DATE" > "$ISO_DIR/.disk/info"
     echo "full_cd/single" > "$ISO_DIR/.disk/cd_type"
     # No .disk/base_installable: the medium cannot install a base system with
     # debootstrap; ubiquity copies the squashfs (see make_cdrom_archive).
@@ -362,7 +387,7 @@ main() {
     [ ${#stages[@]} -gt 0 ] || stages=("${STAGES_ALL[@]}")
     local logfile
     logfile="$LOGS/build-iso-$(timestamp).log"
-    log "Trota OS $TROTA_VERSION ($TROTA_BASE_SUITE/$TROTA_ARCH) — stages: ${stages[*]} — log: $logfile"
+    log "$FLAVOR_NAME $TROTA_VERSION ($TROTA_BASE_SUITE/$TROTA_ARCH) — stages: ${stages[*]} — log: $logfile"
     exec > >(tee -a "$logfile") 2>&1
     for s in "${stages[@]}"; do
         declare -F "stage_$s" >/dev/null || die "unknown stage: $s (valid: ${STAGES_ALL[*]} clean)"

@@ -111,6 +111,18 @@ Description: Trota OS package search helper
  explains how to install software. APT remains the package manager: the
  helper never installs or removes anything itself.
 
+Package: trota-vr
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version}),
+         pciutils, usbutils, vulkan-tools, flatpak, trota-software-sources
+Recommends: monado-service, libopenxr1-monado, xr-hardware, libopenxr-loader1, steam-devices, gamemode
+Description: Trota VR: virtual reality on Trota OS
+ Checks a PC for virtual reality (graphics card and driver, Vulkan,
+ connected headsets, OpenXR runtime, device permissions) and installs on
+ request WiVRn, to play PC VR on standalone headsets such as Meta Quest
+ over Wi-Fi, or Steam for SteamVR, from Flathub. Ships the firewall
+ profile that opens the WiVRn ports when a firewall is active.
+
 Package: trota-docs
 Architecture: all
 Section: doc
