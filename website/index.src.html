@@ -354,6 +354,7 @@ footer .legal { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(-
       <a href="#desktop">Desktop</a>
       <a href="#edizioni">Edizioni</a>
       <a href="#iot">IoT ed edge</a>
+      <a href="#vr">VR</a>
       <a href="#usi">Usi</a>
       <a href="#prezzi">Prezzi</a>
       <a href="#domande">Domande</a>
@@ -517,6 +518,33 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
 <span class="p">$ </span>podman run -d --name flows -p 1880:1880 docker.io/nodered/node-red
 <span class="p">$ </span>sudo ufw allow 1883/tcp &amp;&amp; sudo ufw allow 1880/tcp</div>
         <p class="hw-note"><b>Hardware:</b> PC x86 a 64 bit, come mini PC, PC industriali fanless e thin client, da 2 GB di RAM. Le schede ARM, come Raspberry Pi, non sono ancora supportate.</p>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="section alt" id="vr" aria-labelledby="vr-title">
+    <div class="wrap"><div class="row">
+      <header><p class="eyebrow">Realtà virtuale</p><h2 id="vr-title">Trota OS VR</h2></header>
+      <div class="content">
+        <p>Una variante dell'edizione Desktop per la realtà virtuale: lo stesso sistema, con già pronti il runtime OpenXR libero Monado, i permessi per visori e controller e l'app Trota VR, che controlla il PC e installa con un clic i programmi per giocare.</p>
+        <div class="cols">
+          <div>
+            <h3>Visori autonomi</h3>
+            <p>Meta Quest, Pico e simili usano la potenza del PC via Wi-Fi con WiVRn, software libero da Flathub.</p>
+          </div>
+          <div>
+            <h3>Visori da PC</h3>
+            <p>Valve Index, HTC Vive e gli altri visori collegati al PC, con Monado o con SteamVR. Steam è software di Valve e si installa solo se lo chiedi.</p>
+          </div>
+          <div>
+            <h3>App Trota VR</h3>
+            <p>Controlla scheda video e driver, Vulkan, visori collegati e permessi, e dice cosa sistemare prima di iniziare.</p>
+          </div>
+        </div>
+        <div class="term"><span class="p">$ </span>trota-vr --text
+<span class="o">[ OK ] Graphics card: Dedicated graphics card ready for VR.</span>
+<span class="p">$ </span>trota-vr --install wivrn</div>
+        <p class="notice"><b>In preparazione.</b> La ISO di Trota OS VR non è ancora pubblicata e non è stata provata con visori reali. Per giocare servono una scheda video AMD o NVIDIA recente, 16 GB di RAM e, per i visori autonomi, un Wi-Fi veloce o il router vicino.</p>
       </div>
     </div></div>
   </section>
@@ -706,6 +734,7 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
         <details><summary>Fino a quando riceve aggiornamenti?</summary><p>Gli aggiornamenti di sicurezza arrivano fino ad aprile 2029 e si installano da soli. Le nuove versioni di Trota OS escono come nuove immagini.</p></details>
         <details><summary>Perché non ci sono gli snap?</summary><p>Per tenere il sistema leggero: Firefox è il pacchetto ufficiale di Mozilla e le altre applicazioni arrivano da Flathub. Chi vuole gli snap può riattivarli.</p></details>
         <details><summary>Serve un account o una connessione?</summary><p>No. La rete serve solo per gli aggiornamenti e per installare nuove applicazioni.</p></details>
+        <details><summary>Si può usare con un visore VR?</summary><p>Sarà possibile con Trota OS VR, una variante dell'edizione Desktop in preparazione: Meta Quest e Pico via Wi-Fi con WiVRn, i visori da PC con Monado o SteamVR. La ISO non è ancora pubblicata.</p></details>
         <details><summary>Funziona in macchina virtuale?</summary><p>Sì: tutte le edizioni sono provate in QEMU/KVM con firmware BIOS, UEFI e Secure Boot. L'edizione Cloud è fatta apposta per Proxmox, OpenStack e i cloud pubblici.</p></details>
       </div>
     </div></div>
