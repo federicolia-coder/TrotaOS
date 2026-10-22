@@ -29,6 +29,10 @@ on:
         description: "Build the desktop ISO (off: only add the disk images to the existing release)"
         type: boolean
         default: true
+      vr:
+        description: "Also build the Trota OS VR ISO (preview) and add it to the release"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -223,5 +227,56 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-logs-${{ matrix.edition }}
+          path: logs/
+          if-no-files-found: ignore
+
+  vr:
+    needs: iso
+    # Also when the ISO job was skipped (VR ISO only, added to the existing release).
+    if: ${{ always() && inputs.vr && (needs.iso.result == 'success' || needs.iso.result == 'skipped') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      TROTA_MIRROR: http://archive.ubuntu.com/ubuntu
+      TROTA_FLAVOR: vr
+      ISO: dist/trota-os-vr-1.0-amd64.iso
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+              /opt/hostedtoolcache /usr/local/share/boost /usr/share/swift /usr/local/julia* \
+              /opt/microsoft /usr/local/share/powershell /usr/local/share/chromium
+          sudo docker image prune --all --force >/dev/null || true
+          df -h /
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends debootstrap squashfs-tools xorriso mtools \
+              dosfstools rsync grub-pc-bin grub-efi-amd64-bin dpkg-dev python3 python3-pytest gettext
+
+      - name: Build packages
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh
+
+      - name: Build the VR ISO
+        run: sudo --preserve-env=TROTA_MIRROR,TROTA_FLAVOR ./scripts/build/build-iso.sh || sudo --preserve-env=TROTA_MIRROR,TROTA_FLAVOR ./scripts/build/build-iso.sh bootstrap packages trota customize iso checksum
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" dist
+          ls -l dist/
+          [ "$(stat -c %s "$ISO")" -lt 2147483648 ] || { echo "::error::$ISO is over the 2 GiB limit of GitHub"; exit 1; }
+          gh release upload "$TAG" "$ISO" "$ISO.sha256" dist/trota-os-vr-1.0-amd64.manifest --clobber
+
+      - name: Build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-vr
           path: logs/
           if-no-files-found: ignore
