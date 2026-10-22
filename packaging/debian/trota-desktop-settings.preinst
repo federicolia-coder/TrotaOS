@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+# GDM session names: Ubuntu's files are kept as <name>.ubuntu (not listed by
+# GDM) and the Trota OS ones take their place.
+if [ "$1" = "install" ] || [ "$1" = "upgrade" ]; then
+    for f in wayland-sessions/ubuntu.desktop wayland-sessions/ubuntu-wayland.desktop \
+             xsessions/ubuntu.desktop xsessions/ubuntu-xorg.desktop; do
+        dpkg-divert --package trota-desktop-settings --add --rename \
+            --divert "/usr/share/$f.ubuntu" "/usr/share/$f"
+    done
+fi
+
+#DEBHELPER#
+exit 0

@@ -1,0 +1,44 @@
+# Preseed for the AUTOMATED TEST installation only (tests/vm/vmtest.py).
+# It is injected into the initrd of the test VM and never shipped in the ISO.
+# @PASSWORD_HASH@ is replaced at run time with the hash of a random password.
+d-i debian-installer/locale string en_US.UTF-8
+d-i localechooser/supported-locales multiselect en_US.UTF-8, it_IT.UTF-8
+d-i keyboard-configuration/xkb-keymap select us
+d-i keyboard-configuration/layoutcode string us
+d-i time/zone string Europe/Rome
+d-i clock-setup/utc boolean true
+d-i netcfg/get_hostname string trota-vm
+
+# Whole (virtual) disk, ext4, default layout
+d-i partman-auto/disk string /dev/vda
+d-i partman-auto/method string regular
+d-i partman-auto/choose_recipe select atomic
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-md/device_remove_md boolean true
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+d-i partman-efi/non_efi_system boolean true
+
+# First user, with automatic login so the desktop can be checked
+d-i passwd/user-fullname string Trota Tester
+d-i passwd/username string tester
+d-i passwd/user-password-crypted password @PASSWORD_HASH@
+d-i passwd/auto-login boolean true
+d-i user-setup/allow-password-weak boolean true
+d-i user-setup/encrypt-home boolean false
+
+ubiquity ubiquity/use_nonfree boolean false
+ubiquity ubiquity/download_updates boolean false
+ubiquity ubiquity/summary note
+ubiquity ubiquity/reboot boolean true
+ubiquity ubiquity/poweroff boolean false
+
+# Test instrumentation: serial console on the installed system, so that
+# vmtest.py can log in and run tests/vm/checks-installed.sh.
+ubiquity ubiquity/success_command string \
+    echo 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX console=tty0 console=ttyS0,115200"' > /target/etc/default/grub.d/99-trota-vmtest.cfg; \
+    mount --bind /dev /target/dev; mount --bind /proc /target/proc; mount --bind /sys /target/sys; \
+    chroot /target update-grub; \
+    umount /target/sys /target/proc /target/dev

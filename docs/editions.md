@@ -2,6 +2,7 @@
 
 Trota OS 1.0 esiste in quattro edizioni, costruite dallo stesso repository con
 la stessa base, gli stessi aggiornamenti di sicurezza e la stessa identità.
+La Desktop ha anche una variante **VR** per la realtà virtuale (sotto).
 
 | Edizione | Per cosa | Formato | Come si costruisce |
 |---|---|---|---|
@@ -9,6 +10,7 @@ la stessa base, gli stessi aggiornamenti di sicurezza e la stessa identità.
 | **Server / Edge** | Server fisici e virtuali, mini PC e gateway edge, laboratori | Immagine disco pronta (`.img.xz`, `.qcow2`) | `build-image.sh server` |
 | **Cloud** | Cloud pubblici e privati (OpenStack, Proxmox, KVM, …) | Immagine disco (`.qcow2`, `.img.xz`) con cloud-init | `build-image.sh cloud` |
 | **Kiosk / Signage** | Chioschi, totem, schermi informativi, dashboard, menu | Immagine disco pronta (`.img.xz`, `.qcow2`) | `build-image.sh kiosk` |
+| **Desktop VR** (variante) | Realtà virtuale su PC e con visori autonomi | ISO live con installer | `TROTA_FLAVOR=vr build-iso.sh` |
 
 Le immagini disco non hanno un installer: si scrivono su un disco (o si
 importano in una piattaforma di virtualizzazione) e al primo avvio
@@ -88,6 +90,33 @@ o va in crash riparte da solo; ogni giorno alle 04:00 viene riavviato.
 Primo accesso come per Server (utente `trota`, password `trota` da cambiare,
 solo sulla porta seriale o via SSH con chiave, perché lo schermo è occupato
 dal kiosk).
+
+## Desktop VR (Trota OS VR)
+
+La stessa ISO desktop con in più lo stack per la realtà virtuale. Contiene
+solo pacchetti dell'archivio Ubuntu (`packages/manifest/vr.list`):
+
+- **Monado** (`monado-service`, `libopenxr1-monado`): runtime OpenXR libero,
+  registrato come runtime predefinito (`/etc/xdg/openxr/1/active_runtime.json`);
+- **regole udev** per visori e controller usabili senza root (`xr-hardware`,
+  `steam-devices`: solo le regole, non Steam);
+- l'app **Trota VR** (pacchetto `trota-vr`): controlla scheda video e driver,
+  Vulkan, visori collegati, runtime OpenXR e permessi, e su richiesta installa
+  da Flathub **WiVRn** (VR del PC su Meta Quest, Pico e altri visori autonomi
+  via Wi-Fi) o **Steam** (SteamVR, giochi VR, visori da PC come Valve Index e
+  HTC Vive). Steam è software proprietario di Valve: per questo non è
+  preinstallato. Da terminale: `trota-vr --text`, `trota-vr --install wivrn`.
+
+Il profilo firewall `WiVRn` (porte 9757 TCP e UDP) è installato ma non
+attivo: `sudo ufw allow WiVRn` se il firewall è acceso.
+
+Requisiti consigliati: scheda video AMD o NVIDIA recente (per NVIDIA il
+driver proprietario da *Driver aggiuntivi*), 16 GB di RAM, Wi-Fi 6 o rete
+via cavo per lo streaming con WiVRn. **Non ancora provata con visori reali.**
+
+```sh
+sudo TROTA_FLAVOR=vr ./scripts/build/build-iso.sh     # dist/trota-os-vr-1.0-amd64.iso
+```
 
 ## Gestione remota
 

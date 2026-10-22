@@ -1,0 +1,1480 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR TestardStudios
+# This file is distributed under the same license as the Trota OS package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Trota OS 1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
+"POT-Creation-Date: 2026-10-20 11:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: applications/trota-common/trota_common/diagnostics.py:82
+#, python-brace-format
+msgid "{path}: cannot be read ({error})"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:97
+#, python-brace-format
+msgid "{path}: {free} free of {total} ({pct} free)"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:102
+msgid "There is enough free disk space."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:103
+msgid "Free disk space is getting low."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:104
+msgid "The disk is almost full."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:109
+msgid ""
+"Use \"Disk Usage Analyzer\" to find large files, empty the Trash, and remove "
+"applications you no longer use. Updates may fail when the disk is full."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:112
+msgid "Disk space"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:117
+#: applications/trota-system-info/trota_system_info/app.py:138
+#: applications/trota-welcome/trota_welcome/app.py:182
+msgid "Network"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:119
+msgid "NetworkManager command line tool (nmcli) is not installed."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:121
+msgid "Could not query NetworkManager."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:122
+msgid "Make sure the NetworkManager service is running."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:124
+#, python-brace-format
+msgid "NetworkManager state: {state}"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:125
+#, python-brace-format
+msgid "Connectivity: {c}"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:134
+#, python-brace-format
+msgid "Name resolution of archive.ubuntu.com: {r}"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:134
+msgid "failed"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:134
+msgid "working"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:136
+msgid "Connected to the Internet."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:138
+msgid "Connected, but Internet access is limited."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:139
+msgid ""
+"If you are on a public network, open the browser to complete the login page "
+"(captive portal)."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:140
+msgid "Not connected to a network."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:141
+msgid "Open Settings → Network or Wi-Fi to connect."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:146
+#, python-brace-format
+msgid "Running kernel: {k}"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:155
+#, python-brace-format
+msgid "Installed kernels: {k}"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:158
+#, python-brace-format
+msgid ""
+"Kernel taint flags: {t} (normal with proprietary or out-of-tree drivers)"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:163
+#, python-brace-format
+msgid "Requested by: {p}"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:164
+msgid "A restart is required to complete updates."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:164
+#: applications/trota-common/trota_common/diagnostics.py:167
+#: applications/trota-common/trota_common/diagnostics.py:170
+#: applications/trota-common/trota_common/diagnostics.py:172
+#: applications/trota-system-info/trota_system_info/app.py:103
+msgid "Kernel"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:165
+msgid "Save your work and restart the computer."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:167
+msgid "The running kernel is not among the installed ones."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:168
+msgid ""
+"This is normal in the live session. On an installed system, restart to use "
+"the current kernel."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:170
+msgid "A newer kernel is installed."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:171
+msgid "Restart the computer to start using it."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:172
+msgid "Running the latest installed kernel."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:179
+msgid "AppArmor: enabled"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:181
+msgid "AppArmor: not enabled"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:188
+#, python-brace-format
+msgid "Automatic update check: {v}"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:188
+#: applications/trota-common/trota_common/diagnostics.py:189
+msgid "off"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:188
+#: applications/trota-common/trota_common/diagnostics.py:189
+msgid "on"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:189
+#, python-brace-format
+msgid "Automatic security updates: {v}"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:193
+msgid "APT configuration could not be read."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:196
+msgid "Firewall (ufw): enabled"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:198
+msgid ""
+"Firewall (ufw): installed, not enabled (no service listens on the network by "
+"default)"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:199
+msgid "Security features are active."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:199
+msgid "Some security features are not active."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:201
+msgid ""
+"Open \"Software & Updates\" → Updates and enable automatic security updates. "
+"AppArmor should never be disabled on Trota OS."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:204
+msgid "Security"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:208
+msgid "System services"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:212
+msgid "systemctl is not available."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:214
+msgid "The service manager could not be queried."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:226
+#, python-brace-format
+msgid "{name}: not installed"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:236
+#, python-brace-format
+msgid "Failed units: {u}"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:242
+msgid "Core services are running."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:245
+#, python-brace-format
+msgid "{n} service needs attention."
+msgid_plural "{n} services need attention."
+msgstr[0] ""
+msgstr[1] ""
+
+#: applications/trota-common/trota_common/diagnostics.py:247
+msgid ""
+"Inspect a service with: systemctl status <name>. Use \"Logs\" to read its "
+"messages."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:252
+msgid "Recent errors in the system log"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:255
+msgid "journalctl is not available."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:257
+msgid "The system log could not be read."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:262
+msgid ""
+"Only your own messages are visible: members of the \"adm\" group can read "
+"the full system log."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:264
+msgid "No errors logged since the last boot."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:266
+#, python-brace-format
+msgid "{n} error message since the last boot."
+msgid_plural "{n} error messages since the last boot."
+msgstr[0] ""
+msgstr[1] ""
+
+#: applications/trota-common/trota_common/diagnostics.py:269
+msgid ""
+"Some errors are harmless (hardware probing, optional drivers). Open \"Logs\" "
+"for details and include them when you report a problem."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:274
+msgid "Software updates"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:288
+#, python-brace-format
+msgid "Package lists refreshed {n} day ago."
+msgid_plural "Package lists refreshed {n} days ago."
+msgstr[0] ""
+msgstr[1] ""
+
+#: applications/trota-common/trota_common/diagnostics.py:304
+msgid "Update information is not available."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:305
+#, python-brace-format
+msgid "Updates available: {t} (security: {s})"
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:307
+#, python-brace-format
+msgid "{n} security update is available."
+msgid_plural "{n} security updates are available."
+msgstr[0] ""
+msgstr[1] ""
+
+#: applications/trota-common/trota_common/diagnostics.py:310
+#, python-brace-format
+msgid "{n} update is available."
+msgid_plural "{n} updates are available."
+msgstr[0] ""
+msgstr[1] ""
+
+#: applications/trota-common/trota_common/diagnostics.py:312
+msgid "The system is up to date."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:315
+msgid "Package lists are more than a week old."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:316
+msgid "Open \"Software Updater\" to install updates."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:336
+msgid "The check could not run."
+msgstr ""
+
+#: applications/trota-common/trota_common/diagnostics.py:337
+msgid "Please report this problem to the Trota OS developers."
+msgstr ""
+
+#: applications/trota-common/trota_common/packages.py:60
+msgid "Supported by Canonical with security updates."
+msgstr ""
+
+#: applications/trota-common/trota_common/packages.py:61
+msgid "Proprietary driver supported by Canonical."
+msgstr ""
+
+#: applications/trota-common/trota_common/packages.py:62
+msgid "Maintained by the community."
+msgstr ""
+
+#: applications/trota-common/trota_common/packages.py:63
+msgid "Not free software; may have legal restrictions."
+msgstr ""
+
+#: applications/trota-common/trota_common/packages.py:95
+msgid "apt-cache is not installed"
+msgstr ""
+
+#: applications/trota-common/trota_common/packages.py:97
+msgid "The search took too long. Try a more specific search."
+msgstr ""
+
+#: applications/trota-common/trota_common/packages.py:99
+msgid "apt-cache search failed"
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:87
+msgid "Trademarks"
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:90
+msgid ""
+"Trota OS is developed and published by TestardStudios. It is based on "
+"Ubuntu, but it is not affiliated with or endorsed by Canonical Ltd. Ubuntu "
+"is a registered trademark of Canonical Ltd."
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:128
+msgid "Not installed on this system"
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:135
+#: applications/trota-common/trota_common/ui.py:163
+#: applications/trota-package-helper/trota_package_helper/app.py:216
+#, python-brace-format
+msgid "Could not start the application: {error}"
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:156
+msgid "not installed"
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:178
+#, python-brace-format
+msgid "Could not open the link: {error}"
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:186
+msgid "Copied to the clipboard"
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:191
+msgid "About"
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:192
+msgid "Quit"
+msgstr ""
+
+#: applications/trota-common/trota_common/ui.py:201
+msgid "Main menu"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:20
+#: applications/trota-diagnostics/trota_diagnostics/app.py:21
+msgid "Everything looks good"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:20
+msgid "No problems were found."
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:21
+msgid "There are a few notes you may want to read."
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:22
+#: applications/trota-diagnostics/trota_diagnostics/app.py:23
+msgid "Read the suggestions below. Nothing was changed on your system."
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:22
+#: applications/trota-vr/trota_vr/app.py:22
+msgid "Some items need attention"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:23
+msgid "Problems found"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:24
+#: applications/trota-vr/trota_vr/app.py:24
+msgid "Checks completed"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:29
+#: applications/trota-welcome/trota_welcome/app.py:39
+msgid "Disk Usage Analyzer"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:30
+msgid "Network settings"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:31
+#: applications/trota-package-helper/trota_package_helper/app.py:63
+#: applications/trota-welcome/trota_welcome/app.py:187
+msgid "Software Updater"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:32
+#: applications/trota-welcome/trota_welcome/app.py:40
+msgid "Logs"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:33
+#: applications/trota-welcome/trota_welcome/app.py:37
+msgid "System Monitor"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:34
+#: applications/trota-welcome/trota_welcome/app.py:189
+msgid "Software & Updates"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:40
+msgid "Diagnostics"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:45
+#: applications/trota-diagnostics/trota_diagnostics/app.py:60
+msgid "Run checks"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:48
+#: applications/trota-system-info/trota_system_info/app.py:52
+#: applications/trota-vr/trota_vr/app.py:41
+msgid "Copy report"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:56
+msgid "Check the health of your system"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:57
+msgid ""
+"Disk space, network, kernel, security features, services, recent errors and "
+"updates.\n"
+"All checks are read-only: nothing is changed, deleted or repaired "
+"automatically."
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:64
+msgid "Running checks…"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:112
+#: applications/trota-vr/trota_vr/app.py:116
+msgid "Suggestion"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:126
+#: applications/trota-welcome/trota_welcome/app.py:201
+msgid "Trota Diagnostics"
+msgstr ""
+
+#: applications/trota-diagnostics/trota_diagnostics/app.py:127
+msgid "Safe, read-only health checks"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:26
+msgid "Graphical applications"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:27
+msgid ""
+"Software installs applications from the package archive and from Flathub "
+"(Steam, VS Code, Spotify, Discord…) as Flatpak packages, isolated from the "
+"system and updated automatically."
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:29
+msgid "Command line tools and libraries"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:30
+msgid ""
+"Install them from the package archive with APT, for example: sudo apt "
+"install htop"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:31
+msgid "Software from other websites"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:32
+msgid ""
+"Prefer the package archive or Flathub. Add third-party repositories (PPA) "
+"only from sources you trust: they get full access to your system."
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:39
+#: applications/trota-package-helper/trota_package_helper/app.py:91
+msgid "Package Helper"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:51
+#: applications/trota-system-info/trota_system_info/app.py:100
+#: applications/trota-welcome/trota_welcome/app.py:188
+#: applications/trota-welcome/trota_welcome/app.py:217
+msgid "Software"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:54
+msgid "Search packages, e.g. “python”, “video editor”"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:62
+msgid ""
+"Package lists have not been downloaded yet. Open Software Updater to refresh "
+"them."
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:70
+msgid "How to install software on Trota OS"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:75
+msgid "Searching…"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:76
+msgid "No packages found"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:77
+msgid "Try a different or shorter search."
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:79
+msgid "Search failed"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:133
+#, python-brace-format
+msgid "Showing the first {n} results"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:134
+#, python-brace-format
+msgid "{n} results"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:146
+msgid "Loading…"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:161
+msgid "Package not available"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:167
+#, python-brace-format
+msgid "Installed (version {v})"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:168
+msgid "Not installed"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:169
+msgid "Status"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:170
+msgid "Available version"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:171
+msgid "Section"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:173
+msgid "Installed size"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:175
+msgid "Download size"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:177
+msgid "Homepage"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:181
+msgid "Description"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:186
+msgid "How to install"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:186
+msgid "How to remove"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:187
+msgid ""
+"Run this command in the Terminal. You will be asked for your password: only "
+"administrators can install or remove software."
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:192
+msgid "Copy command"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:196
+msgid "Open Terminal"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:196
+msgid "Paste the command with Ctrl+Shift+V"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:198
+msgid "Open Software"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:199
+msgid "Graphical applications may also be available there"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:220
+#: applications/trota-welcome/trota_welcome/app.py:204
+#: applications/trota-welcome/trota_welcome/app.py:218
+msgid "Trota Package Helper"
+msgstr ""
+
+#: applications/trota-package-helper/trota_package_helper/app.py:221
+msgid "Search the package catalogue"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:20
+msgid "Wired"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:21
+msgid "Wireless"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:22
+msgid "Virtual"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:23
+msgid "Other"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:44
+msgid "System Info"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:49
+msgid "Refresh"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:55
+msgid "Save report…"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:88
+msgid "Information could not be collected"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:101
+msgid "Operating system"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:102
+msgid "Based on"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:104
+msgid "Architecture"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:105
+msgid "Desktop"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:106
+msgid "Computer name"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:107
+msgid "Uptime"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:110
+msgid "Hardware"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:112
+#, python-brace-format
+msgid "{n} threads"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:114
+#, python-brace-format
+msgid "{n} cores"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:117
+msgid "Processor"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:119
+msgid "Memory"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:119
+#, python-brace-format
+msgid "{total} total · {avail} available"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:124
+msgid "None"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:124
+msgid "Swap"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:125
+msgid "Not detected"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:126
+msgid "Graphics"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:129
+msgid "Storage"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:131
+#, python-brace-format
+msgid "{used} used of {total} · {free} free · {fs} on {dev}"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:145
+msgid "Hardware address"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:146
+msgid "No address"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:147
+msgid "Address"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:150
+msgid "Interfaces"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:150
+msgid "No network interface found"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:154
+msgid ""
+"All information is read locally from this computer and is never sent "
+"anywhere."
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:166
+msgid "Save report"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:180
+msgid "Report saved"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:182
+#, python-brace-format
+msgid "Could not save the report: {error}"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:186
+#: applications/trota-welcome/trota_welcome/app.py:198
+msgid "Trota System Info"
+msgstr ""
+
+#: applications/trota-system-info/trota_system_info/app.py:187
+msgid "Information about this computer, collected locally"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:20
+msgid "Install the VR software below and connect your headset."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:20
+#: applications/trota-vr/trota_vr/app.py:21
+msgid "This PC is ready for VR"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:21
+msgid "Read the notes below."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:22
+msgid "VR may not work well until you follow the suggestions below."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:23
+msgid "Follow the suggestions below, then check again."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:23
+msgid "VR cannot work yet"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:27
+#: applications/trota-welcome/trota_welcome/app.py:190
+msgid "Additional Drivers"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:38
+msgid "Check again"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:46
+msgid "Checking this PC for VR…"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:87
+#: applications/trota-vr/trota_vr/checks.py:199
+msgid "VR software"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:88
+msgid ""
+"Free to install from Flathub. Steam and SteamVR are Valve's proprietary "
+"software."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:94
+msgid "Open"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:98
+msgid "Install"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:104
+msgid "This PC"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:130
+msgid "Installing…"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:131
+#, python-brace-format
+msgid "Installing {name}: this can take a few minutes."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:142
+#, python-brace-format
+msgid "{name} is installed."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:144
+#, python-brace-format
+msgid "Could not install {name}: {error}"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:145
+msgid "unknown error"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:153
+msgid "Check this PC for virtual reality and install the VR software"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:43
+msgid ""
+"Play PC VR on Meta Quest, Pico and other standalone headsets, over Wi-Fi"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:45
+msgid "SteamVR and VR games, for PC headsets such as Valve Index and HTC Vive"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:86
+msgid "Graphics card"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:89
+msgid "Could not read the graphics cards (lspci)."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:92
+msgid "No graphics card found."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:96
+msgid "NVIDIA card without the NVIDIA driver."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:97
+msgid ""
+"Install the recommended NVIDIA driver from Additional Drivers and restart: "
+"VR needs it for good performance."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:100
+msgid "Dedicated graphics card ready for VR."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:101
+msgid "Only integrated graphics."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:102
+msgid ""
+"Enough to try WiVRn with simple apps, too slow for most VR games. A recent "
+"AMD or NVIDIA card is recommended."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:115
+msgid "Vulkan"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:118
+msgid "vulkaninfo is not installed."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:119
+msgid "Install the vulkan-tools package."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:124
+msgid "No graphics card supports Vulkan."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:125
+msgid "VR runtimes need Vulkan: install the graphics driver, then check again."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:126
+#, python-brace-format
+msgid "Vulkan works on {device}."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:131
+msgid "PC VR headset"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:139
+msgid "Headset devices connected."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:140
+msgid "No PC VR headset connected by USB."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:141
+msgid "Standalone headsets (Meta Quest, Pico) connect over Wi-Fi with WiVRn."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:162
+msgid "OpenXR runtime"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:168
+#, python-brace-format
+msgid "Active runtime: {name}."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:170
+msgid "No OpenXR runtime is active."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:171
+msgid "Start WiVRn or SteamVR once, or install the monado-service package."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:176
+msgid "Headset permissions"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:187
+msgid "Headsets and controllers can be used without root."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:188
+msgid "Some device rules are missing."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:189
+msgid ""
+"Install the xr-hardware and steam-devices packages, then reconnect the "
+"headset."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:203
+msgid "VR software installed."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:204
+msgid "No VR software installed yet."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:205
+msgid "Install WiVRn for standalone headsets or Steam for PC headsets."
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:18
+msgid "Internet"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:19
+msgid "Firefox"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:19
+msgid "Web browser"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:21
+msgid "Office and study"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:22
+msgid "Notes and plain text files"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:22
+msgid "Text Editor"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:23
+msgid "LibreOffice Writer"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:23
+msgid "Word processor"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:24
+msgid "LibreOffice Calc"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:24
+msgid "Spreadsheets"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:25
+msgid "LibreOffice Impress"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:25
+msgid "Presentations"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:26
+msgid "Document Viewer"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:26
+msgid "PDF and other documents"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:27
+msgid "Basic, scientific and programming modes"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:27
+msgid "Calculator"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:29
+msgid "Files and media"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:30
+msgid "File manager"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:30
+msgid "Files"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:31
+msgid "Archive Manager"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:31
+msgid "Create and extract archives"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:32
+msgid "Image Viewer"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:32
+msgid "View pictures"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:33
+msgid "Video player"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:33
+msgid "Videos"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:35
+msgid "System"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:36
+msgid "Command line"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:36
+msgid "Terminal"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:37
+msgid "Processes and resource usage"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:38
+msgid "Disk management and S.M.A.R.T. data"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:38
+msgid "Disks"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:39
+msgid "Find what uses disk space"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:40
+msgid "System log viewer"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:54
+msgid "Welcome to Trota OS"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:64
+#: applications/trota-welcome/trota_welcome/app.py:83
+msgid "Welcome"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:65
+msgid "Get started"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:66
+msgid "Trota tools"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:67
+msgid "Applications"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:68
+msgid "Help and support"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:136
+msgid "Developed and published by TestardStudios"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:142
+msgid ""
+"Trota OS is a light desktop operating system for development, system "
+"administration, gaming, study and everyday use. Security updates arrive "
+"automatically, .deb packages and Flatpak applications work out of the box, "
+"and there is no mandatory account and no telemetry."
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:150
+msgid "Check for updates"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:151
+msgid "Open Settings"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:152
+msgid "System information"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:160
+msgid "Show this window at login"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:161
+msgid "You can always open it from the applications menu"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:171
+#, python-brace-format
+msgid "Could not save the preference: {error}"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:174
+msgid "Personalize"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:175
+msgid "Appearance"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:175
+msgid "Light or dark style, accent color, dock"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:176
+msgid "Choose one of the Trota OS wallpapers or your own pictures"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:176
+msgid "Wallpaper"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:177
+msgid "Displays"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:177
+msgid "Resolution, scaling and night light"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:178
+msgid "Accessibility"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:178
+msgid "Screen reader, large text, high contrast, zoom"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:180
+msgid "Connect"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:181
+msgid "Connect to a wireless network"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:181
+msgid "Wi-Fi"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:182
+msgid "Wired connections, VPN and proxy"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:183
+msgid "Accounts, passwords and fingerprint login"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:183
+msgid "Users"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:184
+msgid "Privacy and security"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:184
+msgid "Screen lock, location services, file history"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:186
+msgid "Software and updates"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:187
+msgid "Install updates now"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:188
+msgid "Find and install applications"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:189
+msgid "Repositories and automatic update policy"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:190
+msgid "Proprietary graphics and Wi-Fi drivers (e.g. NVIDIA)"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:195
+msgid "Trota OS tools"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:196
+msgid ""
+"Original utilities of Trota OS. They work offline and never send data "
+"anywhere."
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:199
+msgid "Version, kernel, CPU, memory, disks, network and graphics"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:202
+msgid "Safe, read-only checks with clear suggestions"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:205
+msgid "Search the package catalogue and learn how to install software"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:216
+msgid "More software"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:217
+msgid "Thousands of applications from Flathub, including Steam and VS Code"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:218
+msgid "Search the APT catalogue"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:223
+msgid "Documentation"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:226
+msgid "Offline guide installed on this computer"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:226
+msgid "Trota OS documentation"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:227
+msgid "Latest version of the guides"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:227
+msgid "Online documentation"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:228
+msgid "Desktop guide"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:228
+msgid "How to use the GNOME desktop"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:231
+msgid "Support"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:232
+msgid ""
+"Trota OS is a community project by TestardStudios, provided without "
+"commercial support. Security updates for the Ubuntu base come from the "
+"Ubuntu archive for the whole LTS lifetime (standard support until April "
+"2029)."
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:236
+msgid "Open an issue on the project tracker"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:236
+msgid "Report a problem"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:237
+msgid "Read the security policy first"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:237
+msgid "Report a security vulnerability"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:238
+msgid "Copy system information"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:239
+msgid "Paste it in your report: it contains no personal files"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:248
+msgid "Trota Welcome"
+msgstr ""
+
+#: applications/trota-welcome/trota_welcome/app.py:249
+msgid "Getting started with Trota OS"
+msgstr ""

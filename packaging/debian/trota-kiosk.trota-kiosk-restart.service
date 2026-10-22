@@ -1,0 +1,6 @@
+[Unit]
+Description=Daily restart of the Trota OS Kiosk browser
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl try-restart trota-kiosk.service

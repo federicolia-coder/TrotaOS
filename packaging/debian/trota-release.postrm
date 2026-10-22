@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "purge" ] || [ "$1" = "abort-install" ] || [ "$1" = "disappear" ]; then
+    dpkg-divert --package trota-release --remove --rename \
+        --divert /usr/lib/os-release.ubuntu /usr/lib/os-release
+fi
+
+#DEBHELPER#
+exit 0

@@ -1,0 +1,14 @@
+# Trota OS Server / Edge / Cloud — packages that must NOT be installed.
+# Same mechanism as excluded.list (APT priority -1 during the build).
+# Format: <package>  # <reason>
+
+snapd                    # no snaps in Trota OS
+ubuntu-report            # telemetry
+whoopsie                 # telemetry: crash report upload
+apport                   # crash reporting (sends reports to Launchpad)
+popularity-contest       # package usage survey
+landscape-common         # Canonical Landscape client
+ubuntu-advantage-desktop-daemon # desktop Ubuntu Pro integration
+ubuntu-kernel-accessories # bpftrace, bpfcc-tools, extra LLVM copies
+linux-tools-common       # perf and kernel tools
+plymouth                 # boot splash: not useful on a headless system

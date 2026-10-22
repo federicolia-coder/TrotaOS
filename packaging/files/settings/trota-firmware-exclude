@@ -1,0 +1,18 @@
+# Trota OS: firmware for data-centre hardware that a desktop never uses is not
+# unpacked (about 170 MB). The packages stay installed, so the Ubuntu kernel
+# metapackage and its updates keep working. Delete this file and reinstall the
+# packages to get the files back:
+#   sudo rm /etc/dpkg/dpkg.cfg.d/trota-firmware-exclude
+#   sudo apt install --reinstall linux-firmware-mellanox-spectrum linux-firmware-marvell-prestera linux-firmware-netronome linux-firmware-qlogic
+# Mellanox Spectrum Ethernet switch ASICs (linux-firmware-mellanox-spectrum)
+path-exclude=/lib/firmware/mellanox/*
+path-exclude=/usr/lib/firmware/mellanox/*
+# Marvell Prestera Ethernet switch ASICs (linux-firmware-marvell-prestera)
+path-exclude=/lib/firmware/mrvl/prestera/*
+path-exclude=/usr/lib/firmware/mrvl/prestera/*
+# Netronome Agilio SmartNICs (linux-firmware-netronome)
+path-exclude=/lib/firmware/netronome/*
+path-exclude=/usr/lib/firmware/netronome/*
+# QLogic FastLinQ server adapters (linux-firmware-qlogic)
+path-exclude=/lib/firmware/qed/*
+path-exclude=/usr/lib/firmware/qed/*

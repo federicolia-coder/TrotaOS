@@ -1,0 +1,12 @@
+[Unit]
+Description=Update Flatpak applications (Trota OS)
+Documentation=man:flatpak-update(1)
+ConditionPathExists=/usr/bin/flatpak
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flatpak update --system --noninteractive --assumeyes
+Nice=19
+IOSchedulingClass=idle

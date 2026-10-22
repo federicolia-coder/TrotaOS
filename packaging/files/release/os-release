@@ -1,0 +1,16 @@
+PRETTY_NAME="Trota OS 1.0"
+NAME="Trota OS"
+VERSION="1.0 (Fario)"
+ID=trota
+ID_LIKE="ubuntu debian"
+VERSION_ID="1.0"
+VERSION_CODENAME=noble
+UBUNTU_CODENAME=noble
+HOME_URL="https://github.com/federicolia-coder/TrotaOS"
+SUPPORT_URL="https://github.com/federicolia-coder/TrotaOS/tree/main/docs"
+BUG_REPORT_URL="https://github.com/federicolia-coder/TrotaOS/issues"
+PRIVACY_POLICY_URL="https://github.com/federicolia-coder/TrotaOS/blob/main/docs/privacy.md"
+LOGO=trota-os-logo
+TROTA_VERSION="1.0"
+TROTA_CODENAME="Fario"
+TROTA_BASE_VERSION="24.04 LTS"

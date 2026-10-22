@@ -1,0 +1,212 @@
+# Trota Fleet
+
+Pannello web per gestire da un'unica pagina i dispositivi Trota OS Server,
+Cloud e Kiosk dei clienti. Software proprietario di TestardStudios (vedi
+[LICENSE](LICENSE)): non fa parte di Trota OS e non entra nei suoi pacchetti.
+
+**Strumento solo interno.** Lo usano soltanto il personale e i collaboratori di
+TestardStudios per erogare i servizi gestiti (per esempio "Kiosk e IoT
+gestiti"). I clienti non hanno accesso al pannello: chiedono le modifiche a
+TestardStudios, che le esegue da qui. Gli account si creano solo da terminale
+o dalle variabili d'ambiente, non esiste registrazione pubblica.
+
+## Cosa fa
+
+- **Dispositivi**: elenco con stato (in linea / non in linea), cliente,
+  edizione, indirizzo, aggiornamenti da installare, ultimo contatto. Si può
+  filtrare per cliente e cercare per nome, indirizzo o note.
+- **Scheda del dispositivo**: sistema, kernel, da quanto è acceso, carico,
+  memoria, disco, indirizzi, pagina del kiosk, storico dei comandi con il
+  loro risultato. Nome, cliente e note si possono modificare.
+- **Comandi**, anche a più dispositivi insieme: cambiare la pagina del kiosk,
+  riavviare il kiosk, installare gli aggiornamenti, riavviare il dispositivo.
+  Se il dispositivo è spento il comando parte al collegamento successivo.
+- **Aggiungi dispositivi**: codici di registrazione per cliente, con un
+  numero massimo di dispositivi e una scadenza. Il pannello mostra il codice
+  una sola volta, con il comando da dare sul dispositivo e la configurazione
+  cloud-init per prepararne molti insieme.
+
+## Come funziona
+
+```
+dispositivo (trota-fleet-agent)  ──HTTPS, ogni 60 s──▶  pannello  ◀── browser dell'amministratore
+```
+
+- È il dispositivo a chiamare il pannello, mai il contrario: funziona dietro
+  NAT e firewall e sul dispositivo non si apre nessuna porta.
+- A ogni contatto il dispositivo manda un breve rapporto sul suo stato e
+  riceve i comandi in coda. I comandi possibili sono solo i quattro sopra:
+  il pannello non può eseguire programmi o comandi di shell sul dispositivo,
+  neanche se viene violato.
+- Ogni dispositivo ha un segreto suo, dato alla registrazione. Rimuoverlo
+  dal pannello lo scollega subito.
+- Nel database ci sono solo hash: password (PBKDF2), segreti dei dispositivi,
+  sessioni e codici di registrazione (SHA-256).
+- Login con limite ai tentativi sbagliati, cookie `HttpOnly` e
+  `SameSite=Strict`, token CSRF su ogni modulo, Content-Security-Policy
+  senza script esterni o in linea.
+
+Il pannello usa solo la libreria standard di Python 3.10+ e SQLite: nessuna
+dipendenza da installare.
+
+## Installazione
+
+### Su Render con Cloudflare D1 (consigliata)
+
+Il pannello gira su Render come servizio web e tiene i dati in un database
+**Cloudflare D1**: niente computer da tenere acceso, niente disco su Render
+(che nel piano gratuito si cancella a ogni riavvio).
+
+1. **Cloudflare → Storage & Databases → D1 → Create database**, nome
+   `trota-fleet`. Annotare il *Database ID*.
+2. **Cloudflare → My Profile → API Tokens → Create Token → Custom token**:
+   permesso *Account → D1 → Edit*, solo per l'account di TestardStudios.
+3. Su Render, nel servizio `trota-fleet` → *Environment*:
+
+   | Variabile | Valore |
+   |---|---|
+   | `TROTA_FLEET_D1_ACCOUNT` | Account ID di Cloudflare |
+   | `TROTA_FLEET_D1_DATABASE` | Database ID del passo 1 |
+   | `TROTA_FLEET_D1_TOKEN` | token del passo 2 (segreto) |
+   | `TROTA_FLEET_ADMIN` | nome del primo amministratore |
+   | `TROTA_FLEET_ADMIN_PASSWORD` | sua password, almeno 12 caratteri (segreto) |
+
+   Avvio: `cd fleet && python3 -m trota_fleet serve` (la porta la dà Render
+   in `$PORT`). Le tabelle si creano da sole al primo avvio; il primo
+   amministratore viene creato una sola volta, poi le due variabili
+   `TROTA_FLEET_ADMIN*` si possono togliere.
+
+Ogni contatto di un dispositivo è **una sola richiesta** a D1 e una
+scrittura. Il piano gratuito di D1 (100.000 righe scritte al giorno) basta
+per circa 60 dispositivi con un contatto al minuto; oltre serve il piano
+Workers Paid (5 $ al mese) oppure un intervallo più lungo
+(`TROTA_FLEET_INTERVAL=120` raddoppia i dispositivi). Le copie di sicurezza
+le fa Cloudflare (*Time Travel*: ripristino a un momento qualsiasi degli
+ultimi giorni).
+
+
+### Su un computer con Trota OS (anche un portatile)
+
+```sh
+sudo fleet/install.sh
+```
+
+Lo script fa cinque cose e si può rilanciare per aggiornare il pannello
+senza perdere i dati:
+
+1. copia il pannello in `/opt/trota-fleet` e lo avvia come servizio
+   (`trota-fleet-panel`, utente di sistema `trota-fleet`) su
+   http://localhost:8080, con una copia del database ogni giorno in
+   `/var/lib/trota-fleet-panel/backups` (ultime 14);
+2. chiede l'indirizzo pubblico del pannello, es. `https://fleet.testardstudios.it`;
+3. crea il primo amministratore;
+4. chiede il token di un **Cloudflare Tunnel** e installa `cloudflared`: il
+   pannello diventa raggiungibile da Internet in HTTPS senza aprire porte
+   sul router. Il token si crea nella dashboard di Cloudflare: Zero Trust →
+   Networks → Tunnels → *Create a tunnel* (Cloudflared); nella scheda
+   *Public Hostname* si indica il nome (es. `fleet.testardstudios.it`) e il
+   servizio `HTTP` → `localhost:8080`. Serve che il dominio sia gestito da
+   Cloudflare;
+5. su un portatile, con l'alimentatore collegato, toglie la sospensione
+   (anche a coperchio chiuso). A batteria il comportamento resta quello
+   normale.
+
+Se il computer è spento o in sospensione il pannello non risponde; i
+dispositivi continuano a funzionare e si ricollegano da soli.
+
+### Con Podman su Trota OS Server
+
+```sh
+podman build -t trota-fleet fleet/
+podman volume create trota-fleet
+podman run --rm -it -v trota-fleet:/data trota-fleet adduser federico
+podman run -d --name trota-fleet --restart=always -p 127.0.0.1:8080:8080 -v trota-fleet:/data \
+    -e TROTA_FLEET_PUBLIC_URL=https://fleet.testardstudios.it trota-fleet
+```
+
+### Con systemd
+
+```sh
+sudo useradd --system --home /var/lib/trota-fleet-panel trota-fleet
+sudo install -d /opt/trota-fleet && sudo cp -r fleet/trota_fleet /opt/trota-fleet/
+sudo cp fleet/trota-fleet-panel.service /etc/systemd/system/
+echo 'TROTA_FLEET_PUBLIC_URL=https://fleet.testardstudios.it' | sudo tee /etc/default/trota-fleet-panel
+sudo install -d -o trota-fleet -g trota-fleet -m 700 /var/lib/trota-fleet-panel
+sudo systemctl daemon-reload
+sudo -u trota-fleet env PYTHONPATH=/opt/trota-fleet TROTA_FLEET_DB=/var/lib/trota-fleet-panel/fleet.db \
+    python3 -m trota_fleet adduser federico
+sudo systemctl enable --now trota-fleet-panel
+```
+
+### HTTPS con Caddy
+
+```sh
+sudo apt install caddy
+sudo cp fleet/Caddyfile.example /etc/caddy/Caddyfile   # cambiare il nome di dominio
+sudo systemctl reload caddy
+sudo ufw allow 80,443/tcp
+```
+
+### Impostazioni
+
+| Variabile | Predefinito | Cosa fa |
+|---|---|---|
+| `TROTA_FLEET_DB` | `/var/lib/trota-fleet-panel/fleet.db` | database SQLite |
+| `TROTA_FLEET_LISTEN` | `127.0.0.1:8080` | indirizzo e porta (IPv4) |
+| `TROTA_FLEET_PUBLIC_URL` | indirizzo della richiesta | mostrato nei comandi di registrazione |
+| `TROTA_FLEET_BEHIND_PROXY` | `0` | `1` = usa le intestazioni `X-Forwarded-*` del proxy |
+| `TROTA_FLEET_INTERVAL` | `60` | secondi tra un contatto e l'altro dei dispositivi |
+| `TROTA_FLEET_D1_ACCOUNT`, `_DATABASE`, `_TOKEN` | — | dati su Cloudflare D1 invece che nel file SQLite |
+| `TROTA_FLEET_IP_HEADER` | — | intestazione con l'IP del visitatore messa dal proxy (es. `CF-Connecting-IP`) |
+| `TROTA_FLEET_RETENTION_DAYS` | `90` | giorni dopo cui si cancellano da soli storico dei comandi e codici scaduti |
+| `TROTA_FLEET_COMPANY` | `legal/company.json` | dati dell'azienda mostrati in fondo alle pagine e nell'informativa |
+| `PORT` | — | porta data dall'hosting (Render): ascolta su `0.0.0.0:$PORT` |
+
+Altri amministratori o cambio password: `python3 -m trota_fleet adduser NOME`.
+Backup: una copia del file del database (`sqlite3 fleet.db ".backup copia.db"`).
+
+## Privacy e documenti
+
+- Il pannello ha la sua **informativa privacy** (`/privacy`) e la **pagina
+  sui cookie** (`/cookie`: un solo cookie tecnico di sessione, nessun
+  consenso necessario). I dati dell'azienda vengono da `legal/company.json`,
+  lo stesso file del sito.
+- **Cancellazione automatica**: ogni 6 ore il pannello toglie sessioni
+  scadute, comandi più vecchi di 90 giorni e codici di registrazione
+  scaduti, revocati o esauriti da più di 90 giorni. I dispositivi restano
+  finché non vengono rimossi (e con loro si cancella tutto lo storico).
+- Per i contratti con i clienti: bozza di **accordo sul trattamento dei
+  dati** (art. 28 GDPR) in [legal/accordo-trattamento-dati.md](legal/accordo-trattamento-dati.md)
+  e bozza del **registro dei trattamenti** in [legal/registro-trattamenti.md](legal/registro-trattamenti.md).
+  Da far rivedere a un consulente prima dell'uso.
+
+## Collegare un dispositivo
+
+Nel pannello, **Aggiungi dispositivi** → cliente, numero di dispositivi,
+validità → **Crea il codice**. Poi sul dispositivo:
+
+```sh
+sudo trota-fleet-agent enroll https://fleet.testardstudios.it TF-xxxxxxxx
+sudo systemctl enable --now trota-fleet-agent
+```
+
+oppure, prima della prima accensione, con cloud-init (il pannello mostra il
+testo pronto). L'agente è già installato nelle immagini Server, Cloud e Kiosk
+di Trota OS e resta fermo finché non viene configurato. Dettagli:
+[docs/fleet.md](../docs/fleet.md).
+
+## Test
+
+```sh
+python3 -m pytest -q fleet/tests
+```
+
+Avviano un pannello vero su una porta locale e lo usano con l'agente vero e
+un browser simulato: login, codici, registrazione, comandi, risultati,
+escaping dei dati inviati dai dispositivi, CSRF, limiti.
+
+## Prossimi passi possibili
+
+- avvisi via email quando un dispositivo va fuori linea;
+- pianificazione degli aggiornamenti in una fascia oraria;
+- grafici di memoria, disco e temperatura nel tempo.

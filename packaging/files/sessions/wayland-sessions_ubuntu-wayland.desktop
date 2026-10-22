@@ -1,0 +1,13 @@
+# Trota OS session (trota-desktop-settings). Replaces the file of the
+# ubuntu-session package through a dpkg diversion: same session, own name.
+[Desktop Entry]
+Name=Trota OS on Wayland
+Name[it]=Trota OS su Wayland
+Comment=This session logs you into Trota OS
+Comment[it]=Questa sessione avvia Trota OS
+Exec=env GNOME_SHELL_SESSION_MODE=ubuntu /usr/bin/gnome-session --session=ubuntu
+TryExec=/usr/bin/gnome-shell
+Type=Application
+X-GDM-SessionRegisters=true
+X-GDM-CanRunHeadless=true
+DesktopNames=ubuntu;GNOME;

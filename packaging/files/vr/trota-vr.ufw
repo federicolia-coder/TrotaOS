@@ -1,0 +1,6 @@
+# Firewall profile for WiVRn (Trota VR). Not enabled by default:
+#   sudo ufw allow WiVRn
+[WiVRn]
+title=WiVRn VR streaming
+description=Stream PC VR to standalone headsets such as Meta Quest over Wi-Fi
+ports=9757/tcp|9757/udp

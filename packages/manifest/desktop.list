@@ -1,0 +1,153 @@
+# Trota OS — GNOME desktop.
+# Derived from the Recommends of Ubuntu 24.04 "ubuntu-desktop-minimal",
+# minus the packages listed in excluded.list (see docs/architecture.md).
+
+# Session, shell, display manager
+gdm3
+gnome-shell
+ubuntu-session
+gnome-session-canberra
+gnome-settings-daemon
+gnome-control-center
+gnome-shell-extension-appindicator
+gir1.2-dbusmenu-glib-0.4 # context menus of the dock (Ubuntu Dock needs it)
+gnome-shell-extension-desktop-icons-ng
+gnome-shell-extension-ubuntu-dock
+gnome-shell-extension-ubuntu-tiling-assistant
+gnome-menus
+gir1.2-gmenu-3.0
+xdg-desktop-portal-gnome
+xorg
+gsettings-ubuntu-schemas
+ubuntu-settings
+policykit-desktop-privileges
+libglib2.0-bin
+xdg-user-dirs
+xdg-user-dirs-gtk
+xdg-utils
+zenity
+libnotify-bin
+
+# Themes and fonts
+yaru-theme-gnome-shell
+yaru-theme-gtk
+yaru-theme-icon
+yaru-theme-sound
+gnome-accessibility-themes
+dmz-cursor-theme
+xcursor-themes
+fontconfig
+fonts-inter
+fonts-dejavu-core
+fonts-liberation
+fonts-noto-core
+fonts-noto-cjk
+fonts-noto-color-emoji
+fonts-ubuntu
+
+# Accessibility
+at-spi2-core
+libatk-adaptor
+orca
+brltty
+mousetweaks
+speech-dispatcher
+
+# Input methods
+ibus
+ibus-gtk
+ibus-gtk3
+ibus-table
+im-config
+xkb-data
+inputattach
+
+# Audio and video stack
+pipewire-pulse
+wireplumber
+libspa-0.2-bluetooth
+alsa-base
+alsa-utils
+gstreamer1.0-alsa
+gstreamer1.0-packagekit
+gstreamer1.0-plugins-base-apps
+gstreamer1.0-plugins-good
+
+# Networking
+network-manager
+network-manager-config-connectivity-ubuntu
+network-manager-openvpn-gnome
+network-manager-pptp-gnome
+wpasupplicant
+wireless-tools
+rfkill
+libproxy1-plugin-gsettings
+libproxy1-plugin-networkmanager
+avahi-daemon
+libnss-mdns
+bluez
+bluez-cups
+gnome-bluetooth-sendto
+
+# Printing
+cups
+cups-bsd
+cups-client
+cups-filters
+foomatic-db-compressed-ppds
+openprinting-ppds
+ghostscript
+hplip
+printer-driver-brlaser
+printer-driver-c2esp
+printer-driver-foo2zjs
+printer-driver-m2300w
+printer-driver-min12xxw
+printer-driver-pnm2ppa
+printer-driver-ptouch
+printer-driver-pxljr
+printer-driver-sag-gdi
+printer-driver-splix
+
+# System services
+anacron
+gnome-keyring
+libpam-gnome-keyring
+libpam-fprintd
+gpg-agent
+dirmngr
+ca-certificates
+systemd-oomd
+fwupd
+fwupd-signed
+laptop-detect
+pcmciautils
+libu2f-udev
+libsasl2-modules
+spice-vdagent
+gvfs-fuse
+memtest86+
+
+# Software, updates and drivers
+packagekit
+appstream
+apt-config-icons-hidpi
+update-manager
+update-notifier
+software-properties-gtk
+ubuntu-release-upgrader-gtk
+ubuntu-drivers-common
+language-selector-common
+language-selector-gnome
+
+# Help
+yelp
+ubuntu-docs              # GNOME desktop guide (Ubuntu edition, required by gnome-user-docs)
+
+# Languages shipped on the image (others are installed on demand)
+language-pack-en
+language-pack-gnome-en
+language-pack-it
+language-pack-gnome-it
+hunspell-en-us
+hunspell-it

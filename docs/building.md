@@ -75,7 +75,11 @@ Tutti in `scripts/build/config.env`, sovrascrivibili dall'ambiente:
 ```sh
 sudo TROTA_MIRROR=http://it.archive.ubuntu.com/ubuntu ./scripts/build/build-iso.sh
 sudo TROTA_SQUASHFS_COMP=zstd ./scripts/build/build-iso.sh iso checksum
+sudo TROTA_FLAVOR=vr ./scripts/build/build-iso.sh    # variante VR (docs/editions.md)
 ```
+
+La variante VR usa chroot e albero ISO separati (`build/chroot-vr`,
+`build/iso-vr`), quindi si può costruire accanto alla ISO desktop.
 
 Se l'host esce in HTTPS tramite un proxy che ispeziona TLS, passare il
 certificato con `TROTA_BUILD_CA_BUNDLE=/percorso/ca.crt` (usato solo durante

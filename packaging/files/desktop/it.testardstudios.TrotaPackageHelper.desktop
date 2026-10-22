@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=Trota Package Helper
+Name[it]=Assistente pacchetti Trota
+GenericName=Package search
+GenericName[it]=Ricerca pacchetti
+Comment=Search the package catalogue
+Comment[it]=Cerca nel catalogo dei pacchetti
+Exec=trota-package-helper
+Icon=it.testardstudios.TrotaPackageHelper
+Terminal=false
+Categories=GTK;GNOME;System;PackageManager;
+Keywords=apt;package;install;software;pacchetti;installare;
+StartupNotify=true
+StartupWMClass=it.testardstudios.TrotaPackageHelper

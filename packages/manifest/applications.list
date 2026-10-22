@@ -1,0 +1,41 @@
+# Trota OS — preinstalled applications (one per role, no duplicates).
+# Trota OS ships no snaps. Firefox is the official .deb from Mozilla's APT
+# repository (configured by trota-software-sources) and is installed by the
+# "trota" stage of scripts/build/build-iso.sh; applications not in the Ubuntu
+# archive come from Flathub through GNOME Software.
+
+gnome-software           # software manager (APT + Flatpak)
+gnome-software-plugin-flatpak
+flatpak
+
+nautilus                 # file manager
+nautilus-sendto
+gnome-terminal           # terminal
+gnome-text-editor        # text editor
+evince                   # PDF / document viewer
+file-roller              # archive manager
+unzip
+zip
+eog                      # image viewer
+totem                    # video player
+gnome-calculator
+gnome-characters
+gnome-clocks
+gnome-font-viewer
+gnome-system-monitor     # system utilities
+gnome-disk-utility
+gnome-logs
+gnome-power-manager
+baobab
+seahorse
+gnome-tweaks
+libreoffice-writer       # productivity
+libreoffice-calc
+libreoffice-impress
+libreoffice-gnome
+libreoffice-l10n-it
+libreoffice-help-it
+gamemode                 # gaming: CPU governor helper used by Steam/Lutris
+mesa-vulkan-drivers
+mesa-utils
+vulkan-tools

@@ -1,0 +1,15 @@
+# Trota Fleet panel image (Podman or Docker). Data in the /data volume.
+#   podman build -t trota-fleet fleet/
+#   podman run --rm -it -v trota-fleet:/data trota-fleet adduser federico
+#   podman run -d --name trota-fleet -p 127.0.0.1:8080:8080 -v trota-fleet:/data \
+#       -e TROTA_FLEET_PUBLIC_URL=https://fleet.example.com trota-fleet
+FROM docker.io/library/python:3.12-slim
+RUN useradd --system --home /data --uid 10001 fleet && mkdir /data && chown fleet /data
+COPY trota_fleet /app/trota_fleet
+ENV PYTHONPATH=/app PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 TZ=Europe/Rome \
+    TROTA_FLEET_DB=/data/fleet.db TROTA_FLEET_LISTEN=0.0.0.0:8080 TROTA_FLEET_BEHIND_PROXY=1
+USER fleet
+VOLUME /data
+EXPOSE 8080
+ENTRYPOINT ["python3", "-m", "trota_fleet"]
+CMD ["serve"]

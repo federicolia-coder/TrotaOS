@@ -1,0 +1,25 @@
+Trota OS Kiosk
+==============
+
+The first screen shows one web page, full screen, in Firefox (kiosk mode)
+inside the cage Wayland compositor. The browser starts at boot, comes back by
+itself if it crashes or is closed, and is restarted every day at 04:00.
+
+Configuration: /etc/trota-kiosk.conf
+  TROTA_KIOSK_URL=https://example.com/board   page to show
+  TROTA_KIOSK_VT_SWITCH=no                     yes = allow Ctrl+Alt+F<n>
+Apply: sudo systemctl restart trota-kiosk
+
+Firefox policies (no updates prompts, no telemetry, no password manager...):
+/etc/firefox/policies/policies.json. Every start uses a fresh, empty profile.
+
+Administration: SSH with keys, or the serial console. Provision many screens
+with cloud-init (NoCloud data source on a USB drive labelled CIDATA), e.g.:
+
+  #cloud-config
+  ssh_authorized_keys: [ "ssh-ed25519 AAAA... admin" ]
+  write_files:
+    - path: /etc/trota-kiosk.conf
+      content: |
+        TROTA_KIOSK_URL=https://intranet.example/board
+  runcmd: [ [systemctl, restart, trota-kiosk] ]

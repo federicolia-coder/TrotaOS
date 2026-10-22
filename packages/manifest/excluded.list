@@ -1,0 +1,26 @@
+# Trota OS — packages that must NOT be installed by the image build.
+# During the build they are pinned to priority -1 so that no Recommends can pull
+# them in; tests/test_manifest.py checks that no other list contains them.
+# Users remain free to install any of them later with APT.
+# Format: <package>  # <reason>
+
+ubuntu-report            # telemetry: hardware survey sent to Canonical (opt-out)
+whoopsie                 # telemetry: crash report upload daemon
+apport-gtk               # crash reporting UI (sends reports to Launchpad)
+apport                   # crash reporting backend
+kerneloops               # uploads kernel oops reports
+popularity-contest       # package usage survey
+cloud-init               # cloud provisioning, not useful on a desktop
+gnome-remote-desktop     # remote desktop server: no remote access by default
+openssh-server           # no network services listening by default
+postfix                  # mail server, may be pulled by smartmontools Recommends
+exim4-daemon-light       # mail server
+gnome-initial-setup      # Ubuntu-branded onboarding; replaced by Trota Welcome
+snapd                    # Trota OS ships no snaps (blocked also on the installed system, see trota-software-sources)
+gnome-software-plugin-snap # snap support in GNOME Software
+ubuntu-kernel-accessories # bpftrace, bpfcc-tools and two extra LLVM copies (~210 MB), kernel developers only
+linux-tools-common       # perf and kernel tools (~170 MB with LLVM), recommended by the HWE kernel
+sssd                     # enterprise directory login (Active Directory/LDAP), a background service on every boot
+
+# Note: ubuntu-wallpapers cannot be excluded because Ubuntu's gnome-shell
+# package depends on it; Trota OS only changes the default wallpaper.

@@ -1,0 +1,15 @@
+// Trota OS: origins installed automatically by unattended-upgrades.
+// The system identifies itself as "Trota" (lsb_release -i), so the
+// ${distro_id} entries of 50unattended-upgrades no longer match the Ubuntu
+// archive: the Ubuntu security origins are listed here explicitly.
+Unattended-Upgrade::Allowed-Origins {
+        "Ubuntu:${distro_codename}";
+        "Ubuntu:${distro_codename}-security";
+        "UbuntuESMApps:${distro_codename}-apps-security";
+        "UbuntuESM:${distro_codename}-infra-security";
+};
+// Firefox from Mozilla's APT repository (trota-software-sources): security
+// fixes reach the browser without waiting for the user.
+Unattended-Upgrade::Origins-Pattern {
+        "site=packages.mozilla.org";
+};

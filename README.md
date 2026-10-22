@@ -20,6 +20,9 @@ Sviluppato e pubblicato da **TestardStudios**.
   - **Trota System Info** – informazioni sul sistema raccolte localmente
   - **Trota Diagnostics** – controlli di salute in sola lettura
   - **Trota Package Helper** – ricerca nel catalogo APT e istruzioni di installazione
+- Variante **Trota OS VR** della Desktop, con Monado (OpenXR) e l'app
+  **Trota VR**, che controlla il PC e installa WiVRn o Steam da Flathub
+  ([docs/editions.md](docs/editions.md))
 
 ### Compatibilità
 

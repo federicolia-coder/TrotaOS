@@ -1,0 +1,7 @@
+# Trota OS ships no snaps. This pin stops APT from installing snapd, also as a
+# dependency of the Ubuntu transitional packages that install a snap (for
+# example chromium-browser). To allow snaps again, remove the
+# trota-software-sources package or delete this file.
+Package: snapd
+Pin: release a=*
+Pin-Priority: -10

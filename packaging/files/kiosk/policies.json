@@ -1,0 +1,39 @@
+{
+  "policies": {
+    "DisableAppUpdate": true,
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisablePocket": true,
+    "DisableFirefoxAccounts": true,
+    "DisableDeveloperTools": true,
+    "DisableFormHistory": true,
+    "DisableProfileImport": true,
+    "DisableSetDesktopBackground": true,
+    "DontCheckDefaultBrowser": true,
+    "NoDefaultBookmarks": true,
+    "OfferToSaveLogins": false,
+    "PasswordManagerEnabled": false,
+    "OverrideFirstRunPage": "",
+    "OverridePostUpdatePage": "",
+    "PromptForDownloadLocation": false,
+    "UserMessaging": {
+      "WhatsNew": false,
+      "ExtensionRecommendations": false,
+      "FeatureRecommendations": false,
+      "UrlbarInterventions": false,
+      "SkipOnboarding": true,
+      "MoreFromMozilla": false,
+      "Locked": true
+    },
+    "FirefoxHome": {
+      "Search": false,
+      "TopSites": false,
+      "SponsoredTopSites": false,
+      "Highlights": false,
+      "Pocket": false,
+      "SponsoredPocket": false,
+      "Snippets": false,
+      "Locked": true
+    }
+  }
+}

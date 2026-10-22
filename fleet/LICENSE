@@ -1,0 +1,12 @@
+Trota Fleet — pannello di gestione remota
+Copyright (C) 2026 TestardStudios. Tutti i diritti riservati.
+
+Questo software (la cartella fleet/ e il suo contenuto) è proprietà di
+TestardStudios e non è distribuito con licenza open source. Non è concesso
+copiarlo, modificarlo, distribuirlo, offrirlo come servizio a terzi o
+usarlo in altro modo senza un accordo scritto con TestardStudios
+(sales@testardstudios.it).
+
+L'agente che gira sui dispositivi (applications/trota-fleet-agent) fa parte
+di Trota OS ed è distribuito con licenza GPL-3.0-or-later: il pannello e
+l'agente sono programmi separati che comunicano solo tramite HTTPS.

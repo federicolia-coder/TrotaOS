@@ -1,0 +1,31 @@
+Trota Fleet agent
+=================
+
+Connects this device to a Trota Fleet panel, where it appears with its
+status (system, uptime, memory, disk, addresses, pending updates, kiosk
+page) and from where it can receive a few commands:
+
+  - show another page on the kiosk, restart the kiosk browser;
+  - install the available updates;
+  - reboot.
+
+The device calls the panel over HTTPS once a minute: no port is opened on
+the device. The panel cannot run any other command or program.
+
+Enrolment (the code is created in the panel, Dispositivi → Aggiungi):
+
+  sudo trota-fleet-agent enroll https://fleet.example.com <code>
+  sudo systemctl enable --now trota-fleet-agent
+
+With cloud-init, for many devices at once:
+
+  #cloud-config
+  write_files:
+    - path: /etc/trota-fleet.conf
+      content: |
+        TROTA_FLEET_URL=https://fleet.example.com
+        TROTA_FLEET_TOKEN=<code>
+
+Other commands: trota-fleet-agent status (the report sent to the panel),
+trota-fleet-agent once, trota-fleet-agent leave.
+Files: /etc/trota-fleet.conf, /var/lib/trota-fleet/device.json (root only).

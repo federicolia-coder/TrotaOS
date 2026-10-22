@@ -1,0 +1,286 @@
+# Build Trota OS on GitHub-hosted runners and publish it as a GitHub release:
+# the desktop ISO, then the Server/Edge, Cloud and Kiosk disk images
+# (docs/editions.md). Started by hand: Actions → "Build and release ISO" → Run workflow.
+#
+# GitHub limits release assets to 2 GiB per file: the ISO is attached as a
+# single file when it fits, otherwise in parts (see docs/release-notes.md).
+name: Build and release ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (created on the selected branch)"
+        required: true
+        default: "v1.0.0"
+      prerelease:
+        description: "Mark the release as a pre-release"
+        type: boolean
+        default: true
+      replace:
+        description: "Delete an existing release with this tag (and the tag) first"
+        type: boolean
+        default: false
+      images:
+        description: "Also build the Server, Cloud and Kiosk disk images"
+        type: boolean
+        default: true
+      iso:
+        description: "Build the desktop ISO (off: only add the disk images to the existing release)"
+        type: boolean
+        default: true
+      vr:
+        description: "Also build the Trota OS VR ISO (preview) and add it to the release"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-iso
+  cancel-in-progress: false
+
+jobs:
+  iso:
+    if: ${{ inputs.iso }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      # The Azure mirror of the hosted runners dropped packages in three runs.
+      TROTA_MIRROR: http://archive.ubuntu.com/ubuntu
+      ISO: dist/trota-os-1.0-amd64.iso
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          REPLACE: ${{ inputs.replace }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1 || git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
+            if [ "$REPLACE" = true ]; then
+              echo "::notice::release $TAG will be replaced after a successful build"
+            else
+              echo "::error::release or tag $TAG already exists (run again with 'replace' to overwrite it)"; exit 1
+            fi
+          fi
+
+      # The build needs ~25 GB; the runner image ships ~20 GB free.
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+              /opt/hostedtoolcache /usr/local/share/boost /usr/share/swift /usr/local/julia* \
+              /opt/microsoft /usr/local/share/powershell /usr/local/share/chromium
+          sudo docker image prune --all --force >/dev/null || true
+          df -h /
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends debootstrap squashfs-tools xorriso mtools \
+              dosfstools rsync grub-pc-bin grub-efi-amd64-bin dpkg-dev python3 python3-pytest gettext
+
+      - name: Unit tests
+        run: python3 -m pytest -q -p no:cacheprovider tests fleet/tests --deselect tests/test_ui_smoke.py
+
+      # One retry: a mirror occasionally fails to serve a package.
+      - name: Build packages
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh
+
+      # The hosted runner has 2 CPUs: xz with 1 MiB blocks takes ~40 minutes.
+      - name: Build ISO
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-iso.sh || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-iso.sh bootstrap packages trota customize iso checksum
+
+      - name: Prepare release files
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" dist
+          mkdir -p release
+          name="$(basename "$ISO")"
+          bytes="$(stat -c %s "$ISO")"
+          # GitHub release assets must be smaller than 2 GiB.
+          if [ "$bytes" -lt 2147483648 ]; then
+            mv "$ISO" release/
+            single=true
+          else
+            echo "::warning::ISO is $bytes bytes (over 2 GiB): attached in parts"
+            split -b 1900M -d -a 1 --numeric-suffixes=1 "$ISO" "release/$name.part"
+            (cd release && sha256sum ./*.part* > SHA256SUMS-parts \
+              && cat ./*.part* | sha256sum -c <(sed 's/  .*/  -/' "../$ISO.sha256"))
+            single=false
+          fi
+          cp "$ISO.sha256" dist/trota-os-1.0-amd64.manifest release/
+          ls -l release
+          sha="$(cut -d' ' -f1 "$ISO.sha256")"
+          size="$(numfmt --to=si --suffix=B "$bytes")"
+          url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}"
+          {
+            if [ "${{ inputs.prerelease }}" = true ]; then
+              echo "**Anteprima.** Build automatica su GitHub Actions; l'immagine ha superato \`verify-iso.sh\`. I test in macchina virtuale e su hardware reale sono descritti in [docs/testing.md]($url/docs/testing.md)."
+              echo
+            fi
+            echo "Trota OS 1.0 \"Fario\" di TestardStudios: sistema operativo leggero, GNOME su Wayland."
+            echo
+            echo "- Nessuno snap e niente in background: Firefox \`.deb\` aggiornato da Mozilla, applicazioni da Flathub."
+            echo "- Nessuna telemetria, nessun servizio di rete in ascolto, aggiornamenti di sicurezza automatici."
+            echo "- Avvio BIOS e UEFI con Secure Boot."
+            echo "- Compatibile con i pacchetti \`.deb\` e i PPA per Ubuntu 24.04 LTS."
+            echo
+            echo "### Desktop: ISO live con installer ($size)"
+            if [ "$single" = true ]; then
+              echo "Scarica \`$name\` e verificalo:"
+              echo '```sh'
+              echo "sha256sum -c $name.sha256"
+              echo '```'
+              echo "Su Windows: \`certutil -hashfile $name SHA256\`."
+            else
+              parts="$(cd release && ls ./*.part* | sed 's#^\./##' | paste -sd' ')"
+              winparts="$(echo "$parts" | sed 's/ / + /g')"
+              echo "GitHub accetta file fino a 2 GiB: la ISO è divisa in parti ($parts). Scaricale tutte nella stessa cartella."
+              echo '```sh'
+              echo "cat $name.part* > $name && sha256sum -c $name.sha256"
+              echo '```'
+              echo "Su Windows: \`copy /b $winparts $name\`, poi \`certutil -hashfile $name SHA256\`."
+            fi
+            echo
+            echo "SHA-256 della ISO: \`$sha\`"
+            echo
+            if [ "${{ inputs.images }}" = true ]; then
+              echo
+              echo "### Server / Edge, Cloud, Kiosk: immagini disco pronte"
+              echo "\`trota-os-<edizione>-1.0-amd64.img.xz\` da scrivere su un disco, \`.qcow2\` per macchine virtuali e cloud; configurazione al primo avvio con cloud-init. Guida: [docs/editions.md]($url/docs/editions.md)."
+              echo "Le immagini vengono aggiunte a questo release qualche minuto dopo la ISO; checksum nei file \`.sha256\`."
+            fi
+            echo
+            echo "Note di rilascio e problemi noti: [docs/release-notes.md]($url/docs/release-notes.md) · Installazione: [docs/installation.md]($url/docs/installation.md)"
+          } > release-body.md
+          cat release-body.md
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          if [ "${{ inputs.replace }}" = true ] && gh release view "$TAG" >/dev/null 2>&1; then
+            gh release delete "$TAG" --cleanup-tag --yes
+          elif [ "${{ inputs.replace }}" = true ] && git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
+            git push origin ":refs/tags/$TAG"
+          fi
+          flags=()
+          [ "${{ inputs.prerelease }}" = true ] && flags+=(--prerelease)
+          gh release create "$TAG" release/* --target "$GITHUB_SHA" \
+              --title "Trota OS 1.0 \"Fario\"$([ "${{ inputs.prerelease }}" = true ] && echo ' (anteprima)')" \
+              --notes-file release-body.md "${flags[@]}"
+
+      - name: Build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: logs/
+          if-no-files-found: ignore
+
+  images:
+    needs: iso
+    # Also when the ISO job was skipped (images only, added to the existing release).
+    if: ${{ always() && inputs.images && (needs.iso.result == 'success' || needs.iso.result == 'skipped') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [server, cloud, kiosk]
+    env:
+      TROTA_MIRROR: http://archive.ubuntu.com/ubuntu
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends debootstrap rsync dosfstools mtools fdisk qemu-utils xz-utils \
+              dpkg-dev python3 python3-pytest gettext
+
+      - name: Build packages
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh
+
+      - name: Build the ${{ matrix.edition }} image
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-image.sh ${{ matrix.edition }} || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-image.sh ${{ matrix.edition }}
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          EDITION: ${{ matrix.edition }}
+        run: |
+          name="trota-os-$EDITION-1.0-amd64"
+          ls -l dist/
+          for f in "dist/$name.qcow2" "dist/$name.img.xz"; do
+            [ "$(stat -c %s "$f")" -lt 2147483648 ] || { echo "::error::$f is over the 2 GiB limit of GitHub"; exit 1; }
+          done
+          gh release upload "$TAG" "dist/$name.qcow2" "dist/$name.img.xz" "dist/$name.sha256" "dist/$name.manifest" --clobber
+
+      - name: Build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ matrix.edition }}
+          path: logs/
+          if-no-files-found: ignore
+
+  vr:
+    needs: iso
+    # Also when the ISO job was skipped (VR ISO only, added to the existing release).
+    if: ${{ always() && inputs.vr && (needs.iso.result == 'success' || needs.iso.result == 'skipped') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      TROTA_MIRROR: http://archive.ubuntu.com/ubuntu
+      TROTA_FLAVOR: vr
+      ISO: dist/trota-os-vr-1.0-amd64.iso
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+              /opt/hostedtoolcache /usr/local/share/boost /usr/share/swift /usr/local/julia* \
+              /opt/microsoft /usr/local/share/powershell /usr/local/share/chromium
+          sudo docker image prune --all --force >/dev/null || true
+          df -h /
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends debootstrap squashfs-tools xorriso mtools \
+              dosfstools rsync grub-pc-bin grub-efi-amd64-bin dpkg-dev python3 python3-pytest gettext
+
+      - name: Build packages
+        run: sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh || sudo --preserve-env=TROTA_MIRROR ./scripts/build/build-packages.sh
+
+      - name: Build the VR ISO
+        run: sudo --preserve-env=TROTA_MIRROR,TROTA_FLAVOR ./scripts/build/build-iso.sh || sudo --preserve-env=TROTA_MIRROR,TROTA_FLAVOR ./scripts/build/build-iso.sh bootstrap packages trota customize iso checksum
+
+      - name: Attach to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" dist
+          ls -l dist/
+          [ "$(stat -c %s "$ISO")" -lt 2147483648 ] || { echo "::error::$ISO is over the 2 GiB limit of GitHub"; exit 1; }
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title "Trota OS 1.0 \"Fario\" (anteprima)" \
+                --notes "Trota OS VR 1.0 (anteprima): ISO desktop con Monado e l'app Trota VR. Non ancora provata con visori reali: docs/editions.md."
+          fi
+          gh release upload "$TAG" "$ISO" "$ISO.sha256" dist/trota-os-vr-1.0-amd64.manifest --clobber
+
+      - name: Build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-vr
+          path: logs/
+          if-no-files-found: ignore

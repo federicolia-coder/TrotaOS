@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily restart of the Trota OS Kiosk browser (clears memory of long-running pages)
+
+[Timer]
+# Change the time with: sudo systemctl edit trota-kiosk-restart.timer
+OnCalendar=*-*-* 04:00:00
+Persistent=false
+
+[Install]
+WantedBy=timers.target

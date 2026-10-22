@@ -1,0 +1,14 @@
+#!/bin/sh
+# Trota OS Kiosk session: one browser window, full screen, in the cage
+# Wayland compositor (started by trota-kiosk.service on tty1).
+set -eu
+[ -r /etc/trota-kiosk.conf ] && . /etc/trota-kiosk.conf
+url="${TROTA_KIOSK_URL:-file:///usr/share/trota-kiosk/index.html}"
+cage_opts="-d"
+[ "${TROTA_KIOSK_VT_SWITCH:-no}" = yes ] && cage_opts="$cage_opts -s"
+# A fresh profile at every start: nothing persists between sessions.
+profile="$(mktemp -d "${XDG_RUNTIME_DIR:-/tmp}/trota-kiosk.XXXXXX")"
+trap 'rm -rf "$profile"' EXIT
+export MOZ_ENABLE_WAYLAND=1
+# shellcheck disable=SC2086
+cage $cage_opts -- firefox --kiosk --no-remote --profile "$profile" "$url"

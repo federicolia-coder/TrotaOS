@@ -1,0 +1,201 @@
+Source: trota-os
+Section: misc
+Priority: optional
+Maintainer: TestardStudios <maintainers@testardstudios.invalid>
+Build-Depends: debhelper-compat (= 13),
+               dh-python,
+               python3:any,
+               gettext,
+               librsvg2-bin,
+               python3-markdown,
+               python3-pytest
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+Homepage: https://github.com/federicolia-coder/TrotaOS
+Vcs-Git: https://github.com/federicolia-coder/TrotaOS.git
+
+Package: trota-artwork
+Architecture: all
+Depends: ${misc:Depends}, plymouth, plymouth-label, plymouth-theme-spinner
+Description: Trota OS artwork: logo, wallpapers, icons, boot splash
+ Original artwork of Trota OS by TestardStudios: logo and wordmark in
+ several variants, desktop wallpapers, application icons, the Plymouth
+ boot splash theme and a GRUB theme.
+
+Package: trota-release
+Architecture: all
+Depends: ${misc:Depends}, base-files
+Breaks: trota-software-sources (<< 1.0.1)
+Replaces: trota-software-sources (<< 1.0.1)
+Description: Trota OS release identification
+ Installs the Trota OS /usr/lib/os-release through a dpkg diversion
+ (ID=trota, ID_LIKE="ubuntu debian"). The original file of the base is
+ preserved as /usr/lib/os-release.ubuntu and keeps being updated by
+ base-files. VERSION_CODENAME/UBUNTU_CODENAME stay "noble" so that APT
+ sources, PPAs and third-party repositories keep working. Also provides the
+ python-apt templates for "Software & Updates" and the unattended-upgrades
+ origins of the base archive and of Firefox, an APT pin that keeps snapd
+ from being installed, and turns off the Ubuntu Pro advertising of
+ "apt upgrade" and the background ESM/APT-news queries of ubuntu-pro-client
+ (security updates are not affected).
+
+Package: trota-software-sources
+Architecture: all
+Depends: ${misc:Depends}, apt (>= 2.0), trota-release (>= ${source:Version})
+Recommends: flatpak
+Description: Trota OS desktop software sources
+ Configures where the Trota OS desktop gets software that is not in the base
+ archive:
+  * the official Mozilla APT repository, so that Firefox is a .deb package
+    updated by Mozilla (Ubuntu's transitional snap package is pinned away);
+  * Flathub as the system-wide Flatpak remote, with a daily update of the
+    installed Flatpak applications (trota-flatpak-update.timer).
+
+Package: trota-desktop-settings
+Architecture: all
+Depends: ${misc:Depends}, trota-artwork (= ${source:Version}), dconf-cli,
+         gsettings-desktop-schemas, fonts-inter, yaru-theme-gtk, yaru-theme-icon
+Description: Trota OS default desktop configuration
+ GSettings and dconf defaults of the Trota OS GNOME desktop: dark style,
+ wallpapers, dock, fonts, terminal colours, login screen logo and privacy
+ defaults. Only defaults are changed: every setting remains user
+ configurable. Gives the GDM sessions the Trota OS name (dpkg diversion of
+ the ubuntu-session files) and keeps the desktop light: no file indexer, no
+ GNOME Software or Ubuntu Pro notifier at login. A dpkg filter skips the
+ Ubuntu wallpapers and the firmware files of data-centre hardware (Ethernet
+ switch ASICs, SmartNICs, FastLinQ server adapters).
+
+Package: trota-common
+Architecture: all
+Section: python
+Depends: ${misc:Depends}, ${python3:Depends}, python3-gi, gir1.2-gtk-4.0,
+         gir1.2-adw-1, trota-artwork (= ${source:Version})
+Recommends: iproute2, pciutils
+Description: shared library of the Trota OS applications
+ Python modules shared by the Trota OS utilities: local system
+ information, read-only diagnostics, APT catalogue queries, translations
+ and GTK 4 / libadwaita helpers.
+
+Package: trota-welcome
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version})
+Recommends: trota-docs
+Description: Trota OS welcome guide
+ First-run guide of Trota OS: version information, quick access to
+ settings, updates, documentation and support, and an overview of the
+ preinstalled applications. Shown at login until disabled.
+
+Package: trota-system-info
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version})
+Description: Trota OS system information
+ Shows the Trota OS and Ubuntu versions, kernel, architecture, CPU,
+ memory, disks, graphics and network interfaces. Information is collected
+ locally and never sent anywhere. Also usable from the terminal
+ (--text, --json).
+
+Package: trota-diagnostics
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version})
+Recommends: network-manager, update-notifier-common
+Description: Trota OS safe system diagnostics
+ Read-only health checks: disk space, network, kernel, security features,
+ system services, recent log errors and pending updates, with cautious
+ suggestions. Nothing is changed or repaired automatically.
+
+Package: trota-package-helper
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version}), apt
+Description: Trota OS package search helper
+ Searches the APT catalogue, shows essential package information and
+ explains how to install software. APT remains the package manager: the
+ helper never installs or removes anything itself.
+
+Package: trota-vr
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version}),
+         pciutils, usbutils, vulkan-tools, flatpak, trota-software-sources
+Recommends: monado-service, libopenxr1-monado, xr-hardware, libopenxr-loader1, steam-devices, gamemode
+Description: Trota VR: virtual reality on Trota OS
+ Checks a PC for virtual reality (graphics card and driver, Vulkan,
+ connected headsets, OpenXR runtime, device permissions) and installs on
+ request WiVRn, to play PC VR on standalone headsets such as Meta Quest
+ over Wi-Fi, or Steam for SteamVR, from Flathub. Ships the firewall
+ profile that opens the WiVRn ports when a firewall is active.
+
+Package: trota-docs
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}
+Description: Trota OS documentation
+ Offline HTML version of the Trota OS documentation: installation,
+ building, troubleshooting, security and licensing.
+
+Package: trota-desktop
+Architecture: all
+Section: metapackages
+Depends: ${misc:Depends}, trota-release, trota-artwork, trota-desktop-settings,
+         trota-software-sources,
+         trota-welcome, trota-system-info, trota-diagnostics,
+         trota-package-helper,
+         ubuntu-session, gdm3, gnome-shell, apparmor, unattended-upgrades,
+         network-manager, update-manager
+Recommends: trota-docs
+Description: Trota OS desktop system (metapackage)
+ Depends on all the Trota OS components. Removing it does not remove the
+ rest of the system, but it should stay installed so that future Trota OS
+ components arrive with normal updates.
+
+Package: ubiquity-slideshow-trota
+Architecture: all
+Depends: ${misc:Depends}
+Provides: ubiquity-slideshow
+Conflicts: ubiquity-slideshow
+Replaces: ubiquity-slideshow
+Description: Trota OS installer slideshow
+ Slides shown by the ubiquity installer while Trota OS is being installed
+ (English and Italian). Self-contained HTML, no network access.
+ .
+ Ubiquity 24.04 also needs a slideshow to keep its privilege handling
+ consistent during the installation.
+
+Package: trota-server-settings
+Architecture: all
+Depends: ${misc:Depends}, trota-release (= ${source:Version}), openssh-server, procps
+Description: Trota OS Server, Edge and Cloud defaults
+ Configuration of the headless Trota OS editions:
+  * SSH with keys only (no root login, no password login unless enabled
+    explicitly with cloud-init "ssh_pwauth");
+  * a base set of kernel hardening settings (sysctl): kernel pointers and
+    logs restricted, ptrace and unprivileged BPF limited, protected links
+    and FIFOs, no ICMP redirects or source routing, SYN cookies;
+  * bounded systemd journal, also on small edge devices.
+
+Package: trota-kiosk
+Architecture: all
+Depends: ${misc:Depends}, trota-server-settings (= ${source:Version}),
+         trota-software-sources (= ${source:Version}), cage, firefox, adduser,
+         fonts-noto-core
+Description: Trota OS Kiosk and digital signage session
+ Shows one web page full screen on the first screen, in Firefox (kiosk mode)
+ inside the cage Wayland compositor: information screens, totems, menu
+ boards, dashboards, self-service terminals.
+  * starts at boot as the unprivileged user "kiosk", with a fresh profile
+    every time; restarts by itself and once a day;
+  * Firefox policies without update prompts, telemetry, password manager,
+    developer tools or first-run pages;
+  * page and console access set in /etc/trota-kiosk.conf, also with
+    cloud-init for many screens at once.
+
+Package: trota-fleet-agent
+Architecture: all
+Section: admin
+Depends: ${misc:Depends}, ${python3:Depends}, python3:any, ca-certificates, iproute2
+Description: Trota Fleet agent for remote management
+ Connects a Trota OS Server, Cloud or Kiosk device to a Trota Fleet panel:
+ the device reports its status (system, uptime, memory, disk, addresses,
+ pending updates, kiosk page) and receives a fixed set of commands: change
+ the kiosk page, restart the kiosk, install updates, reboot.
+  * the device calls the panel over HTTPS: no port is opened on the device;
+  * the panel cannot run arbitrary programs or shell commands;
+  * does nothing until a panel is configured in /etc/trota-fleet.conf.

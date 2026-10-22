@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Trota VR
+GenericName=Virtual reality setup
+GenericName[it]=Configurazione realtà virtuale
+Comment=Check this PC for virtual reality and install the VR software
+Comment[it]=Controlla il PC per la realtà virtuale e installa i programmi VR
+Exec=trota-vr
+Icon=it.testardstudios.TrotaVR
+Terminal=false
+Categories=GTK;GNOME;Game;Settings;HardwareSettings;
+Keywords=VR;XR;virtual reality;headset;Quest;SteamVR;OpenXR;realtà virtuale;visore;
+StartupNotify=true
+StartupWMClass=it.testardstudios.TrotaVR

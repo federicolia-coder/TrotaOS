@@ -1,0 +1,7 @@
+#!/usr/bin/python3
+# trota-vr — Trota OS. Copyright (C) 2026 TestardStudios. GPL-3.0-or-later.
+import sys
+
+from trota_vr.cli import main
+
+sys.exit(main(sys.argv[1:]))

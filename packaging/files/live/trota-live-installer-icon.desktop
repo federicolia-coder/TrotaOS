@@ -1,0 +1,10 @@
+[Desktop Entry]
+# Live session only (package ubiquity-slideshow-trota, removed by the
+# installer): the installer icon on the desktop is marked as trusted, so it
+# shows its name and icon instead of "ubiquity.desktop".
+Type=Application
+Name=Trota OS installer icon
+Exec=sh -c 'f="$(xdg-user-dir DESKTOP)/ubiquity.desktop"; for i in $(seq 30); do [ -f "$f" ] && break; sleep 1; done; [ -f "$f" ] && chmod +x "$f" && gio set "$f" metadata::trusted true'
+NoDisplay=true
+X-GNOME-Autostart-Phase=Applications
+X-GNOME-Autostart-enabled=true
