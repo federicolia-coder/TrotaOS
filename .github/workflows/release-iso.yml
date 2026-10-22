@@ -271,6 +271,10 @@ jobs:
           sudo chown -R "$(id -u):$(id -g)" dist
           ls -l dist/
           [ "$(stat -c %s "$ISO")" -lt 2147483648 ] || { echo "::error::$ISO is over the 2 GiB limit of GitHub"; exit 1; }
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --target "$GITHUB_SHA" --prerelease --title "Trota OS 1.0 \"Fario\" (anteprima)" \
+                --notes "Trota OS VR 1.0 (anteprima): ISO desktop con Monado e l'app Trota VR. Non ancora provata con visori reali: docs/editions.md."
+          fi
           gh release upload "$TAG" "$ISO" "$ISO.sha256" dist/trota-os-vr-1.0-amd64.manifest --clobber
 
       - name: Build logs
