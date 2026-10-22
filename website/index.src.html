@@ -544,7 +544,11 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
         <div class="term"><span class="p">$ </span>trota-vr --text
 <span class="o">[ OK ] Graphics card: Dedicated graphics card ready for VR.</span>
 <span class="p">$ </span>trota-vr --install wivrn</div>
-        <p class="notice"><b>In preparazione.</b> La ISO di Trota OS VR non è ancora pubblicata e non è stata provata con visori reali. Per giocare servono una scheda video AMD o NVIDIA recente, 16 GB di RAM e, per i visori autonomi, un Wi-Fi veloce o il router vicino.</p>
+        <div class="actions">
+          <a class="btn primary" href="trota-vr-1.0.1.tar.gz" download>Scarica Trota VR (1 MB)</a>
+          <a class="btn" href="trota-vr-1.0.1.tar.gz.sha256">SHA-256</a>
+        </div>
+        <p class="notice"><b>Anteprima per chi ha già Trota OS 1.0.</b> Estrai l'archivio e, nella cartella, esegui <code>sh installa.sh</code>: installa l'app Trota VR, Monado e le regole per visori e controller. Non è ancora stata provata con visori reali, e la ISO completa di Trota OS VR non è ancora pubblicata. Per giocare servono una scheda video AMD o NVIDIA recente, 16 GB di RAM e, per i visori autonomi, il PC collegato al router con il cavo o un Wi-Fi a 5 GHz.</p>
       </div>
     </div></div>
   </section>
@@ -734,7 +738,7 @@ TROTA_KIOSK_URL=https://menu.bar.it</div>
         <details><summary>Fino a quando riceve aggiornamenti?</summary><p>Gli aggiornamenti di sicurezza arrivano fino ad aprile 2029 e si installano da soli. Le nuove versioni di Trota OS escono come nuove immagini.</p></details>
         <details><summary>Perché non ci sono gli snap?</summary><p>Per tenere il sistema leggero: Firefox è il pacchetto ufficiale di Mozilla e le altre applicazioni arrivano da Flathub. Chi vuole gli snap può riattivarli.</p></details>
         <details><summary>Serve un account o una connessione?</summary><p>No. La rete serve solo per gli aggiornamenti e per installare nuove applicazioni.</p></details>
-        <details><summary>Si può usare con un visore VR?</summary><p>Sarà possibile con Trota OS VR, una variante dell'edizione Desktop in preparazione: Meta Quest e Pico via Wi-Fi con WiVRn, i visori da PC con Monado o SteamVR. La ISO non è ancora pubblicata.</p></details>
+        <details><summary>Si può usare con un visore VR?</summary><p>Sì, in anteprima: chi ha Trota OS 1.0 può installare l'app Trota VR dalla sezione VR di questa pagina. Meta Quest e Pico funzionano via Wi-Fi con WiVRn, i visori da PC con Monado o SteamVR. Non è ancora stata provata con visori reali.</p></details>
         <details><summary>Funziona in macchina virtuale?</summary><p>Sì: tutte le edizioni sono provate in QEMU/KVM con firmware BIOS, UEFI e Secure Boot. L'edizione Cloud è fatta apposta per Proxmox, OpenStack e i cloud pubblici.</p></details>
       </div>
     </div></div>
