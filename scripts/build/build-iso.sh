@@ -122,8 +122,9 @@ stage_trota() {
     [ -f "$CHROOT/usr/share/ubiquity-slideshow/slides/index.html" ] || die "installer slideshow missing"
     if [ "$TROTA_FLAVOR" = vr ]; then
         [ -x "$CHROOT/usr/bin/trota-vr" ] || die "Trota VR app missing"
-        [ -f "$CHROOT/etc/xdg/openxr/1/active_runtime.json" ] || [ -f "$CHROOT/usr/share/openxr/1/active_runtime.json" ] \
-            || die "no default OpenXR runtime (monado-service)"
+        # active_runtime.json is an absolute alternatives symlink: resolve it inside the chroot.
+        in_chroot "$CHROOT" test -f /etc/xdg/openxr/1/active_runtime.json \
+            || die "no default OpenXR runtime (libopenxr1-monado)"
         echo vr > "$CHROOT/etc/trota-edition"
     fi
 
