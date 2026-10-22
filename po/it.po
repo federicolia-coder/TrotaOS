@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trota OS 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
-"POT-Creation-Date: 2026-10-20 11:21+0000\n"
+"POT-Creation-Date: 2026-10-22 13:41+0000\n"
 "PO-Revision-Date: 2026-10-16 12:00+0000\n"
 "Last-Translator: TestardStudios\n"
 "Language-Team: Italian\n"
@@ -100,6 +100,7 @@ msgid "If you are on a public network, open the browser to complete the login pa
 msgstr "Se sei su una rete pubblica, apri il browser per completare la pagina di accesso (captive portal)."
 
 #: applications/trota-common/trota_common/diagnostics.py:140
+#: applications/trota-vr/trota_vr/checks.py:210
 msgid "Not connected to a network."
 msgstr "Non connesso a una rete."
 
@@ -874,7 +875,7 @@ msgid "Checking this PC for VR…"
 msgstr "Controllo del PC per la VR…"
 
 #: applications/trota-vr/trota_vr/app.py:87
-#: applications/trota-vr/trota_vr/checks.py:199
+#: applications/trota-vr/trota_vr/checks.py:260
 msgid "VR software"
 msgstr "Programmi VR"
 
@@ -894,30 +895,42 @@ msgstr "Installa"
 msgid "This PC"
 msgstr "Questo PC"
 
-#: applications/trota-vr/trota_vr/app.py:130
+#: applications/trota-vr/trota_vr/app.py:122
+msgid "Open WiVRn ports"
+msgstr "Apri le porte di WiVRn"
+
+#: applications/trota-vr/trota_vr/app.py:137
+msgid "The firewall was not changed."
+msgstr "Il firewall non è stato modificato."
+
+#: applications/trota-vr/trota_vr/app.py:137
+msgid "WiVRn ports are open."
+msgstr "Le porte di WiVRn sono aperte."
+
+#: applications/trota-vr/trota_vr/app.py:145
 msgid "Installing…"
 msgstr "Installazione…"
 
-#: applications/trota-vr/trota_vr/app.py:131
+#: applications/trota-vr/trota_vr/app.py:146
 #, python-brace-format
 msgid "Installing {name}: this can take a few minutes."
 msgstr "Installazione di {name}: può richiedere qualche minuto."
 
-#: applications/trota-vr/trota_vr/app.py:142
+#: applications/trota-vr/trota_vr/app.py:157
 #, python-brace-format
 msgid "{name} is installed."
 msgstr "{name} è installato."
 
-#: applications/trota-vr/trota_vr/app.py:144
+#: applications/trota-vr/trota_vr/app.py:159
 #, python-brace-format
 msgid "Could not install {name}: {error}"
 msgstr "Impossibile installare {name}: {error}"
 
-#: applications/trota-vr/trota_vr/app.py:145
+#: applications/trota-vr/trota_vr/app.py:160
 msgid "unknown error"
 msgstr "errore sconosciuto"
 
-#: applications/trota-vr/trota_vr/app.py:153
+#: applications/trota-vr/trota_vr/app.py:168
 msgid "Check this PC for virtual reality and install the VR software"
 msgstr "Controlla il PC per la realtà virtuale e installa i programmi VR"
 
@@ -1035,15 +1048,63 @@ msgstr "Mancano alcune regole per i dispositivi."
 msgid "Install the xr-hardware and steam-devices packages, then reconnect the headset."
 msgstr "Installa i pacchetti xr-hardware e steam-devices, poi ricollega il visore."
 
-#: applications/trota-vr/trota_vr/checks.py:203
+#: applications/trota-vr/trota_vr/checks.py:204
+msgid "Network for WiVRn"
+msgstr "Rete per WiVRn"
+
+#: applications/trota-vr/trota_vr/checks.py:207
+msgid "Could not read the network connections."
+msgstr "Impossibile leggere le connessioni di rete."
+
+#: applications/trota-vr/trota_vr/checks.py:211
+msgid "Standalone headsets stream from the PC over the local network: connect the PC to the router, by cable if possible."
+msgstr "I visori autonomi ricevono le immagini dal PC sulla rete di casa: collega il PC al router, se possibile con il cavo."
+
+#: applications/trota-vr/trota_vr/checks.py:219
+msgid "PC connected by cable: best for streaming."
+msgstr "PC collegato con il cavo: la soluzione migliore per lo streaming."
+
+#: applications/trota-vr/trota_vr/checks.py:224
+msgid "Wi-Fi at 2.4 GHz: too slow for VR streaming."
+msgstr "Wi-Fi a 2,4 GHz: troppo lento per lo streaming VR."
+
+#: applications/trota-vr/trota_vr/checks.py:225
+msgid "Connect the PC by cable, or use the 5 GHz network of the router; the headset should be on 5 GHz (or 6 GHz) too."
+msgstr "Collega il PC con il cavo, oppure usa la rete a 5 GHz del router; anche il visore dovrebbe essere a 5 GHz (o 6 GHz)."
+
+#: applications/trota-vr/trota_vr/checks.py:227
+msgid "Wi-Fi connected."
+msgstr "Wi-Fi connesso."
+
+#: applications/trota-vr/trota_vr/checks.py:228
+msgid "For the smoothest image connect the PC to the router by cable and keep the headset on 5 GHz Wi-Fi."
+msgstr "Per un'immagine più fluida collega il PC al router con il cavo e tieni il visore sul Wi-Fi a 5 GHz."
+
+#: applications/trota-vr/trota_vr/checks.py:237
+msgid "Firewall"
+msgstr "Firewall"
+
+#: applications/trota-vr/trota_vr/checks.py:241
+msgid "No firewall is blocking WiVRn."
+msgstr "Nessun firewall blocca WiVRn."
+
+#: applications/trota-vr/trota_vr/checks.py:242
+msgid "The firewall is on: WiVRn needs its ports open."
+msgstr "Il firewall è attivo: WiVRn ha bisogno delle sue porte aperte."
+
+#: applications/trota-vr/trota_vr/checks.py:244
+msgid "Use \"Open WiVRn ports\" below, or run: sudo ufw allow WiVRn"
+msgstr "Usa \"Apri le porte di WiVRn\" qui sotto, oppure esegui: sudo ufw allow WiVRn"
+
+#: applications/trota-vr/trota_vr/checks.py:264
 msgid "VR software installed."
 msgstr "Programmi VR installati."
 
-#: applications/trota-vr/trota_vr/checks.py:204
+#: applications/trota-vr/trota_vr/checks.py:265
 msgid "No VR software installed yet."
 msgstr "Nessun programma VR ancora installato."
 
-#: applications/trota-vr/trota_vr/checks.py:205
+#: applications/trota-vr/trota_vr/checks.py:266
 msgid "Install WiVRn for standalone headsets or Steam for PC headsets."
 msgstr "Installa WiVRn per i visori autonomi o Steam per i visori da PC."
 

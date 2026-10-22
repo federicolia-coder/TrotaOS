@@ -189,6 +189,67 @@ def check_udev(ctx: Context) -> CheckResult:
                        _("Install the xr-hardware and steam-devices packages, then reconnect the headset."))
 
 
+# --- network for WiVRn ---------------------------------------------------------
+def parse_nmcli_devices(text: str) -> list[tuple[str, str, str]]:
+    """(device, type, state) from `nmcli -t -f DEVICE,TYPE,STATE device`."""
+    out = []
+    for line in text.splitlines():
+        parts = line.split(":")
+        if len(parts) >= 3:
+            out.append((parts[0], parts[1], parts[2]))
+    return out
+
+
+def check_network(ctx: Context) -> CheckResult:
+    title = _("Network for WiVRn")
+    r = ctx.runner(("nmcli", "-t", "-f", "DEVICE,TYPE,STATE", "device"), 15)
+    if not r.ok:
+        return CheckResult("network", title, INFO, _("Could not read the network connections."))
+    up = [(d, t) for d, t, s in parse_nmcli_devices(r.stdout) if s == "connected" and t in ("ethernet", "wifi")]
+    if not up:
+        return CheckResult("network", title, WARNING, _("Not connected to a network."), [],
+                           _("Standalone headsets stream from the PC over the local network: connect the PC "
+                             "to the router, by cable if possible."))
+    details = []
+    for dev, _type in up:
+        a = ctx.runner(("nmcli", "-t", "-g", "IP4.ADDRESS", "device", "show", dev), 15)
+        ips = [x.split("/")[0] for x in a.stdout.replace("|", "\n").split() if x] if a.ok else []
+        details.append(f"{dev} ({_type}): {', '.join(ips) or '-'}")
+    if any(t == "ethernet" for _d, t in up):
+        return CheckResult("network", title, OK, _("PC connected by cable: best for streaming."), details)
+    w = ctx.runner(("nmcli", "-t", "-f", "ACTIVE,FREQ", "device", "wifi", "list", "--rescan", "no"), 15)
+    freqs = [int(m) for line in w.stdout.splitlines() if line.startswith("yes:")
+             for m in re.findall(r"(\d{4})", line)]
+    if freqs and max(freqs) < 3000:
+        return CheckResult("network", title, WARNING, _("Wi-Fi at 2.4 GHz: too slow for VR streaming."), details,
+                           _("Connect the PC by cable, or use the 5 GHz network of the router; the headset "
+                             "should be on 5 GHz (or 6 GHz) too."))
+    return CheckResult("network", title, OK, _("Wi-Fi connected."), details,
+                       _("For the smoothest image connect the PC to the router by cable and keep the "
+                         "headset on 5 GHz Wi-Fi."))
+
+
+# --- firewall --------------------------------------------------------------------
+FIREWALL_COMMAND = ("pkexec", "ufw", "allow", "WiVRn")
+
+
+def check_firewall(ctx: Context) -> CheckResult:
+    title = _("Firewall")
+    r = ctx.runner(("systemctl", "is-active", "ufw"), 10)
+    active = r.stdout.strip() == "active"
+    if not active:
+        return CheckResult("firewall", title, OK, _("No firewall is blocking WiVRn."))
+    return CheckResult("firewall", title, INFO, _("The firewall is on: WiVRn needs its ports open."),
+                       ["9757/tcp", "9757/udp"],
+                       _("Use \"Open WiVRn ports\" below, or run: sudo ufw allow WiVRn"))
+
+
+def open_firewall(ctx: Context | None = None) -> _runner.CommandResult:
+    """Allow the WiVRn ufw profile (asks for the administrator password)."""
+    ctx = ctx or Context()
+    return ctx.runner(FIREWALL_COMMAND, 300)
+
+
 # --- VR software ---------------------------------------------------------------
 def installed_apps(ctx: Context) -> set[str]:
     r = ctx.runner(("flatpak", "list", "--app", "--columns=application"), 20)
@@ -205,7 +266,8 @@ def check_software(ctx: Context) -> CheckResult:
                        _("Install WiVRn for standalone headsets or Steam for PC headsets."))
 
 
-CHECKS = (check_gpu, check_vulkan, check_headset, check_runtime, check_udev, check_software)
+CHECKS = (check_gpu, check_vulkan, check_headset, check_runtime, check_udev, check_network, check_firewall,
+          check_software)
 
 
 def run_all(ctx: Context | None = None) -> list[CheckResult]:

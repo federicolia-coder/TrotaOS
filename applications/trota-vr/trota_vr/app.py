@@ -118,12 +118,27 @@ class VRWindow(Adw.ApplicationWindow):
                 tool = CHECK_TOOLS.get(r.id)
                 if tool and r.status in ("warning", "error"):
                     s.add_suffix(ui.launch_button(tool[0], tool[1], self.toasts))
+                if r.id == "firewall" and r.status == "info":
+                    fw = Gtk.Button(label=_("Open WiVRn ports"), valign=Gtk.Align.CENTER)
+                    fw.connect("clicked", self._on_open_firewall)
+                    s.add_suffix(fw)
                 row.add_row(s)
             if r.status in ("warning", "error"):
                 row.set_expanded(True)
             group.add(row)
         page.add(group)
         return page
+
+    def _on_open_firewall(self, button):
+        button.set_sensitive(False)
+
+        def worker():
+            r = checks.open_firewall()
+            msg = _("WiVRn ports are open.") if r.ok else _("The firewall was not changed.")
+            GLib.idle_add(lambda: (self.toasts.add_toast(Adw.Toast(title=msg, timeout=5)), button.set_sensitive(True))
+                          and GLib.SOURCE_REMOVE)
+
+        threading.Thread(target=worker, daemon=True).start()
 
     def _on_install(self, button, app):
         button.set_sensitive(False)

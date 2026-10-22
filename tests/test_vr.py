@@ -130,3 +130,32 @@ def test_one_broken_check_does_not_stop_the_others(tmp_path, monkeypatch):
     monkeypatch.setattr(vr, "CHECKS", (boom, vr.check_headset))
     results = vr.run_all(ctx(tmp_path, {("lsusb",): ok("")}))
     assert [r.status for r in results] == ["skipped", vr.INFO]
+
+
+NMCLI_DEV = "wlp2s0:wifi:connected\nenp3s0:ethernet:unavailable\nlo:loopback:connected (externally)\n"
+
+
+def test_network_wifi_band(tmp_path):
+    base = {("nmcli", "-t", "-f", "DEVICE,TYPE,STATE", "device"): ok(NMCLI_DEV),
+            ("nmcli", "-t", "-g", "IP4.ADDRESS", "device", "show"): ok("192.168.1.20/24\n")}
+    slow = vr.check_network(ctx(tmp_path, {**base, ("nmcli", "-t", "-f", "ACTIVE,FREQ"): ok("no:5180 MHz\nyes:2437 MHz\n")}))
+    assert slow.status == vr.WARNING and slow.details == ["wlp2s0 (wifi): 192.168.1.20"]
+    fast = vr.check_network(ctx(tmp_path, {**base, ("nmcli", "-t", "-f", "ACTIVE,FREQ"): ok("yes:5180 MHz\n")}))
+    assert fast.status == vr.OK
+
+
+def test_network_cable_and_offline(tmp_path):
+    wired = {("nmcli", "-t", "-f", "DEVICE,TYPE,STATE", "device"): ok("enp3s0:ethernet:connected\n"),
+             ("nmcli", "-t", "-g", "IP4.ADDRESS"): ok("10.0.0.5/24\n")}
+    assert vr.check_network(ctx(tmp_path, wired)).status == vr.OK
+    off = {("nmcli", "-t", "-f", "DEVICE,TYPE,STATE", "device"): ok("wlp2s0:wifi:disconnected\n")}
+    assert vr.check_network(ctx(tmp_path, off)).status == vr.WARNING
+    assert vr.check_network(ctx(tmp_path)).status == vr.INFO     # nmcli missing
+
+
+def test_firewall(tmp_path):
+    assert vr.check_firewall(ctx(tmp_path, {("systemctl", "is-active", "ufw"): ok("inactive\n")})).status == vr.OK
+    on = vr.check_firewall(ctx(tmp_path, {("systemctl", "is-active", "ufw"): ok("active\n")}))
+    assert on.status == vr.INFO and "9757/udp" in on.details
+    runner = FakeRunner({("pkexec", "ufw", "allow", "WiVRn"): ok("Rule added\n")})
+    assert vr.open_firewall(vr.Context(runner=runner)).ok and runner.calls == [vr.FIREWALL_COMMAND]

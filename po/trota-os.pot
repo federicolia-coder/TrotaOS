@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trota OS 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
-"POT-Creation-Date: 2026-10-20 11:21+0000\n"
+"POT-Creation-Date: 2026-10-22 13:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -106,6 +106,7 @@ msgid ""
 msgstr ""
 
 #: applications/trota-common/trota_common/diagnostics.py:140
+#: applications/trota-vr/trota_vr/checks.py:210
 msgid "Not connected to a network."
 msgstr ""
 
@@ -909,7 +910,7 @@ msgid "Checking this PC for VR…"
 msgstr ""
 
 #: applications/trota-vr/trota_vr/app.py:87
-#: applications/trota-vr/trota_vr/checks.py:199
+#: applications/trota-vr/trota_vr/checks.py:260
 msgid "VR software"
 msgstr ""
 
@@ -931,30 +932,42 @@ msgstr ""
 msgid "This PC"
 msgstr ""
 
-#: applications/trota-vr/trota_vr/app.py:130
+#: applications/trota-vr/trota_vr/app.py:122
+msgid "Open WiVRn ports"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:137
+msgid "The firewall was not changed."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:137
+msgid "WiVRn ports are open."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/app.py:145
 msgid "Installing…"
 msgstr ""
 
-#: applications/trota-vr/trota_vr/app.py:131
+#: applications/trota-vr/trota_vr/app.py:146
 #, python-brace-format
 msgid "Installing {name}: this can take a few minutes."
 msgstr ""
 
-#: applications/trota-vr/trota_vr/app.py:142
+#: applications/trota-vr/trota_vr/app.py:157
 #, python-brace-format
 msgid "{name} is installed."
 msgstr ""
 
-#: applications/trota-vr/trota_vr/app.py:144
+#: applications/trota-vr/trota_vr/app.py:159
 #, python-brace-format
 msgid "Could not install {name}: {error}"
 msgstr ""
 
-#: applications/trota-vr/trota_vr/app.py:145
+#: applications/trota-vr/trota_vr/app.py:160
 msgid "unknown error"
 msgstr ""
 
-#: applications/trota-vr/trota_vr/app.py:153
+#: applications/trota-vr/trota_vr/app.py:168
 msgid "Check this PC for virtual reality and install the VR software"
 msgstr ""
 
@@ -1079,15 +1092,69 @@ msgid ""
 "headset."
 msgstr ""
 
-#: applications/trota-vr/trota_vr/checks.py:203
+#: applications/trota-vr/trota_vr/checks.py:204
+msgid "Network for WiVRn"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:207
+msgid "Could not read the network connections."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:211
+msgid ""
+"Standalone headsets stream from the PC over the local network: connect the "
+"PC to the router, by cable if possible."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:219
+msgid "PC connected by cable: best for streaming."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:224
+msgid "Wi-Fi at 2.4 GHz: too slow for VR streaming."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:225
+msgid ""
+"Connect the PC by cable, or use the 5 GHz network of the router; the headset "
+"should be on 5 GHz (or 6 GHz) too."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:227
+msgid "Wi-Fi connected."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:228
+msgid ""
+"For the smoothest image connect the PC to the router by cable and keep the "
+"headset on 5 GHz Wi-Fi."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:237
+msgid "Firewall"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:241
+msgid "No firewall is blocking WiVRn."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:242
+msgid "The firewall is on: WiVRn needs its ports open."
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:244
+msgid "Use \"Open WiVRn ports\" below, or run: sudo ufw allow WiVRn"
+msgstr ""
+
+#: applications/trota-vr/trota_vr/checks.py:264
 msgid "VR software installed."
 msgstr ""
 
-#: applications/trota-vr/trota_vr/checks.py:204
+#: applications/trota-vr/trota_vr/checks.py:265
 msgid "No VR software installed yet."
 msgstr ""
 
-#: applications/trota-vr/trota_vr/checks.py:205
+#: applications/trota-vr/trota_vr/checks.py:266
 msgid "Install WiVRn for standalone headsets or Steam for PC headsets."
 msgstr ""
 
