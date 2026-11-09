@@ -241,7 +241,8 @@ class WelcomeWindow(Adw.ApplicationWindow):
         copy_row.add_prefix(Gtk.Image(icon_name="edit-copy-symbolic"))
         copy_row.connect("activated", lambda r: ui.copy_to_clipboard(r, sysinfo.report_text(sysinfo.collect())))
         support.add(copy_row)
-        return self._scrolled(docs, support)
+        staff = ui.internal_group()
+        return self._scrolled(*([staff] if staff else []), docs, support)
 
 
 class WelcomeApp(ui.TrotaApplication):

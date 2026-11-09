@@ -1,0 +1,9 @@
+#!/bin/sh
+# testard-admin — open the TestardStudios admin panel in the default browser.
+# Trota OS internal edition. Copyright (C) 2026 TestardStudios. GPL-3.0-or-later.
+url=https://admin-common-867827762439.europe-west8.run.app/
+if [ -r /etc/trota-internal.conf ]; then
+    conf_url="$(sed -n 's/^ADMIN_URL=//p' /etc/trota-internal.conf | tail -n 1)"
+    [ -n "$conf_url" ] && url="$conf_url"
+fi
+exec xdg-open "$url"

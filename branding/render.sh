@@ -9,7 +9,7 @@ mkdir -p "$OUT/wallpapers" "$OUT/plymouth/trota" "$OUT/grub/trota" "$OUT/pixmaps
 
 "$PY" "$HERE/generate.py" --check
 
-for w in forge steel ingot; do
+for w in forge steel ingot internal; do
     rsvg-convert -w 3840 -h 2160 "$HERE/wallpapers/trota-$w.svg" -o "$OUT/wallpapers/trota-$w.png"
 done
 

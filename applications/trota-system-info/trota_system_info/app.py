@@ -96,6 +96,9 @@ class SystemInfoWindow(Adw.ApplicationWindow):
 
     def _build(self, r: sysinfo.SystemReport) -> Gtk.Widget:
         page = Adw.PreferencesPage()
+        staff = ui.internal_group()
+        if staff:
+            page.add(staff)
 
         system = Adw.PreferencesGroup(title=_("Software"))
         system.add(info_row(_("Operating system"), r.os_pretty_name))

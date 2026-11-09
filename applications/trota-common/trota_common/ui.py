@@ -11,7 +11,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk  # noqa: E402
 
-from . import PROJECT_URL, ISSUES_URL, PUBLISHER, __version__, desktop  # noqa: E402
+from . import PROJECT_URL, ISSUES_URL, PUBLISHER, __version__, desktop, internal  # noqa: E402
 from .i18n import _, bind_gtk_domain  # noqa: E402
 
 DATA_DIRS = (
@@ -164,6 +164,17 @@ def launch_row(target: str, title: str, subtitle: str, icon: str | None = None) 
 
     row.connect("activated", on_activated)
     return row
+
+
+def internal_group() -> Adw.PreferencesGroup | None:
+    """Company links of the internal edition (trota_common.internal), or None elsewhere."""
+    if not internal.is_internal():
+        return None
+    conf = internal.load()
+    group = Adw.PreferencesGroup(title=_("TestardStudios staff"))
+    group.add(uri_row(conf.support_uri, internal.support_title(), internal.support_subtitle(), "help-faq-symbolic"))
+    group.add(uri_row(conf.admin_url, internal.admin_title(), internal.admin_subtitle(), "preferences-system-symbolic"))
+    return group
 
 
 def uri_row(uri: str, title: str, subtitle: str, icon: str = "web-browser-symbolic") -> Adw.ActionRow:

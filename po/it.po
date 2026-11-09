@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trota OS 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
-"POT-Creation-Date: 2026-10-22 13:41+0000\n"
+"POT-Creation-Date: 2026-11-09 14:14+0000\n"
 "PO-Revision-Date: 2026-10-16 12:00+0000\n"
 "Last-Translator: TestardStudios\n"
 "Language-Team: Italian\n"
@@ -47,7 +47,7 @@ msgid "Disk space"
 msgstr "Spazio su disco"
 
 #: applications/trota-common/trota_common/diagnostics.py:117
-#: applications/trota-system-info/trota_system_info/app.py:138
+#: applications/trota-system-info/trota_system_info/app.py:141
 #: applications/trota-welcome/trota_welcome/app.py:182
 msgid "Network"
 msgstr "Rete"
@@ -136,7 +136,7 @@ msgstr "È necessario riavviare per completare gli aggiornamenti."
 #: applications/trota-common/trota_common/diagnostics.py:167
 #: applications/trota-common/trota_common/diagnostics.py:170
 #: applications/trota-common/trota_common/diagnostics.py:172
-#: applications/trota-system-info/trota_system_info/app.py:103
+#: applications/trota-system-info/trota_system_info/app.py:106
 msgid "Kernel"
 msgstr "Kernel"
 
@@ -342,6 +342,23 @@ msgstr "Il controllo non è stato eseguito."
 msgid "Please report this problem to the Trota OS developers."
 msgstr "Segnala questo problema agli sviluppatori di Trota OS."
 
+#: applications/trota-common/trota_common/internal.py:54
+msgid "Contact technical support"
+msgstr "Contatta il supporto tecnico"
+
+#. TRANSLATORS: an in-joke for TestardStudios staff; keep the capitals.
+#: applications/trota-common/trota_common/internal.py:59
+msgid "NOT FEDERICO, PREFERABLY"
+msgstr "NON FEDERICO, PREFERIBILMENTE"
+
+#: applications/trota-common/trota_common/internal.py:63
+msgid "Testard admin panel"
+msgstr "Pannello admin Testard"
+
+#: applications/trota-common/trota_common/internal.py:67
+msgid "Company administration (staff sign-in required)"
+msgstr "Amministrazione aziendale (serve l'accesso da dipendente)"
+
 #: applications/trota-common/trota_common/packages.py:60
 msgid "Supported by Canonical with security updates."
 msgstr "Supportato da Canonical con aggiornamenti di sicurezza."
@@ -393,24 +410,28 @@ msgstr "Impossibile avviare l'applicazione: {error}"
 msgid "not installed"
 msgstr "non installato"
 
-#: applications/trota-common/trota_common/ui.py:178
+#: applications/trota-common/trota_common/ui.py:174
+msgid "TestardStudios staff"
+msgstr "Personale TestardStudios"
+
+#: applications/trota-common/trota_common/ui.py:189
 #, python-brace-format
 msgid "Could not open the link: {error}"
 msgstr "Impossibile aprire il collegamento: {error}"
 
-#: applications/trota-common/trota_common/ui.py:186
+#: applications/trota-common/trota_common/ui.py:197
 msgid "Copied to the clipboard"
 msgstr "Copiato negli appunti"
 
-#: applications/trota-common/trota_common/ui.py:191
+#: applications/trota-common/trota_common/ui.py:202
 msgid "About"
 msgstr "Informazioni"
 
-#: applications/trota-common/trota_common/ui.py:192
+#: applications/trota-common/trota_common/ui.py:203
 msgid "Quit"
 msgstr "Esci"
 
-#: applications/trota-common/trota_common/ui.py:201
+#: applications/trota-common/trota_common/ui.py:212
 msgid "Main menu"
 msgstr "Menu principale"
 
@@ -551,7 +572,7 @@ msgid "Package Helper"
 msgstr "Assistente pacchetti"
 
 #: applications/trota-package-helper/trota_package_helper/app.py:51
-#: applications/trota-system-info/trota_system_info/app.py:100
+#: applications/trota-system-info/trota_system_info/app.py:103
 #: applications/trota-welcome/trota_welcome/app.py:188
 #: applications/trota-welcome/trota_welcome/app.py:217
 msgid "Software"
@@ -714,125 +735,125 @@ msgstr "Salva il rapporto…"
 msgid "Information could not be collected"
 msgstr "Impossibile raccogliere le informazioni"
 
-#: applications/trota-system-info/trota_system_info/app.py:101
+#: applications/trota-system-info/trota_system_info/app.py:104
 msgid "Operating system"
 msgstr "Sistema operativo"
 
-#: applications/trota-system-info/trota_system_info/app.py:102
+#: applications/trota-system-info/trota_system_info/app.py:105
 msgid "Based on"
 msgstr "Basato su"
 
-#: applications/trota-system-info/trota_system_info/app.py:104
+#: applications/trota-system-info/trota_system_info/app.py:107
 msgid "Architecture"
 msgstr "Architettura"
 
-#: applications/trota-system-info/trota_system_info/app.py:105
+#: applications/trota-system-info/trota_system_info/app.py:108
 msgid "Desktop"
 msgstr "Desktop"
 
-#: applications/trota-system-info/trota_system_info/app.py:106
+#: applications/trota-system-info/trota_system_info/app.py:109
 msgid "Computer name"
 msgstr "Nome del computer"
 
-#: applications/trota-system-info/trota_system_info/app.py:107
+#: applications/trota-system-info/trota_system_info/app.py:110
 msgid "Uptime"
 msgstr "Tempo di attività"
 
-#: applications/trota-system-info/trota_system_info/app.py:110
+#: applications/trota-system-info/trota_system_info/app.py:113
 msgid "Hardware"
 msgstr "Hardware"
 
-#: applications/trota-system-info/trota_system_info/app.py:112
+#: applications/trota-system-info/trota_system_info/app.py:115
 #, python-brace-format
 msgid "{n} threads"
 msgstr "{n} thread"
 
-#: applications/trota-system-info/trota_system_info/app.py:114
+#: applications/trota-system-info/trota_system_info/app.py:117
 #, python-brace-format
 msgid "{n} cores"
 msgstr "{n} core"
 
-#: applications/trota-system-info/trota_system_info/app.py:117
+#: applications/trota-system-info/trota_system_info/app.py:120
 msgid "Processor"
 msgstr "Processore"
 
-#: applications/trota-system-info/trota_system_info/app.py:119
+#: applications/trota-system-info/trota_system_info/app.py:122
 msgid "Memory"
 msgstr "Memoria"
 
-#: applications/trota-system-info/trota_system_info/app.py:119
+#: applications/trota-system-info/trota_system_info/app.py:122
 #, python-brace-format
 msgid "{total} total · {avail} available"
 msgstr "{total} totali · {avail} disponibili"
 
-#: applications/trota-system-info/trota_system_info/app.py:124
+#: applications/trota-system-info/trota_system_info/app.py:127
 msgid "None"
 msgstr "Nessuno"
 
-#: applications/trota-system-info/trota_system_info/app.py:124
+#: applications/trota-system-info/trota_system_info/app.py:127
 msgid "Swap"
 msgstr "Swap"
 
-#: applications/trota-system-info/trota_system_info/app.py:125
+#: applications/trota-system-info/trota_system_info/app.py:128
 msgid "Not detected"
 msgstr "Non rilevata"
 
-#: applications/trota-system-info/trota_system_info/app.py:126
+#: applications/trota-system-info/trota_system_info/app.py:129
 msgid "Graphics"
 msgstr "Grafica"
 
-#: applications/trota-system-info/trota_system_info/app.py:129
+#: applications/trota-system-info/trota_system_info/app.py:132
 msgid "Storage"
 msgstr "Archiviazione"
 
-#: applications/trota-system-info/trota_system_info/app.py:131
+#: applications/trota-system-info/trota_system_info/app.py:134
 #, python-brace-format
 msgid "{used} used of {total} · {free} free · {fs} on {dev}"
 msgstr "{used} usati su {total} · {free} liberi · {fs} su {dev}"
 
-#: applications/trota-system-info/trota_system_info/app.py:145
+#: applications/trota-system-info/trota_system_info/app.py:148
 msgid "Hardware address"
 msgstr "Indirizzo hardware"
 
-#: applications/trota-system-info/trota_system_info/app.py:146
+#: applications/trota-system-info/trota_system_info/app.py:149
 msgid "No address"
 msgstr "Nessun indirizzo"
 
-#: applications/trota-system-info/trota_system_info/app.py:147
+#: applications/trota-system-info/trota_system_info/app.py:150
 msgid "Address"
 msgstr "Indirizzo"
 
-#: applications/trota-system-info/trota_system_info/app.py:150
+#: applications/trota-system-info/trota_system_info/app.py:153
 msgid "Interfaces"
 msgstr "Interfacce"
 
-#: applications/trota-system-info/trota_system_info/app.py:150
+#: applications/trota-system-info/trota_system_info/app.py:153
 msgid "No network interface found"
 msgstr "Nessuna interfaccia di rete trovata"
 
-#: applications/trota-system-info/trota_system_info/app.py:154
+#: applications/trota-system-info/trota_system_info/app.py:157
 msgid "All information is read locally from this computer and is never sent anywhere."
 msgstr "Tutte le informazioni sono lette localmente da questo computer e non vengono mai inviate altrove."
 
-#: applications/trota-system-info/trota_system_info/app.py:166
+#: applications/trota-system-info/trota_system_info/app.py:169
 msgid "Save report"
 msgstr "Salva il rapporto"
 
-#: applications/trota-system-info/trota_system_info/app.py:180
+#: applications/trota-system-info/trota_system_info/app.py:183
 msgid "Report saved"
 msgstr "Rapporto salvato"
 
-#: applications/trota-system-info/trota_system_info/app.py:182
+#: applications/trota-system-info/trota_system_info/app.py:185
 #, python-brace-format
 msgid "Could not save the report: {error}"
 msgstr "Impossibile salvare il rapporto: {error}"
 
-#: applications/trota-system-info/trota_system_info/app.py:186
+#: applications/trota-system-info/trota_system_info/app.py:189
 #: applications/trota-welcome/trota_welcome/app.py:198
 msgid "Trota System Info"
 msgstr "Informazioni di sistema Trota"
 
-#: applications/trota-system-info/trota_system_info/app.py:187
+#: applications/trota-system-info/trota_system_info/app.py:190
 msgid "Information about this computer, collected locally"
 msgstr "Informazioni su questo computer, raccolte localmente"
 
@@ -1478,10 +1499,10 @@ msgstr "Copia le informazioni di sistema"
 msgid "Paste it in your report: it contains no personal files"
 msgstr "Incollale nella segnalazione: non contengono file personali"
 
-#: applications/trota-welcome/trota_welcome/app.py:248
+#: applications/trota-welcome/trota_welcome/app.py:249
 msgid "Trota Welcome"
 msgstr "Benvenuto in Trota OS"
 
-#: applications/trota-welcome/trota_welcome/app.py:249
+#: applications/trota-welcome/trota_welcome/app.py:250
 msgid "Getting started with Trota OS"
 msgstr "Primi passi con Trota OS"

@@ -2,6 +2,7 @@ applications/trota-common/trota_common/__init__.py
 applications/trota-common/trota_common/desktop.py
 applications/trota-common/trota_common/diagnostics.py
 applications/trota-common/trota_common/i18n.py
+applications/trota-common/trota_common/internal.py
 applications/trota-common/trota_common/osinfo.py
 applications/trota-common/trota_common/packages.py
 applications/trota-common/trota_common/runner.py

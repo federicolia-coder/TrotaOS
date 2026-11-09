@@ -11,6 +11,7 @@ La Desktop ha anche una variante **VR** per la realtà virtuale (sotto).
 | **Cloud** | Cloud pubblici e privati (OpenStack, Proxmox, KVM, …) | Immagine disco (`.qcow2`, `.img.xz`) con cloud-init | `build-image.sh cloud` |
 | **Kiosk / Signage** | Chioschi, totem, schermi informativi, dashboard, menu | Immagine disco pronta (`.img.xz`, `.qcow2`) | `build-image.sh kiosk` |
 | **Desktop VR** (variante) | Realtà virtuale su PC e con visori autonomi | ISO live con installer | `TROTA_FLAVOR=vr build-iso.sh` |
+| **Interna** (variante, non pubblica) | I computer di TestardStudios | ISO live con installer | `TROTA_FLAVOR=internal build-iso.sh` |
 
 Le immagini disco non hanno un installer: si scrivono su un disco (o si
 importano in una piattaforma di virtualizzazione) e al primo avvio
@@ -150,3 +151,28 @@ Ogni immagine è provata in macchina virtuale con `tests/vm/vmtest.py image
 --image dist/trota-os-<edizione>-1.0-amd64.qcow2 --firmware uefi|bios|secureboot`
 (controlli in `tests/vm/checks-image.sh`); i risultati sono in
 [testing.md](testing.md).
+
+## Interna (solo TestardStudios)
+
+La Desktop per i computer dell'azienda. Non va pubblicata: il workflow di
+release non la costruisce e `verify-iso.sh` segnala un'ISO pubblica che
+contiene il pacchetto `trota-internal`.
+
+```sh
+sudo TROTA_FLAVOR=internal ./scripts/build/build-iso.sh
+# → dist/trota-os-internal-1.0-amd64.iso
+```
+
+Rispetto alla Desktop aggiunge il pacchetto **`trota-internal`**:
+
+- lo sfondo interno (`branding/wallpapers/trota-internal.svg`), che chiede
+  a chi lo vede se è davvero un dipendente di Testard;
+- **Pannello admin Testard** tra le applicazioni e nel dock: apre nel browser
+  il pannello di amministrazione (serve l'accesso da dipendente);
+- il gruppo **Personale TestardStudios** in Trota Welcome (Aiuto e supporto)
+  e in Trota System Info, con *Contatta il supporto tecnico* («NON FEDERICO,
+  PREFERIBILMENTE») e il link al pannello.
+
+Indirizzi in `/etc/trota-internal.conf` (`ADMIN_URL`, `SUPPORT_EMAIL`).
+Lo sfondo si rigenera con `branding/make-internal-wallpaper.py` (serve
+`fonttools` e il font Inter: il testo viene convertito in tracciati).

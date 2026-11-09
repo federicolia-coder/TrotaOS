@@ -1,0 +1,16 @@
+# Trota OS internal edition (package trota-internal). Sorts after
+# 90_trota-os.gschema.override, so these defaults win over the public ones.
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/trota/trota-internal.png'
+picture-uri-dark='file:///usr/share/backgrounds/trota/trota-internal.png'
+
+[org.gnome.desktop.background:ubuntu]
+picture-uri='file:///usr/share/backgrounds/trota/trota-internal.png'
+picture-uri-dark='file:///usr/share/backgrounds/trota/trota-internal.png'
+
+[org.gnome.desktop.screensaver:ubuntu]
+picture-uri='file:///usr/share/backgrounds/trota/trota-internal.png'
+
+[org.gnome.shell:ubuntu]
+favorite-apps=['firefox.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'org.gnome.TextEditor.desktop', 'libreoffice-writer.desktop', 'it.testardstudios.TestardAdmin.desktop', 'org.gnome.Software.desktop', 'it.testardstudios.TrotaWelcome.desktop', 'yelp.desktop']

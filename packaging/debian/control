@@ -123,6 +123,17 @@ Description: Trota VR: virtual reality on Trota OS
  over Wi-Fi, or Steam for SteamVR, from Flathub. Ships the firewall
  profile that opens the WiVRn ports when a firewall is active.
 
+Package: trota-internal
+Architecture: all
+Depends: ${misc:Depends}, trota-desktop-settings (= ${source:Version}),
+         trota-welcome (= ${source:Version}), trota-system-info (= ${source:Version}),
+         xdg-utils
+Description: Trota OS internal edition for TestardStudios staff
+ Company defaults for the computers of TestardStudios: the internal
+ wallpaper, a launcher and dock entry for the admin panel, and the links
+ to technical support shown by Trota Welcome and Trota System Info.
+ Not meant for public images: only the internal ISO installs it.
+
 Package: trota-docs
 Architecture: all
 Section: doc

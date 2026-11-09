@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Testard Admin
+Name[it]=Pannello admin Testard
+GenericName=Company administration
+GenericName[it]=Amministrazione aziendale
+Comment=Open the TestardStudios admin panel (staff sign-in required)
+Comment[it]=Apri il pannello di amministrazione di TestardStudios (serve l'accesso da dipendente)
+Exec=testard-admin
+Icon=preferences-system
+Terminal=false
+Categories=Network;Office;
+Keywords=admin;dashboard;Testard;TestardStudios;amministrazione;pannello;
+StartupNotify=false

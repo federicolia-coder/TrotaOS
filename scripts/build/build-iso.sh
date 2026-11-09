@@ -5,6 +5,7 @@
 #   sudo ./scripts/build/build-iso.sh iso        # only re-run one stage
 #   sudo ./scripts/build/build-iso.sh clean      # remove build/chroot and build/iso
 #   sudo TROTA_FLAVOR=vr ./scripts/build/build-iso.sh   # Trota OS VR (docs/editions.md)
+#   sudo TROTA_FLAVOR=internal ./scripts/build/build-iso.sh   # internal edition, not for release
 #
 # Stages (in order): bootstrap packages trota customize iso checksum
 # The method is documented in docs/building.md and docs/architecture.md.
@@ -15,7 +16,9 @@ case "$TROTA_FLAVOR" in
     desktop) FLAVOR_SUFFIX="" ; FLAVOR_NAME="$TROTA_NAME" ;;
     vr)      FLAVOR_SUFFIX="-vr"; FLAVOR_NAME="$TROTA_NAME VR"
              TROTA_ISO_VOLID="${TROTA_ISO_VOLID/TROTA_OS_/TROTA_OS_VR_}" ;;
-    *) die "TROTA_FLAVOR must be desktop or vr, not '$TROTA_FLAVOR'" ;;
+    internal) FLAVOR_SUFFIX="-internal"; FLAVOR_NAME="$TROTA_NAME Internal"
+             TROTA_ISO_VOLID="${TROTA_ISO_VOLID/TROTA_OS_/TROTA_OS_INT_}" ;;
+    *) die "TROTA_FLAVOR must be desktop, vr or internal, not '$TROTA_FLAVOR'" ;;
 esac
 CHROOT="$BUILD/chroot$FLAVOR_SUFFIX"
 ISO_DIR="$BUILD/iso$FLAVOR_SUFFIX"
@@ -29,12 +32,13 @@ STAGES_ALL=(bootstrap packages trota customize iso checksum)
 cleanup() { [ -d "$CHROOT" ] && chroot_umount "$CHROOT" || true; }
 
 # Trota OS packages of the desktop image (the server ones go to build-image.sh).
-# trota-vr goes only into the VR flavour.
+# trota-vr goes only into the VR flavour, trota-internal only into the internal one.
 desktop_debs() {
-    local not_vr=(! -name 'trota-vr_*')
+    local not_vr=(! -name 'trota-vr_*') not_internal=(! -name 'trota-internal_*')
     [ "$TROTA_FLAVOR" = vr ] && not_vr=()
+    [ "$TROTA_FLAVOR" = internal ] && not_internal=()
     find "$PKG_DIR" -maxdepth 1 -name '*.deb' ! -name 'trota-server-settings_*' ! -name 'trota-kiosk_*' \
-        ! -name 'trota-fleet-agent_*' "${not_vr[@]}" | sort
+        ! -name 'trota-fleet-agent_*' "${not_vr[@]}" "${not_internal[@]}" | sort
 }
 trap cleanup EXIT
 
@@ -126,6 +130,12 @@ stage_trota() {
         in_chroot "$CHROOT" test -f /etc/xdg/openxr/1/active_runtime.json \
             || die "no default OpenXR runtime (libopenxr1-monado)"
         echo vr > "$CHROOT/etc/trota-edition"
+    fi
+    if [ "$TROTA_FLAVOR" = internal ]; then
+        [ -x "$CHROOT/usr/bin/testard-admin" ] || die "trota-internal missing (admin panel launcher)"
+        [ -f "$CHROOT/usr/share/backgrounds/trota/trota-internal.png" ] || die "internal wallpaper missing"
+        # Read by Trota Welcome and Trota System Info (trota_common.internal).
+        echo internal > "$CHROOT/etc/trota-edition"
     fi
 
     # Fail the build if an excluded package slipped in anyway.
