@@ -1,4 +1,4 @@
-"""AMBER Alerts for the internal edition, when the computer is in the United States.
+"""AMBER Alerts as desktop notifications, when the computer is in the United States.
 
 AMBER Alerts are broadcast in the US as "Child Abduction Emergency" (event
 code CAE) through FEMA's Integrated Public Alert & Warning System. Its public
@@ -8,8 +8,9 @@ of the states they cover; each entry links to the full CAP 1.2 message.
 Whether the computer is in the US, and in which states, is worked out from the
 system time zone only (GNOME sets it from the location when "Automatic time
 zone" is on): no location is looked up or sent. Outside the US nothing is
-downloaded. /etc/trota-internal.conf can turn the alerts off (AMBER_ALERTS=off)
-or name the states to follow (AMBER_STATES=ID,OR or FIPS codes).
+downloaded. /etc/trota-amber-alert.conf (package trota-amber-alert) can turn
+the alerts off (AMBER_ALERTS=off) or name the states to follow
+(AMBER_STATES=ID,OR or FIPS codes).
 """
 
 from __future__ import annotations
@@ -32,6 +33,7 @@ EVENT_CODE = "CAE"            # SAME code of the Child Abduction Emergency (AMBE
 USER_AGENT = "Trota-OS-amber-alert/1.0"
 ATOM = "{http://www.w3.org/2005/Atom}"
 CAP = "{urn:oasis:names:tc:emergency:cap:1.2}"
+CONF_FILE = "etc/trota-amber-alert.conf"
 
 # State FIPS codes by USPS abbreviation (50 states, DC and Puerto Rico).
 STATE_FIPS = {
@@ -123,7 +125,7 @@ def parse_states(value: str) -> frozenset[str]:
 def followed_states(root: Path = Path("/")) -> frozenset[str]:
     """States whose AMBER Alerts to show; empty = alerts off or not in the US."""
     try:
-        conf = parse_os_release((root / "etc/trota-internal.conf").read_text())
+        conf = parse_os_release((root / CONF_FILE).read_text())
     except OSError:
         conf = {}
     if conf.get("AMBER_ALERTS", "auto").lower() in ("off", "no", "false", "0"):

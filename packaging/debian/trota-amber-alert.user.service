@@ -1,6 +1,6 @@
 [Unit]
 Description=AMBER Alerts when the computer is in the United States
-Documentation=file:///usr/share/doc/trota-docs/html/editions.html
+Documentation=file:///usr/share/doc/trota-docs/html/privacy.html
 After=graphical-session.target
 
 [Service]

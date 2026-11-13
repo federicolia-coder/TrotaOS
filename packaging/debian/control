@@ -123,18 +123,26 @@ Description: Trota VR: virtual reality on Trota OS
  over Wi-Fi, or Steam for SteamVR, from Flathub. Ships the firewall
  profile that opens the WiVRn ports when a firewall is active.
 
+Package: trota-amber-alert
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version}), libnotify-bin
+Description: AMBER Alerts on Trota OS in the United States
+ When the system time zone is in the United States, shows the AMBER Alerts
+ (child abduction emergencies) of those states as desktop notifications,
+ from FEMA's public IPAWS feed, checked every five minutes by a user timer.
+ No location is looked up or sent, and outside the United States nothing is
+ downloaded. /etc/trota-amber-alert.conf turns the alerts off or picks the
+ states.
+
 Package: trota-internal
 Architecture: all
 Depends: ${misc:Depends}, trota-desktop-settings (= ${source:Version}),
          trota-welcome (= ${source:Version}), trota-system-info (= ${source:Version}),
-         trota-common (= ${source:Version}), xdg-utils, libnotify-bin
+         trota-common (= ${source:Version}), xdg-utils
 Description: Trota OS internal edition for TestardStudios staff
  Company defaults for the computers of TestardStudios: the internal
  wallpaper, a launcher and dock entry for the admin panel, and the links
  to technical support shown by Trota Welcome and Trota System Info.
- When the time zone is in the United States it also shows AMBER Alerts
- (child abduction emergencies) for those states as notifications, from
- FEMA's public IPAWS feed.
  Not meant for public images: only the internal ISO installs it.
 
 Package: trota-docs
@@ -151,7 +159,7 @@ Section: metapackages
 Depends: ${misc:Depends}, trota-release, trota-artwork, trota-desktop-settings,
          trota-software-sources,
          trota-welcome, trota-system-info, trota-diagnostics,
-         trota-package-helper,
+         trota-package-helper, trota-amber-alert,
          ubuntu-session, gdm3, gnome-shell, apparmor, unattended-upgrades,
          network-manager, update-manager
 Recommends: trota-docs

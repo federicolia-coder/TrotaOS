@@ -34,7 +34,7 @@ Sono quelle standard di Ubuntu, necessarie al funzionamento:
 | fwupd (`fwupd-refresh.timer`) | cdn.fwupd.org | Metadati degli aggiornamenti firmware (LVFS); i firmware si installano solo su richiesta | `sudo systemctl disable --now fwupd-refresh.timer` |
 | Ubuntu Pro client (`ua-timer.timer`) | contracts.canonical.com | Solo se l'utente attiva Ubuntu Pro. In Trota OS gli "APT news" sono **disattivati** e i servizi `apt-news`/`esm-cache`, che Ubuntu avvia a ogni `apt update`, sono **mascherati** | `sudo systemctl unmask apt-news.service esm-cache.service` |
 | Firefox | Mozilla | Funzioni del browser | Impostazioni di Firefox |
-| Allerte AMBER (`trota-amber-alert.timer`, **solo edizione interna**) | apps.fema.gov | Ogni 5 minuti, e solo se il fuso orario è negli Stati Uniti: elenco pubblico delle allerte in corso. Non invia la posizione | `AMBER_ALERTS=off` in `/etc/trota-internal.conf`, oppure `systemctl --user disable --now trota-amber-alert.timer` |
+| Allerte AMBER (`trota-amber-alert.timer`) | apps.fema.gov | Ogni 5 minuti, e solo se il fuso orario è negli Stati Uniti: elenco pubblico delle allerte AMBER in corso (rapimento di minori), mostrate come notifiche. Il paese si ricava dal fuso orario: la posizione non viene cercata né inviata | `AMBER_ALERTS=off` in `/etc/trota-amber-alert.conf`, oppure `systemctl --user disable --now trota-amber-alert.timer` |
 
 Il messaggio del giorno dinamico di Ubuntu (`motd-news`) è inattivo perché il
 pacchetto di configurazione `motd-news-config` non è installato.

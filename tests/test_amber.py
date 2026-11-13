@@ -1,4 +1,4 @@
-"""AMBER Alerts of the internal edition (trota_common.amber), with recorded feed data.
+"""AMBER Alerts (trota_common.amber, package trota-amber-alert), with recorded feed data.
 
 The alert texts below are invented; the structure is that of the IPAWS EAS feed
 and of the CAP 1.2 messages it links to.
@@ -73,7 +73,7 @@ def test_local_timezone_from_link_and_file(tmp_path):
 def test_configuration(tmp_path):
     (tmp_path / "etc").mkdir()
     os.symlink("/usr/share/zoneinfo/America/Phoenix", tmp_path / "etc/localtime")
-    conf = tmp_path / "etc/trota-internal.conf"
+    conf = tmp_path / amber.CONF_FILE
     assert amber.followed_states(tmp_path) == {"04"}                       # no config: time zone
     conf.write_text("AMBER_ALERTS=auto\nAMBER_STATES=\n")
     assert amber.followed_states(tmp_path) == {"04"}
@@ -126,3 +126,14 @@ def test_seen_entries_expire_after_a_week(tmp_path):
     seen.save(amber.SeenStore.KEEP_SECONDS + 10)
     reloaded = amber.SeenStore(tmp_path / "seen.json")
     assert "new" in reloaded and "old" not in reloaded
+
+
+def test_shipped_config_follows_the_time_zone(tmp_path):
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    (tmp_path / "etc").mkdir()
+    (tmp_path / amber.CONF_FILE).write_text((root / "packaging/files/amber/trota-amber-alert.conf").read_text())
+    os.symlink("/usr/share/zoneinfo/America/Boise", tmp_path / "etc/localtime")
+    assert amber.followed_states(tmp_path) == {"16", "41"}
+    control = (root / "packaging/debian/control").read_text()
+    assert "trota-package-helper, trota-amber-alert," in control     # pulled in by trota-desktop

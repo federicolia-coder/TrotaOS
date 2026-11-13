@@ -172,16 +172,7 @@ Rispetto alla Desktop aggiunge il pacchetto **`trota-internal`**:
 - il gruppo **Personale TestardStudios** in Trota Welcome (Aiuto e supporto)
   e in Trota System Info, con *Contatta il supporto tecnico* («NON FEDERICO,
   PREFERIBILMENTE») e il link al pannello.
-- **allerte AMBER** (rapimento di minori) come notifiche, quando il computer
-  si trova negli **Stati Uniti**: il servizio utente `trota-amber-alert.timer`
-  controlla ogni 5 minuti il feed pubblico IPAWS della FEMA (codice evento
-  `CAE`) e mostra una volta sola le allerte degli stati del fuso orario.
-  Il paese si ricava **solo dal fuso orario** del sistema (che GNOME imposta
-  dalla posizione se *Fuso orario automatico* è attivo): nessuna posizione
-  viene cercata o inviata e fuori dagli Stati Uniti non si scarica nulla.
-  In `/etc/trota-internal.conf`: `AMBER_ALERTS=off` le disattiva,
-  `AMBER_STATES=ID,OR` sceglie gli stati da seguire.
 
-Indirizzi in `/etc/trota-internal.conf` (`ADMIN_URL`, `SUPPORT_EMAIL`, `AMBER_*`).
+Indirizzi in `/etc/trota-internal.conf` (`ADMIN_URL`, `SUPPORT_EMAIL`).
 Lo sfondo si rigenera con `branding/make-internal-wallpaper.py` (serve
 `fonttools` e il font Inter: il testo viene convertito in tracciati).

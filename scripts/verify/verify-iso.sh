@@ -64,7 +64,7 @@ trap 'rm -rf "$tmp"' EXIT
 xorriso -osirrox on -indev "$ISO" -extract /.disk/info "$tmp/info" -extract /casper/filesystem.manifest "$tmp/manifest" \
     -extract /casper/filesystem.size "$tmp/size" -extract /EFI/boot/bootx64.efi "$tmp/bootx64.efi" >/dev/null 2>&1
 grep -Eq '^Trota-OS(-VR|-Internal)? [0-9]' "$tmp/info" 2>/dev/null && pass "medium name: $(cat "$tmp/info")" || bad ".disk/info is not 'Trota-OS <version>' (ubiquity format)"
-for p in trota-desktop trota-release trota-welcome trota-system-info casper ubiquity linux-generic-hwe-24.04; do
+for p in trota-desktop trota-release trota-welcome trota-system-info trota-amber-alert casper ubiquity linux-generic-hwe-24.04; do
     grep -q "^${p}[[:space:]]" "$tmp/manifest" 2>/dev/null && pass "manifest lists $p" || bad "manifest lacks $p"
 done
 # Trota OS VR: the VR stack and the Trota VR app (packages/manifest/vr.list).

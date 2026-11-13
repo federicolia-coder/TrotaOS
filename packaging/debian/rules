@@ -68,6 +68,9 @@ override_dh_auto_install:
 	install -d debian/trota-release/etc/systemd/system
 	ln -sf /dev/null debian/trota-release/etc/systemd/system/esm-cache.service
 	ln -sf /dev/null debian/trota-release/etc/systemd/system/apt-news.service
+	# --- trota-amber-alert --------------------------------------------------
+	install -D -m 755 packaging/files/bin/trota-amber-alert debian/trota-amber-alert/usr/bin/trota-amber-alert
+	install -D -m 644 packaging/files/amber/trota-amber-alert.conf debian/trota-amber-alert/etc/trota-amber-alert.conf
 	# --- trota-internal (internal edition, docs/editions.md) ---------------
 	install -D -m 644 build-art/wallpapers/trota-internal.png \
 		debian/trota-internal/usr/share/backgrounds/trota/trota-internal.png
@@ -75,7 +78,6 @@ override_dh_auto_install:
 		debian/trota-internal/usr/share/glib-2.0/schemas/95_trota-internal.gschema.override
 	install -D -m 644 packaging/files/internal/trota-internal.conf debian/trota-internal/etc/trota-internal.conf
 	install -D -m 755 packaging/files/internal/testard-admin debian/trota-internal/usr/bin/testard-admin
-	install -D -m 755 packaging/files/internal/trota-amber-alert debian/trota-internal/usr/bin/trota-amber-alert
 	install -D -m 644 packaging/files/internal/it.testardstudios.TestardAdmin.desktop \
 		debian/trota-internal/usr/share/applications/it.testardstudios.TestardAdmin.desktop
 	# --- trota-kiosk -------------------------------------------------------
@@ -154,10 +156,6 @@ override_dh_installsystemd:
 	dh_installsystemd -ptrota-kiosk --name=trota-kiosk --no-start
 	dh_installsystemd -ptrota-kiosk --name=trota-kiosk-restart
 	dh_installsystemd -ptrota-fleet-agent --name=trota-fleet-agent --no-start
-
-override_dh_installsystemduser:
-	dh_installsystemduser
-	dh_installsystemduser -ptrota-internal --name=trota-amber-alert
 
 override_dh_python3:
 	dh_python3 --no-ext-rename
