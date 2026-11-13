@@ -68,9 +68,6 @@ override_dh_auto_install:
 	install -d debian/trota-release/etc/systemd/system
 	ln -sf /dev/null debian/trota-release/etc/systemd/system/esm-cache.service
 	ln -sf /dev/null debian/trota-release/etc/systemd/system/apt-news.service
-	# --- trota-amber-alert --------------------------------------------------
-	install -D -m 755 packaging/files/bin/trota-amber-alert debian/trota-amber-alert/usr/bin/trota-amber-alert
-	install -D -m 644 packaging/files/amber/trota-amber-alert.conf debian/trota-amber-alert/etc/trota-amber-alert.conf
 	# --- trota-internal (internal edition, docs/editions.md) ---------------
 	install -D -m 644 build-art/wallpapers/trota-internal.png \
 		debian/trota-internal/usr/share/backgrounds/trota/trota-internal.png

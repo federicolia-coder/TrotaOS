@@ -1,23 +1,35 @@
 #!/usr/bin/python3
 # trota-amber-alert — AMBER Alerts as desktop notifications when the computer is
-# in the United States (Trota OS, trota_common.amber).
+# in the United States (Trota OS, trota_common.amber; turned on by attiva-allerte-amber.sh).
 # Copyright (C) 2026 TestardStudios. GPL-3.0-or-later.
 import argparse
 import os
 import sys
-import urllib.error
 from pathlib import Path
 
-import gi
+# Installed by attiva-allerte-amber.sh: the module sits in ~/.local/share/trota-amber-alert.
+sys.path.insert(0, str(Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share") / "trota-amber-alert"))
+try:
+    import trota_amber as amber
+except ImportError:      # development tree
+    from trota_common import amber
 
-gi.require_version("Gio", "2.0")
-from gi.repository import Gio, GLib  # noqa: E402
-
-from trota_common import amber  # noqa: E402
+TEST_ALERT = amber.Alert(
+    identifier="TROTA-OS-TEST",
+    headline="AMBER Alert - TEST / allerta di prova",
+    description="This is a Trota OS test notification: no child is missing. "
+                "Real alerts come from FEMA's IPAWS feed when the time zone is in the United States.",
+    area="Trota OS test",
+    sender="Trota OS",
+)
 
 
 def notify(alert: amber.Alert) -> None:
     """A critical notification through org.freedesktop.Notifications (stays until dismissed)."""
+    import gi
+    gi.require_version("Gio", "2.0")
+    from gi.repository import Gio, GLib
+
     title, body = amber.notification_text(alert)
     hints = {"urgency": GLib.Variant("y", 2), "category": GLib.Variant("s", "emergency")}
     Gio.bus_get_sync(Gio.BusType.SESSION, None).call_sync(
@@ -30,14 +42,24 @@ def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description="Show AMBER Alerts for the US states of this computer's time zone.")
     ap.add_argument("--states", help="states to follow instead of the configured ones (e.g. ID,OR)")
     ap.add_argument("--dry-run", action="store_true", help="print the alerts instead of notifying")
+    ap.add_argument("--test", action="store_true", help="show a test notification and exit")
+    ap.add_argument("--status", action="store_true", help="print the states followed and exit")
     args = ap.parse_args(argv)
+    if args.test:
+        notify(TEST_ALERT)
+        return 0
+    if args.status:
+        states = amber.followed_states(user_conf=amber.user_config_file())
+        names = sorted(k for k, v in amber.STATE_FIPS.items() if v in states)
+        print(" ".join(names) if names else "-")
+        return 0
 
-    states = amber.parse_states(args.states) if args.states else amber.followed_states()
+    states = amber.parse_states(args.states) if args.states else amber.followed_states(user_conf=amber.user_config_file())
     cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "trota/amber-alerts.json"
     show = (lambda a: print("\n".join(amber.notification_text(a)), end="\n\n")) if args.dry_run else notify
     try:
         amber.check(states, amber.SeenStore(cache), show)
-    except (urllib.error.URLError, OSError, ValueError, GLib.Error) as exc:   # offline, no feed or no session
+    except Exception as exc:   # offline, feed unavailable or no session bus: try again next time
         print(f"trota-amber-alert: feed not available: {exc}", file=sys.stderr)
     return 0
 

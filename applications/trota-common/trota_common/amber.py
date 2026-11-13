@@ -8,9 +8,13 @@ of the states they cover; each entry links to the full CAP 1.2 message.
 Whether the computer is in the US, and in which states, is worked out from the
 system time zone only (GNOME sets it from the location when "Automatic time
 zone" is on): no location is looked up or sent. Outside the US nothing is
-downloaded. /etc/trota-amber-alert.conf (package trota-amber-alert) can turn
-the alerts off (AMBER_ALERTS=off) or name the states to follow
-(AMBER_STATES=ID,OR or FIPS codes).
+downloaded.
+
+The alerts are off unless the user turns them on with the script
+attiva-allerte-amber.sh from the website (docs/amber-alert.md), which installs
+the checker and its user timer in the home folder. ~/.config/trota-amber-alert.conf
+(or /etc/trota-amber-alert.conf for every user) can stop them (AMBER_ALERTS=off)
+or name the states to follow (AMBER_STATES=ID,OR or FIPS codes).
 """
 
 from __future__ import annotations
@@ -122,12 +126,21 @@ def parse_states(value: str) -> frozenset[str]:
     return frozenset(out)
 
 
-def followed_states(root: Path = Path("/")) -> frozenset[str]:
-    """States whose AMBER Alerts to show; empty = alerts off or not in the US."""
-    try:
-        conf = parse_os_release((root / CONF_FILE).read_text())
-    except OSError:
-        conf = {}
+def user_config_file() -> Path:
+    return Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "trota-amber-alert.conf"
+
+
+def followed_states(root: Path = Path("/"), user_conf: Path | None = None) -> frozenset[str]:
+    """States whose AMBER Alerts to show; empty = alerts off or not in the US.
+
+    The user's ~/.config/trota-amber-alert.conf wins over /etc/trota-amber-alert.conf.
+    """
+    conf: dict[str, str] = {}
+    for path in (root / CONF_FILE, user_conf):
+        try:
+            conf.update(parse_os_release(path.read_text()) if path else {})
+        except OSError:
+            pass
     if conf.get("AMBER_ALERTS", "auto").lower() in ("off", "no", "false", "0"):
         return frozenset()
     if conf.get("AMBER_STATES"):

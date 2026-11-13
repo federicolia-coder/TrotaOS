@@ -1,0 +1,8 @@
+[Unit]
+Description=AMBER Alerts when the computer is in the United States
+Documentation=https://github.com/federicolia-coder/TrotaOS/blob/main/docs/amber-alert.md
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/trota-amber-alert
