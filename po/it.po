@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Trota OS 1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/federicolia-coder/TrotaOS/issues\n"
-"POT-Creation-Date: 2026-11-09 14:14+0000\n"
+"POT-Creation-Date: 2026-11-13 11:39+0000\n"
 "PO-Revision-Date: 2026-10-16 12:00+0000\n"
 "Last-Translator: TestardStudios\n"
 "Language-Team: Italian\n"
@@ -15,6 +15,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: applications/trota-common/trota_common/amber.py:236
+msgid "AMBER Alert"
+msgstr "Allerta AMBER"
 
 #: applications/trota-common/trota_common/diagnostics.py:82
 #, python-brace-format

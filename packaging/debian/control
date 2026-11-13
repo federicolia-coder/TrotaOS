@@ -127,11 +127,14 @@ Package: trota-internal
 Architecture: all
 Depends: ${misc:Depends}, trota-desktop-settings (= ${source:Version}),
          trota-welcome (= ${source:Version}), trota-system-info (= ${source:Version}),
-         xdg-utils
+         trota-common (= ${source:Version}), xdg-utils, libnotify-bin
 Description: Trota OS internal edition for TestardStudios staff
  Company defaults for the computers of TestardStudios: the internal
  wallpaper, a launcher and dock entry for the admin panel, and the links
  to technical support shown by Trota Welcome and Trota System Info.
+ When the time zone is in the United States it also shows AMBER Alerts
+ (child abduction emergencies) for those states as notifications, from
+ FEMA's public IPAWS feed.
  Not meant for public images: only the internal ISO installs it.
 
 Package: trota-docs

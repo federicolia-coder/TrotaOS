@@ -1,4 +1,5 @@
 applications/trota-common/trota_common/__init__.py
+applications/trota-common/trota_common/amber.py
 applications/trota-common/trota_common/desktop.py
 applications/trota-common/trota_common/diagnostics.py
 applications/trota-common/trota_common/i18n.py

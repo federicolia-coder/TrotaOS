@@ -1,0 +1,37 @@
+#!/usr/bin/python3
+# trota-amber-alert — AMBER Alerts as desktop notifications when the computer is
+# in the United States (Trota OS internal edition, trota_common.amber).
+# Copyright (C) 2026 TestardStudios. GPL-3.0-or-later.
+import argparse
+import os
+import sys
+import urllib.error
+from pathlib import Path
+
+from trota_common import amber
+from trota_common.runner import run
+
+
+def notify(alert: amber.Alert) -> None:
+    title, body = amber.notification_text(alert)
+    run(["notify-send", "--urgency=critical", "--app-name=AMBER Alert", "--icon=dialog-warning", title, body])
+
+
+def main(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser(description="Show AMBER Alerts for the US states of this computer's time zone.")
+    ap.add_argument("--states", help="states to follow instead of the configured ones (e.g. ID,OR)")
+    ap.add_argument("--dry-run", action="store_true", help="print the alerts instead of notifying")
+    args = ap.parse_args(argv)
+
+    states = amber.parse_states(args.states) if args.states else amber.followed_states()
+    cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "trota/amber-alerts.json"
+    show = (lambda a: print("\n".join(amber.notification_text(a)), end="\n\n")) if args.dry_run else notify
+    try:
+        amber.check(states, amber.SeenStore(cache), show)
+    except (urllib.error.URLError, OSError, ValueError) as exc:   # offline or feed unavailable: try next time
+        print(f"trota-amber-alert: feed not available: {exc}", file=sys.stderr)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
