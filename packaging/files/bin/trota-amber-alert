@@ -8,13 +8,22 @@ import sys
 import urllib.error
 from pathlib import Path
 
-from trota_common import amber
-from trota_common.runner import run
+import gi
+
+gi.require_version("Gio", "2.0")
+from gi.repository import Gio, GLib  # noqa: E402
+
+from trota_common import amber  # noqa: E402
 
 
 def notify(alert: amber.Alert) -> None:
+    """A critical notification through org.freedesktop.Notifications (stays until dismissed)."""
     title, body = amber.notification_text(alert)
-    run(["notify-send", "--urgency=critical", "--app-name=AMBER Alert", "--icon=dialog-warning", title, body])
+    hints = {"urgency": GLib.Variant("y", 2), "category": GLib.Variant("s", "emergency")}
+    Gio.bus_get_sync(Gio.BusType.SESSION, None).call_sync(
+        "org.freedesktop.Notifications", "/org/freedesktop/Notifications", "org.freedesktop.Notifications",
+        "Notify", GLib.Variant("(susssasa{sv}i)", ("AMBER Alert", 0, "dialog-warning", title, body, [], hints, -1)),
+        None, Gio.DBusCallFlags.NONE, -1, None)
 
 
 def main(argv: list[str]) -> int:
@@ -28,7 +37,7 @@ def main(argv: list[str]) -> int:
     show = (lambda a: print("\n".join(amber.notification_text(a)), end="\n\n")) if args.dry_run else notify
     try:
         amber.check(states, amber.SeenStore(cache), show)
-    except (urllib.error.URLError, OSError, ValueError) as exc:   # offline or feed unavailable: try next time
+    except (urllib.error.URLError, OSError, ValueError, GLib.Error) as exc:   # offline, no feed or no session
         print(f"trota-amber-alert: feed not available: {exc}", file=sys.stderr)
     return 0
 

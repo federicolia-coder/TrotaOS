@@ -125,7 +125,7 @@ Description: Trota VR: virtual reality on Trota OS
 
 Package: trota-amber-alert
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version}), libnotify-bin
+Depends: ${misc:Depends}, ${python3:Depends}, trota-common (= ${source:Version}), gir1.2-glib-2.0
 Description: AMBER Alerts on Trota OS in the United States
  When the system time zone is in the United States, shows the AMBER Alerts
  (child abduction emergencies) of those states as desktop notifications,
